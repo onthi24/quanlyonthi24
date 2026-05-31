@@ -922,69 +922,49 @@
         }
 
         function parseGoogleSheetToPackage(rawText) {
-            const data = JSON.parse(rawText.substr(47).slice(0, -2));
-            const rows = data.table.rows;
-            const rawCols = data.table.cols; 
-            
-            let subjectVal = 'Vật lí 10', sidebarVal = 'Vật lí 10 - [Tên Giáo Viên]', targetPath = 'video/video-vatli-10.html';
-            
-            function getVal(cols, index) {
-                if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
-                return cols[index].v.toString().trim();
-            }
+    // Sửa lại cách lấy dữ liệu JSON từ API Google Sheet
+    const jsonString = rawText.match(/google\.visualization\.Query\.setResponse\((.*)\);/)[1];
+    const data = JSON.parse(jsonString);
+    const rows = data.table.rows;
+    const rawCols = data.table.cols; 
+    
+    let subjectVal = 'Vật Lí 12', sidebarVal = 'Tư duy từ Thực nghiệm', targetPath = 'video/video-vatli-12.html';
+    
+    function getVal(cols, index) {
+        if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
+        return cols[index].v.toString().trim();
+    }
 
-            if (rawCols && rawCols.length >= 8) {
-                if (rawCols[7] && rawCols[7].label) {
-                    targetPath = rawCols[7].label.toString().trim();
-                }
-            }
+    // Lấy targetPath từ ô I1 (index 8)
+    if (rawCols && rawCols.length >= 9) {
+        targetPath = rawCols[8].label || 'video/video-vatli-12.html';
+    }
 
-            if (rows[0] && rows[0].c) {
-                subjectVal = getVal(rows[0].c, 0) || 'Toán 6';    
-                sidebarVal = getVal(rows[0].c, 1) || 'Khóa bồi dưỡng kiến thức'; 
-            }
-            
-            let structuredData = {
-                subjectTitle: subjectVal,
-                sidebarTitle: sidebarVal,
-                lessons: []
-            };
+    let structuredData = { subjectTitle: subjectVal, sidebarTitle: sidebarVal, lessons: [] };
+    let currentLessonObj = null;
 
-            let currentLessonObj = null;
+    for (let i = 1; i < rows.length; i++) { // Bắt đầu từ dòng 1 (bỏ qua dòng tiêu đề)
+        const cols = rows[i].c;
+        if (!cols) continue;
 
-            for (let i = 0; i < rows.length; i++) {
-                const cols = rows[i].c;
-                if (!cols) continue;
+        const lessonTitle = getVal(cols, 2); // Cột D
+        const partTitle   = getVal(cols, 3); // Cột E
+        const linkUrl     = getVal(cols, 4); // Cột F
+        const colorCode   = getVal(cols, 5); // Cột G
 
-                const checkSidebarCol = getVal(cols, 1); 
-                if (!checkSidebarCol) break; 
+        if (!lessonTitle) continue;
 
-                const lessonTitle = getVal(cols, 2); 
-                const partTitle   = getVal(cols, 3); 
-                const linkUrl     = getVal(cols, 4); 
-                const colorCode   = getVal(cols, 5); 
-
-                if (!lessonTitle) continue;
-
-                if (!currentLessonObj || currentLessonObj.lessonTitle !== lessonTitle) {
-                    currentLessonObj = {
-                        lessonTitle: lessonTitle,
-                        colorCode: colorCode,
-                        parts: []
-                    };
-                    structuredData.lessons.push(currentLessonObj);
-                }
-
-                if (partTitle && partTitle.trim() !== '') {
-                    currentLessonObj.parts.push({
-                        partTitle: partTitle,
-                        linkUrl: linkUrl
-                    });
-                }
-            }
-            
-            return { data: structuredData, gitPath: targetPath };
+        if (!currentLessonObj || currentLessonObj.lessonTitle !== lessonTitle) {
+            currentLessonObj = { lessonTitle: lessonTitle, colorCode: colorCode, parts: [] };
+            structuredData.lessons.push(currentLessonObj);
         }
+
+        if (partTitle) {
+            currentLessonObj.parts.push({ partTitle: partTitle, linkUrl: linkUrl });
+        }
+    }
+    return { data: structuredData, gitPath: targetPath };
+}
 
         function startAutoSyncToGitHub() {
             const token = document.getElementById('gh-token-input').value.trim();
