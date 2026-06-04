@@ -39,9 +39,13 @@
         }
 
         .logo-box { display: flex; align-items: center; }
+
         .logo-img { height: 45px; object-fit: contain; display: block; }
+
         .mobile-menu-btn { display: none; font-size: 24px; cursor: pointer; color: #333; padding: 10px; }
+
         .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; gap: 5px; }
+
         .nav-item-wrap { position: relative; }
 
         .nav-item {
@@ -59,6 +63,7 @@
         }
 
         .nav-item.active { font-weight: bold; background-color: #fff; border-bottom: 4px solid #000; }
+
         .nav-item:hover { background-color: #e2e8f0; }
 
         .dropdown-content {
@@ -91,17 +96,14 @@
         .bg-green { background: #1a4d2e; }
         .bg-blue { background: #78281f; }
         .bg-orange { background: #B5782A; }
-        
-        /* Đã cập nhật text-align: center cho thẻ bài học */
-        .item-card { background: #fff; padding: 14px 18px; border-radius: 16px; border: 1.5px solid #b5b5b5; text-decoration: none; display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: 0.2s; text-align: center; }
+        .item-card { background: #fff; padding: 14px 18px; border-radius: 16px; border: 1.5px solid #b5b5b5; text-decoration: none; display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: 0.2s; }
         .item-card:hover { background-color: #f8fafc; border-color: #78281f; }
         .item-card h2 { margin: 0; font-weight: 700; color: #222; font-size: 18px; }
 
-        /* --- FOOTER ĐÃ CHỈNH SỬA CĂN TRÁI VÀ MÀU NÚT --- */
-        .footer-action { margin: 40px auto 20px auto; max-width: 1100px; width: 100%; display: flex; gap: 30px; align-items: center; justify-content: flex-start; }
-        
-        .btn-register { background-color: #b5782a; color: #fff; padding: 14px 35px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
-        .link-detail { font-weight: bold; text-decoration: none; font-size: 15px; text-transform: uppercase; color: #005f5f; }
+        /* --- FOOTER --- */
+        .footer-action { margin: 40px auto 20px auto; max-width: 1100px; width: 100%; display: flex; gap: 30px; align-items: center; }
+        .btn-register { background: linear-gradient(to bottom, #d4af37, #a67c00); color: #fff; padding: 14px 35px; border-radius: 25px; border: 1px solid #8e6f3e; font-weight: bold; cursor: pointer; }
+        .link-detail { font-weight: bold; text-decoration: none; font-size: 15px; text-transform: uppercase; }
         .copyright { color: #999; font-size: 14px; padding-left: 20px; max-width: 1100px; margin: 0 auto 20px auto; }
 
         @media (max-width: 768px) {
@@ -117,7 +119,7 @@
             .nav-item-wrap.active-mobile .dropdown-content { display: flex !important; flex-direction: column; }
             .header-main { flex-direction: column; padding: 0 15px; gap: 12px; align-items: flex-start; }
             .container { flex-direction: column; gap: 8px; padding: 0 10px; margin-top: 15px; }
-            .footer-action { flex-direction: column; gap: 20px; padding: 20px; align-items: flex-start; }
+            .footer-action { flex-direction: column; gap: 20px; padding: 20px; }
         }
     </style>
 </head>
@@ -126,7 +128,7 @@
     <div class="top-navbar">
         <div class="mobile-menu-btn" onclick="openMobileMenu(event)"><i class="fa fa-bars"></i></div>
         <div class="logo-box">
-            <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/LOGO24.TRONG.png" alt="ONTHI24 LOGO" class="logo-img">
+            <img src="https://github.com/onthi24/quanlyonthi24/raw/main/onthi24.chu.thuong.trong.png" alt="ONTHI24 LOGO" class="logo-img">
         </div>
         
         <div class="nav-menu" id="mobileNavMenu">
@@ -190,10 +192,12 @@
         </div>
     </div>
 
-    <div class="footer-action">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform" class="btn-register" target="_blank">ĐĂNG KÍ TƯ VẤN</a>
-        <a href="https://sites.google.com/view/namins2" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
-    </div>
+   <div class="footer-action">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform" target="_blank" style="text-decoration: none;">
+        <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
+    </a>
+    <a href="https://sites.google.com/view/namins2" class="link-detail" style="color: #78281f;">GIỚI THIỆU VỀ ONTHI24.COM</a>
+</div>
 
     <div class="copyright">© 2026 ONTHI24</div>
 
