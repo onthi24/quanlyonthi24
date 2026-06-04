@@ -92,19 +92,17 @@
         .bg-blue { background: #78281f; }
         .bg-orange { background: #B5782A; }
         
-        /* Cập nhật căn giữa cho item-card */
+        /* Đã cập nhật text-align: center cho thẻ bài học */
         .item-card { background: #fff; padding: 14px 18px; border-radius: 16px; border: 1.5px solid #b5b5b5; text-decoration: none; display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: 0.2s; text-align: center; }
         .item-card:hover { background-color: #f8fafc; border-color: #78281f; }
         .item-card h2 { margin: 0; font-weight: 700; color: #222; font-size: 18px; }
 
-        /* --- FOOTER --- */
-        .footer-action { margin: 40px auto 20px auto; max-width: 1100px; width: 100%; display: flex; gap: 30px; align-items: center; justify-content: center; }
+        /* --- FOOTER ĐÃ CHỈNH SỬA CĂN TRÁI VÀ MÀU NÚT --- */
+        .footer-action { margin: 40px auto 20px auto; max-width: 1100px; width: 100%; display: flex; gap: 30px; align-items: center; justify-content: flex-start; }
         
-        /* Chỉnh nút thành thẻ a để gắn link */
-        .btn-register { background: linear-gradient(to bottom, #d4af37, #a67c00); color: #fff; padding: 14px 35px; border-radius: 25px; border: 1px solid #8e6f3e; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
-        
-        .link-detail { font-weight: bold; text-decoration: none; font-size: 15px; text-transform: uppercase; }
-        .copyright { color: #999; font-size: 14px; text-align: center; margin-top: 20px; }
+        .btn-register { background-color: #b5782a; color: #fff; padding: 14px 35px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+        .link-detail { font-weight: bold; text-decoration: none; font-size: 15px; text-transform: uppercase; color: #005f5f; }
+        .copyright { color: #999; font-size: 14px; padding-left: 20px; max-width: 1100px; margin: 0 auto 20px auto; }
 
         @media (max-width: 768px) {
             body { padding: 0px; }
@@ -119,7 +117,7 @@
             .nav-item-wrap.active-mobile .dropdown-content { display: flex !important; flex-direction: column; }
             .header-main { flex-direction: column; padding: 0 15px; gap: 12px; align-items: flex-start; }
             .container { flex-direction: column; gap: 8px; padding: 0 10px; margin-top: 15px; }
-            .footer-action { flex-direction: column; gap: 20px; padding: 20px; }
+            .footer-action { flex-direction: column; gap: 20px; padding: 20px; align-items: flex-start; }
         }
     </style>
 </head>
@@ -194,7 +192,7 @@
 
     <div class="footer-action">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform" class="btn-register" target="_blank">ĐĂNG KÍ TƯ VẤN</a>
-        <a href="https://sites.google.com/view/namins2" class="link-detail" style="color: #78281f;" target="_blank">GIỚI THIỆU VỀ ONTHI24.COM</a>
+        <a href="https://sites.google.com/view/namins2" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
     </div>
 
     <div class="copyright">© 2026 ONTHI24</div>
