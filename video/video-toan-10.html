@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
-        const SHEET_ID = '1mphOMBuB0KYO22iqNvt81EpBrU2fBTBe15cmRiFvWxQ'; // ID Google Sheet Toán 10 mới của bạn
+        const SHEET_ID = '1mphOMBuB0KYO22iqNvt81EpBrU2fBTBe15cmRiFvWxQ'; // ID Google Sheet Toán 10 của bạn
         const SHEET_TITLE = 'Trang tính1'; // Tên Tab của Google Sheet
         const SHEET_RANGE = 'B1:I200'; // Quét chuẩn từ cột B đến cột I để lấy dữ liệu
         const ADMIN_PASSWORD = 'admin123'; // Mật khẩu kích hoạt quyền Admin trên giao diện web
@@ -31,6 +31,7 @@
         :root {
             --primary-green: #1e4620; /* Màu xanh lá chủ đạo đồng bộ bài giảng */
             --primary-orange: #e67e22;
+            --main-red-brown: #782525; /* Mã màu nền Toán THPT lấy từ ảnh trang chủ */
         }
 
         body, html {
@@ -452,39 +453,61 @@
         }
 
         /* ========================================================
-           KHỐI HIỂN THỊ DANH MỤC CÁC KHÓA HỌC CHUẨN (ẢNH BÊN TRÁI)
+           THIẾT KẾ MỚI ĐỒNG BỘ 100% THEO TRANH CHỦ (CÓ VẠCH ĐỨNG)
            ======================================================== */
         .courses-catalog-box {
-            margin-top: 25px;
+            margin-top: 30px;
             width: 100%;
             clear: both;
         }
+        
+        /* Tiêu đề có vạch xanh đứng ở đầu, cỡ chữ to bằng chữ Trang Chủ */
         .courses-catalog-title {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 28px;
+            font-size: 28px; /* Cỡ chữ bằng tiêu đề Trang Chủ */
             font-weight: bold;
-            color: #000000;
-            text-decoration: underline;
-            margin-bottom: 12px;
+            color: #1e4620; /* Màu xanh đậm của ONTHI24 */
+            border-left: 5px solid #1e4620; /* Thanh gạch đứng màu xanh đầu dòng */
+            padding-left: 12px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        
+        /* Flexbox tạo bố cục lưới các nút bấm xếp cạnh nhau như khối môn học */
         .courses-list {
             list-style: none;
-            padding-left: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 0;
         }
+        
+        /* Định dạng nút bấm màu nền đỏ nâu của ô Toán THPT, bo góc */
         .course-link-item {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 26px;
-            font-weight: bold;
-            color: #000000;
+            background-color: var(--main-red-brown); /* Mã màu đỏ nâu #782525 từ ảnh */
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 8px; /* Bo góc mềm mại như nút ngoài trang chủ */
             cursor: pointer;
-            margin-bottom: 6px;
-            transition: color 0.2s;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 220px;
+            text-align: left;
         }
+        
         .course-link-item:hover {
-            color: var(--primary-orange);
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+        
+        /* Trạng thái nút đang được chọn học */
         .course-link-item.selected-active {
-            color: var(--primary-green);
+            background-color: #166534; /* Chuyển sang xanh lá đậm khi đang được chọn kích hoạt */
+            font-weight: bold;
+            border-left: 5px solid #ffffff;
         }
 
         /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
@@ -525,7 +548,7 @@
         .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
 
         /* ========================================================
-            📱 ĐIỀU CHỈNH GIAO DIỆN TRÊN ĐIỆN THOẠI CHUẨN XỊN 100%
+            📱 GIAO DIỆN TRÊN ĐIỆN THOẠI RESPONSIVE KHỐI MỚI
            ======================================================== */
         @media (max-width: 768px) {
             .top-navbar {
@@ -537,14 +560,8 @@
                 margin-bottom: 10px;
             }
 
-            .mobile-menu-nav-btn {
-                display: block; 
-            }
-
-            .logo-box {
-                width: auto;
-                margin-bottom: 0;
-            }
+            .mobile-menu-nav-btn { display: block; }
+            .logo-box { width: auto; margin-bottom: 0; }
 
             .nav-menu {
                 position: fixed;
@@ -561,9 +578,7 @@
                 gap: 0;
             }
 
-            .nav-menu.open {
-                left: 0 !important;
-            }
+            .nav-menu.open { left: 0 !important; }
 
             .mobile-close-nav-btn {
                 display: block !important;
@@ -607,58 +622,24 @@
                 border-radius: 0;
             }
 
-            .nav-item-wrap.active-mobile .dropdown-content {
-                display: flex !important;
-                flex-direction: column;
-            }
-
-            .nav-item-wrap .dropdown-content a {
-                padding: 12px 25px;
-                font-size: 16px;
-                color: #333;
-                border-bottom: 1px solid #cbd5e1;
-            }
-
+            .nav-item-wrap.active-mobile .dropdown-content { display: flex !important; flex-direction: column; }
+            .nav-item-wrap .dropdown-content a { padding: 12px 25px; font-size: 16px; color: #333; border-bottom: 1px solid #cbd5e1; }
             .nav-item-wrap:hover .dropdown-content { display: none; }
 
-            .subject-header-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
+            .subject-header-container { flex-direction: column; align-items: flex-start; gap: 10px; }
             .search-box { width: 100%; }
             .search-box input { width: 100%; }
 
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-            .video-column {
-                padding-bottom: 10px; 
-                background-color: #000;
-            }
-            .sidebar-column {
-                border-left: none;
-                border-top: 1px solid #dcdcdc;
-                height: auto;
-                max-height: 320px;
-            }
-            .current-lesson-bottom-display {
-                margin-right: 0px;
-                text-align: center;
-            }
-            .footer-action {
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 15px;
-                text-align: center;
-            }
-            .copyright {
-                text-align: center;
-            }
-            .courses-catalog-title { text-align: center; }
-            .course-link-item { text-align: center; }
+            .main-container { grid-template-columns: 1fr; }
+            .video-column { padding-bottom: 10px; background-color: #000; }
+            .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
+            .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
+            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
+            .copyright { text-align: center; }
+            
+            .courses-catalog-title { font-size: 22px; text-align: left; }
+            .courses-list { flex-direction: column; width: 100%; gap: 10px; }
+            .course-link-item { width: 100%; }
         }
     </style>
 </head>
@@ -773,15 +754,14 @@
 
     <script>
         // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐA GIÁO VIÊN ĐÃ ĐƯỢC CHUẨN HÓA CẤU TRÚC
+        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
         // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Tên môn (Vật lí 12)","byTeachers":{"Mục lục bài bài giảng (Khoá nền tảng)":{"sidebarTitle":"Mục lục bài bài giảng (Khoá nền tảng)","lessons":[{"lessonTitle":"Tên bài giảng (Bài 1. Đại cương Vật lí nhiệt)","colorCode":"Mã màu của bài","parts":[{"partTitle":"Tên phần (Phần 1. Một số khái niệm)","linkUrl":"Link bài giảng"}]}]},"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","colorCode":"","parts":[{"partTitle":"Bài giảng 1","linkUrl":"https://www.youtube.com/watch?v=u0Oso1BelZc&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=4"},{"partTitle":"Bài giảng 2","linkUrl":"https://www.youtube.com/watch?v=OlpgDktWGC8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1ZX91OeULpEmEY6nka_T8nbd8imrJ8sZp/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"}]}]},"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","linkUrl":"https://www.youtube.com/watch?v=xtYqUS8_pZM&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tập Hợp và Các Phép Toán Trên Tập Hợp","linkUrl":"https://www.youtube.com/watch?v=a4p0uvdJTO8&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":""}]},{"lessonTitle":"Chương 2. Bất phương trình về hệ bất phương trình","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Bất Phương Trình và Hệ BPT Bậc Nhất Hai Ẩn","linkUrl":"https://www.youtube.com/watch?v=u0Oso1BelZc&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Bài Toán Thực Tế - Hệ Bất Phương Trình Bậc Nhất 2 Ẩn","linkUrl":"https://www.youtube.com/watch?v=HYoB63CYZ-I"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 3. Hệ thức lượng trong tam giác","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Giá Trị Lượng Giác của 1 Góc Bất Kì Từ 0 đến 180","linkUrl":"https://www.youtube.com/watch?v=jE8zCCSYaSs&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Hệ thức lượng trong tam giác","linkUrl":"https://www.youtube.com/watch?v=1yEbtgluNpE"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 4. Véc tơ","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Vecto và các khái niệm, định nghĩa","linkUrl":"https://www.youtube.com/watch?v=zXyDnOHwBf4&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tổng và Hiệu của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=RXRXmO44qAw&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 3. Tích Vecto Với 1 Số","linkUrl":"https://www.youtube.com/watch?v=kbTFOhLc5w0&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 4. Tích Vô Hướng Của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=npNRm9lZG30&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=8"}]}]}}};
+        const STATIC_DATA_STORE = {"subjectTitle":"Toán 10","byTeachers":{"Mục lục bài bài giảng (Khoá nền tảng)":{"sidebarTitle":"Mục lục bài bài giảng (Khoá nền tảng)","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","linkUrl":"https://www.youtube.com/watch?v=OlpgDktWGC8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1ZX91OeULpEmEY6nka_T8nbd8imrJ8sZp/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"}]}]}}};
         // ==========================================================
 
         let GROUPED_TEACHERS_DATA = {};
         let CURRENT_TEACHER_NAME = "";
 
-        // --- HÀM THANH NAVBAR ---
         function openMobileMenu(e) {
             e.stopPropagation();
             document.getElementById('mobileNavMenu').classList.add('open');
@@ -804,7 +784,6 @@
             }
         }
 
-        // --- XỬ LÝ YOUTUBE ---
         function extractYouTubeId(url) {
             if (!url) return '';
             url = url.trim();
@@ -829,14 +808,13 @@
             if (player) player.src = targetSrc;
         }
 
-        // KHỞI TẠO BỘ DỮ LIỆU ĐA GIÁO VIÊN
         function initTeachersDataPackage(data) {
             GROUPED_TEACHERS_DATA = {};
             if (data.byTeachers) {
                 GROUPED_TEACHERS_DATA = data.byTeachers;
                 document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 10";
             } else {
-                const tName = data.sidebarTitle || "Thầy Nguyễn Ngọc Hải";
+                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
                 GROUPED_TEACHERS_DATA[tName] = {
                     sidebarTitle: tName,
                     lessons: data.lessons || []
@@ -846,7 +824,6 @@
             renderCustomTeacherLinks();
         }
 
-        // SINH DANH MỤC KHÓA HỌC DƯỚI VIDEO (1. THẦY HẢI, 2. THẦY TIẾN...)
         function renderCustomTeacherLinks() {
             const container = document.getElementById('custom-teacher-links-list');
             container.innerHTML = '';
@@ -875,7 +852,6 @@
             renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
         }
 
-        // HIỂN THỊ MỤC LỤC SIDEBAR THEO GIÁO VIÊN ĐƯỢC CHỌN
         function renderLessonsMenu(teacherData) {
             document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle}</span>`;
             const menuContainer = document.getElementById('menu-container');
@@ -1004,7 +980,7 @@
             }
         }
 
-        // THUẬT TOÁN ĐÃ ĐƯỢC FIX LỖI 100%: KHÔNG BAO GIỜ BỊ NUỐT BÀI 1 DO TRÙNG TÊN CHƯƠNG LIÊN TIẾP
+        // HÀM QUÉT DỮ LIỆU ĐƯỢC FIX LỖI: BỎ QUA DÒNG TIÊU ĐỀ 1, CHẠY CHÍNH XÁC TỪ DÒNG THỨ 2 TRỞ ĐI
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
@@ -1023,8 +999,9 @@
                 }
             }
 
-            if (rows[0] && rows[0].c) {
-                subjectVal = getVal(rows[0].c, 0) || 'Toán 10';    
+            // Lấy tiêu đề môn học chính xác từ ô đầu tiên dòng 2
+            if (rows[1] && rows[1].c) {
+                subjectVal = getVal(rows[1].c, 0) || 'Toán 10';    
             }
             
             let structuredData = {
@@ -1032,7 +1009,8 @@
                 byTeachers: {}
             };
 
-            for (let i = 0; i < rows.length; i++) {
+            // i = 1 tức là bỏ qua dòng 1 làm tiêu đề, bắt đầu gom nhóm chuẩn từ dòng 2
+            for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
                 if (!cols) continue;
 
@@ -1042,14 +1020,13 @@
                 const lessonTitle = getVal(cols, 2); 
                 const partTitle   = getVal(cols, 3); 
                 const linkUrl     = getVal(cols, 4); 
-                let colorCode   = getVal(cols, 5); 
+                let colorCode     = getVal(cols, 5); 
 
                 if (!lessonTitle) continue;
 
-                // Cấp cứu dữ liệu nếu cột C của giáo viên bị cell trống
                 if (!teacherName) {
                     const keys = Object.keys(structuredData.byTeachers);
-                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Thầy Nguyễn Ngọc Hải";
+                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
                 }
 
                 if (!structuredData.byTeachers[teacherName]) {
@@ -1070,7 +1047,6 @@
                     };
                     teacherLessons.push(currentLessonObj);
                 } else {
-                    // Nếu chương đã được tạo từ trước bởi dòng tiêu đề trống, nhưng dòng sau mới có mã màu
                     if (colorCode && (!currentLessonObj.colorCode || currentLessonObj.colorCode === '')) {
                         currentLessonObj.colorCode = colorCode;
                     }
@@ -1133,7 +1109,7 @@
                             'Accept': 'application/vnd.github.v3+json'
                         },
                         body: JSON.stringify({
-                            message: `⚡ Auto-Sync Toán 10 Đa Giáo Viên: ${ghPathFromSheet}`,
+                            message: `⚡ Auto-Sync Toán 10 Đa Khóa Học: ${ghPathFromSheet}`,
                             content: newContentBase64,
                             sha: fileSha
                         })
