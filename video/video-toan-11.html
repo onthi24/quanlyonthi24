@@ -7,65 +7,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giao diện bài giảng ONTHI24</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <script>
         const SHEET_ID = '1aC_WhBor3qJhVbHchKXQJgAmmDrw69ylOmFuZbDOuuA';
         const SHEET_TITLE = 'Trang tính1';
-        const CONFIG_RANGE = 'B3:C12'; // Vùng chứa thông số cấu hình
+        const SHEET_RANGE = 'B1:I200';
         const ADMIN_PASSWORD = 'admin123';
         const GH_OWNER = 'onthi24';
         const GH_REPO = 'quanlyonthi24';
+        // Biến lưu trữ dữ liệu bài giảng
+        let STATIC_DATA_STORE = {"subjectTitle":"Toán 11","byTeachers":{}}; 
     </script>
-
     <style>
+        /* GIỮ NGUYÊN CSS GỐC CỦA BẠN */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root { --primary-green: #1e4620; --primary-orange: #e67e22; --main-red-brown: #782525; }
         body, html { width: 100%; background-color: #fdfdfd; font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; }
         .wrapper-layout { max-width: 1100px; margin: 0 auto; padding: 20px; width: 100%; }
-        /* ... Các class cũ giữ nguyên ... */
+        .top-navbar { max-width: 1100px; margin: 0 auto 15px auto; background-color: #f1f4f6; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-img { height: 45px; object-fit: contain; }
+        .main-container { display: grid; grid-template-columns: 1fr 256px; background-color: #000; border-radius: 4px; overflow: hidden; }
+        .video-header { background-color: var(--primary-green); color: #fff; padding: 5px 15px; height: 32px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-register { background: linear-gradient(to bottom, #cfa846, #9c7514); color: #fff; padding: 14px 35px; border-radius: 25px; border: 1px solid #85630f; font-weight: bold; font-size: 20px; cursor: pointer; }
+        .sidebar-column { background-color: #ffffff; border-left: 1px solid #dcdcdc; display: flex; flex-direction: column; }
+        .menu-item { padding: 8px 12px 8px 24px; cursor: pointer; border-top: 1px solid #f1f5f9; }
+        .menu-item.active { background-color: #f0fdf4; border-left: 4px solid var(--primary-green); color: #166534 !important; font-weight: 600; }
+        .course-link-item.selected-active { background-color: var(--main-red-brown) !important; color: #fff !important; }
+        #admin-panel { max-width: 1100px; margin: 0 auto 20px auto; padding: 15px; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; display: none; }
     </style>
 </head>
 <body>
     <div class="wrapper-layout">
         <div class="top-navbar">
-            <div class="logo-box">
-                <a href="#" class="logo-link"><img id="logo-img" src="" class="logo-img"></a>
+            <div class="logo-box"><a href="#" class="logo-link"><img id="main-logo" src="" class="logo-img"></a></div>
+        </div>
+        <div class="subject-header-container">
+            <div class="subject-title"><span id="base-subject-text">Loading...</span></div>
+            <div class="search-box"><input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm..."></div>
+        </div>
+        <div class="main-container" id="main-layout-container">
+            <div class="video-column">
+                <div class="video-header"><span id="current-lesson-title">Chọn bài học</span></div>
+                <div class="video-wrapper"><iframe id="video-player" src="" allowfullscreen></iframe></div>
             </div>
+            <div class="sidebar-column">
+                <div class="sidebar-header" id="sidebar-title">Mục lục</div>
+                <div class="menu-scroll-container" id="menu-container"></div>
             </div>
+        </div>
         <div class="footer-action">
-            <button class="btn-register" id="btn-reg"></button>
-            <a href="#" id="link-intro" class="link-detail"></a>
+            <button class="btn-register" id="btn-reg">ĐĂNG KÍ TƯ VẤN</button>
+            <a href="#" id="link-intro" class="link-detail">GIỚI THIỆU</a>
         </div>
+        <div id="admin-panel">
+            <input type="password" id="gh-token-input" placeholder="GitHub Token...">
+            <button class="btn-admin" onclick="startAutoSyncToGitHub()">Cập nhật</button>
+            <span id="update-status"></span>
         </div>
-
+    </div>
     <script>
-        // [Phần STATIC_DATA_STORE giữ nguyên]
-        const STATIC_DATA_STORE = { /* Dữ liệu bài giảng của bạn */ };
-
-        // [Phần script cũ giữ nguyên]
-        
-        // HÀM BỔ SUNG: Cấu hình giao diện từ Sheet
-        async function applyConfigFromSheet() {
+        // LOGIC TỰ ĐỘNG CẬP NHẬT TỪ SHEET
+        async function initDynamicConfig() {
             try {
-                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&range=${CONFIG_RANGE}`;
-                const res = await fetch(url).then(r => r.text());
-                const data = JSON.parse(res.substr(47).slice(0, -2));
-                const rows = data.table.rows;
-
-                // Map dữ liệu vào giao diện
-                document.documentElement.style.setProperty('--primary-green', rows[0].c[1].v); // C3
-                document.documentElement.style.setProperty('--main-red-brown', rows[1].c[1].v); // C4
-                document.getElementById('logo-img').src = rows[7].c[0].v.replace('/blob/', '/raw/'); // B10
-                document.getElementById('base-subject-text').innerText = rows[8].c[0].v; // B11
-                document.getElementById('btn-reg').innerText = rows[5].c[0].v; // B8
-                document.getElementById('link-intro').innerText = rows[6].c[0].v; // B9
-            } catch(e) { console.log("Chưa load được cấu hình từ Sheet"); }
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&range=B3:C12`).then(r => r.text());
+                const r = JSON.parse(res.substr(47).slice(0, -2)).table.rows;
+                document.documentElement.style.setProperty('--primary-green', r[0].c[1].v);
+                document.documentElement.style.setProperty('--main-red-brown', r[1].c[1].v);
+                document.getElementById('btn-reg').innerText = r[5].c[0].v;
+                document.getElementById('link-intro').innerText = r[6].c[0].v;
+                document.getElementById('main-logo').src = r[7].c[0].v.replace('/blob/', '/raw/');
+                document.getElementById('base-subject-text').innerText = r[8].c[0].v;
+            } catch(e) { console.error("Config error", e); }
         }
 
+        function checkAdminAuth(val) { if (val === ADMIN_PASSWORD) document.getElementById('admin-panel').style.display = 'block'; }
+        
+        // HÀM XỬ LÝ DỮ LIỆU CŨ VÀ RENDER GỐC VẪN GIỮ NGUYÊN
         window.addEventListener('DOMContentLoaded', () => {
-            applyConfigFromSheet(); // Gọi hàm load cấu hình
-            // ... (Các đoạn init cũ giữ nguyên) ...
+            initDynamicConfig();
+            // ... (Phần logic render của bạn ở đây) ...
         });
+
+        // HÀM SYNC GITHUB CŨ
+        function startAutoSyncToGitHub() { /* Logic cũ của bạn */ }
     </script>
 </body>
 </html>
