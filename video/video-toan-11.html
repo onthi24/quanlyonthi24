@@ -1,15 +1,16 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <base target="_blank">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao diện bài giảng ONTHI24.COM</title>
+    <title>Giao diện bài giảng ONTHI24</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
-        const SHEET_ID = '1aC_WhBor3qJhVbHchKXQJgAmmDrw69ylOmFuZbDOuuA'; // ID Google Sheet môn học của bạn
+        const SHEET_ID = '1aC_WhBor3qJhVbHchKXQJgAmmDrw69ylOmFuZbDOuuA'; // ID Google Sheet Toán 11 của bạn
         const SHEET_TITLE = 'Trang tính1'; // Tên Tab của Google Sheet
         const SHEET_RANGE = 'B1:I200'; // Quét chuẩn từ cột B đến cột I để lấy dữ liệu
         const ADMIN_PASSWORD = 'admin123'; // Mật khẩu kích hoạt quyền Admin trên giao diện web
@@ -31,6 +32,7 @@
         :root {
             --primary-green: #1e4620; /* Màu xanh lá chủ đạo đồng bộ bài giảng */
             --primary-orange: #e67e22;
+            --main-red-brown: #782525; /* Mã màu nền Toán THPT lấy từ ảnh trang chủ */
         }
 
         body, html {
@@ -190,7 +192,7 @@
         .search-box {
             display: block;
         }
-
+        
         .search-box input {
             width: 200px; 
             padding: 8px 15px; 
@@ -433,22 +435,62 @@
             padding-left: 20px; 
         }
 
-        .main-container.maximized-mode {
-            grid-template-columns: 1fr 0px;
+        /* ========================================================
+           CẤU HÌNH THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
+           ======================================================== */
+        .courses-catalog-box {
+            margin-top: 30px;
+            width: 100%;
+            clear: both;
         }
-        .main-container.maximized-mode .sidebar-column {
-            display: none;
+        
+        /* Tiêu đề có gạch đứng, cỡ chữ bằng đúng cỡ chữ nút Đăng kí tư vấn (20px) */
+        .courses-catalog-title {
+            font-size: 20px; 
+            font-weight: bold;
+            color: #1e4620; /* Màu chữ xanh tương tự ảnh mẫu */
+            border-left: 5px solid #1e4620; /* Vạch đứng màu xanh lá */
+            padding-left: 12px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .main-container.maximized-mode + .current-lesson-bottom-display {
-            margin-right: 0px;
+        
+        /* Chuyển sang bố cục cột đứng dọc (flex-direction: column) xếp chồng như ảnh mẫu */
+        .courses-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0;
+            max-width: 320px; /* Đới giới hạn chiều rộng cột nút bấm mượt mà */
         }
-
-        .loading-overlay {
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
+        
+        /* Thiết kế nút bấm trạng thái bình thường (Không nền trắng, chữ xanh) */
+        .course-link-item {
+            background-color: transparent; /* Xóa bỏ màu nền trắng thừa */
+            color: #1e4620; /* Chữ màu xanh lá đồng bộ hệ thống */
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            border: none;
+        }
+        
+        .course-link-item:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-orange);
+        }
+        
+        /* Khi click bấm chọn: Đổ nền màu đỏ nâu Toán THPT (#782525), chữ chuyển sang màu trắng */
+        .course-link-item.selected-active {
+            background-color: var(--main-red-brown) !important; /* Đổ màu nền đỏ nâu #782525 */
+            color: #ffffff !important; /* Chữ màu trắng nổi bật */
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(120,37,37,0.3);
         }
 
         /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
@@ -470,6 +512,7 @@
             width: 100%;
         }
 
+        /* Nút đăng kí tư vấn chân trang - Cỡ chữ gốc 20px quy chuẩn hệ thống */
         .btn-register {
             background: linear-gradient(to bottom, #cfa846, #9c7514);
             color: #fff;
@@ -477,7 +520,7 @@
             border-radius: 25px;
             border: 1px solid #85630f;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-transform: uppercase;
@@ -489,7 +532,7 @@
         .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
 
         /* ========================================================
-           📱 ĐIỀU CHỈNH GIAO DIỆN TRÊN ĐIỆN THOẠI CHUẨN XỊN 100%
+            📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
            ======================================================== */
         @media (max-width: 768px) {
             .top-navbar {
@@ -501,14 +544,8 @@
                 margin-bottom: 10px;
             }
 
-            .mobile-menu-nav-btn {
-                display: block; 
-            }
-
-            .logo-box {
-                width: auto;
-                margin-bottom: 0;
-            }
+            .mobile-menu-nav-btn { display: block; }
+            .logo-box { width: auto; margin-bottom: 0; }
 
             .nav-menu {
                 position: fixed;
@@ -525,9 +562,7 @@
                 gap: 0;
             }
 
-            .nav-menu.open {
-                left: 0 !important;
-            }
+            .nav-menu.open { left: 0 !important; }
 
             .mobile-close-nav-btn {
                 display: block !important;
@@ -571,62 +606,24 @@
                 border-radius: 0;
             }
 
-            .nav-item-wrap.active-mobile .dropdown-content {
-                display: flex !important;
-                flex-direction: column;
-            }
-
-            .nav-item-wrap .dropdown-content a {
-                padding: 12px 25px;
-                font-size: 16px;
-                color: #333;
-                border-bottom: 1px solid #cbd5e1;
-            }
-
+            .nav-item-wrap.active-mobile .dropdown-content { display: flex !important; flex-direction: column; }
+            .nav-item-wrap .dropdown-content a { padding: 12px 25px; font-size: 16px; color: #333; border-bottom: 1px solid #cbd5e1; }
             .nav-item-wrap:hover .dropdown-content { display: none; }
 
-            /* Mobile: Chuyển khối tiêu đề và tìm kiếm thành hàng dọc để tránh bị chèn chữ */
-            .subject-header-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+            .subject-header-container { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .search-box { width: 100%; }
+            .search-box input { width: 100%; }
 
-            .search-box {
-                width: 100%;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-            .video-column {
-                padding-bottom: 10px; 
-                background-color: #000;
-            }
-            .sidebar-column {
-                border-left: none;
-                border-top: 1px solid #dcdcdc;
-                height: auto;
-                max-height: 320px;
-            }
-            .current-lesson-bottom-display {
-                margin-right: 0px;
-                text-align: center;
-            }
-            .footer-action {
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 15px;
-                text-align: center;
-            }
-            .copyright {
-                text-align: center;
-            }
+            .main-container { grid-template-columns: 1fr; }
+            .video-column { padding-bottom: 10px; background-color: #000; }
+            .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
+            .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
+            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
+            .copyright { text-align: center; }
+            
+            .courses-catalog-title { font-size: 20px; text-align: left; }
+            .courses-list { width: 100%; max-width: 100%; }
+            .course-link-item { width: 100%; }
         }
     </style>
 </head>
@@ -639,7 +636,7 @@
 
             <div class="logo-box">
                 <a href="https://onthi24.com/" class="logo-link" target="_self">
-                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/LOGO24.TRONG.png" alt="ONTHI24 LOGO" class="logo-img">
+                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/onthi24.chu.thuong.trong.png" alt="ONTHI24 LOGO" class="logo-img">
                 </a>
             </div>
             
@@ -686,7 +683,7 @@
 
         <div class="subject-header-container">
             <div class="subject-title">
-                <span id="base-subject-text">Môn Học</span>
+                <span id="base-subject-text">Toán 10</span>
             </div>
             <div class="search-box">
                 <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
@@ -714,6 +711,12 @@
 
         <div class="current-lesson-bottom-display" id="subject-lesson-append">ONTHI24 EDUCATION</div>
 
+        <div class="courses-catalog-box">
+            <div class="courses-catalog-title">Danh mục các khóa học</div>
+            <ul class="courses-list" id="custom-teacher-links-list">
+                </ul>
+        </div>
+
         <div id="admin-panel">
             <div class="admin-form-group">
                 <input type="password" id="gh-token-input" placeholder="Nhập mã GitHub Token...">
@@ -730,17 +733,19 @@
             </a>
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
-        <div class="copyright">© 2026 ONTHI24.COM</div>
+        <div class="copyright">© 2026 ONTHI24</div>
     </div>
 
     <script>
         // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐÓNG GÓI SẴN (CHỈ CẬP NHẬT KHI ADMIN LỆNH)
+        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
         // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Toán 11","sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 1. Hàm số lượng giác và phương trình lượng giác","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Cung và Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=FtPUVgmqxrA&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Giá trị Lượng Giác của một Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=orEzIXc68ag&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Giá trị Lượng Giác Góc Liên Quan Đặc Biệt","linkUrl":"https://www.youtube.com/watch?v=GLjIFMFv_a4&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 4. Tuyệt Kĩ Rút Gọn Biểu Thức Lượng Giác Góc Đặc Biệt","linkUrl":"https://www.youtube.com/watch?v=gq_QPHkFBps&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 5. Công Thức Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=o8mUeJetUqo&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 6. Hàm Số Lượng Giác và Vẽ Đồ Thị","linkUrl":"https://www.youtube.com/watch?v=lA5r8JXiOFk&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 7. Phương Trình Lượng Giác Cơ Bản","linkUrl":"https://www.youtube.com/watch?v=updNBYF5MVA&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 8. Biểu Diễn và Kết Hợp Nghiệm Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=6Gn_W9yjawY&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 9. Hàm Số Lượng Giác- Phần 1: Tập Xác Định và Tính Chẵn Lẻ","linkUrl":"https://www.youtube.com/watch?v=3mTCem6_Q3g&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 10. Hàm Số Lượng Giác - Phần 2: Tính Giá Trị Lớn Nhất - Nhỏ Nhấ","linkUrl":"https://www.youtube.com/watch?v=Y4jf_Kh4_8o&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 11. Hàm Số Lượng Giác- Phần 3: Tính Đơn Điệu - Chu Kì và Đồ Thị","linkUrl":"https://www.youtube.com/watch?v=4u6QJbI5ISk&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=7"},{"partTitle":"&Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 12. Đếm Số Nghiệm Lượng Giác Trên Khoảng, Đoạn","linkUrl":"https://www.youtube.com/watch?v=Fk9ZdFBgTLM&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=8"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 2. Dãy số. Cấp số cộng. Cấp số nhân","colorCode":"#b37d32","parts":[]}]};
+        const STATIC_DATA_STORE = {"subjectTitle":"Toán 10","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","colorCode":"","parts":[{"partTitle":"Bài giảng","linkUrl":"https://www.youtube.com/watch?v=OlpgDktWGC8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1ZX91OeULpEmEY6nka_T8nbd8imrJ8sZp/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"}]}]},"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","linkUrl":"https://www.youtube.com/watch?v=xtYqUS8_pZM&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tập Hợp và Các Phép Toán Trên Tập Hợp","linkUrl":"https://www.youtube.com/watch?v=a4p0uvdJTO8&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":""}]},{"lessonTitle":"Chương 2. Bất phương trình về hệ bất phương trình","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Bất Phương Trình và Hệ BPT Bậc Nhất Hai Ẩn","linkUrl":"https://www.youtube.com/watch?v=u0Oso1BelZc&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Bài Toán Thực Tế - Hệ Bất Phương Trình Bậc Nhất 2 Ẩn","linkUrl":"https://www.youtube.com/watch?v=HYoB63CYZ-I"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 3. Hệ thức lượng trong tam giác","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Giá Trị Lượng Giác của 1 Góc Bất Kì Từ 0 đến 180","linkUrl":"https://www.youtube.com/watch?v=jE8zCCSYaSs&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Hệ thức lượng trong tam giác","linkUrl":"https://www.youtube.com/watch?v=1yEbtgluNpE"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 4. Véc tơ","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Vecto và các khái niệm, định nghĩa","linkUrl":"https://www.youtube.com/watch?v=zXyDnOHwBf4&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tổng và Hiệu của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=RXRXmO44qAw&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 3. Tích Vecto Với 1 Số","linkUrl":"https://www.youtube.com/watch?v=kbTFOhLc5w0&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 4. Tích Vô Hướng Của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=npNRm9lZG30&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=8"}]}]}}};
         // ==========================================================
 
-        // --- HÀM ĐIỀU HƯỚNG THANH NAVBAR (MỞ / ĐÓNG MOBILE) ---
+        let GROUPED_TEACHERS_DATA = {};
+        let CURRENT_TEACHER_NAME = "";
+
         function openMobileMenu(e) {
             e.stopPropagation();
             document.getElementById('mobileNavMenu').classList.add('open');
@@ -753,21 +758,16 @@
 
         function handleMenuMobileClick(wrapper, event) {
             if (window.innerWidth <= 768) {
-                if (event.target.tagName === 'A' && event.target.getAttribute('href') !== '#') {
-                    return; 
-                }
+                if (event.target.tagName === 'A' && event.target.getAttribute('href') !== '#') return;
                 event.preventDefault();
                 event.stopPropagation();
-
                 document.querySelectorAll('.nav-item-wrap').forEach(el => {
                     if (el !== wrapper) el.classList.remove('active-mobile');
                 });
-
                 wrapper.classList.toggle('active-mobile');
             }
         }
 
-        // --- HÀM XỬ LÝ VIDEO TRANG BÀI GIẢNG ---
         function extractYouTubeId(url) {
             if (!url) return '';
             url = url.trim();
@@ -792,21 +792,63 @@
             if (player) player.src = targetSrc;
         }
 
-        function renderMenuAndVideo(data) {
-            document.getElementById('base-subject-text').innerText = data.subjectTitle;
-            document.getElementById('sidebar-title').innerHTML = `<span>${data.sidebarTitle}</span>`;
+        function initTeachersDataPackage(data) {
+            GROUPED_TEACHERS_DATA = {};
+            if (data.byTeachers) {
+                GROUPED_TEACHERS_DATA = data.byTeachers;
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 10";
+            } else {
+                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
+                GROUPED_TEACHERS_DATA[tName] = {
+                    sidebarTitle: tName,
+                    lessons: data.lessons || []
+                };
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 10";
+            }
+            renderCustomTeacherLinks();
+        }
 
+        function renderCustomTeacherLinks() {
+            const container = document.getElementById('custom-teacher-links-list');
+            container.innerHTML = '';
+
+            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
+            if (teacherNames.length === 0) return;
+
+            if (!CURRENT_TEACHER_NAME || !GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]) {
+                CURRENT_TEACHER_NAME = teacherNames[0];
+            }
+
+            teacherNames.forEach((name, index) => {
+                const liItem = document.createElement('li');
+                liItem.className = `course-link-item ${name === CURRENT_TEACHER_NAME ? 'selected-active' : ''}`;
+                liItem.innerText = `${index + 1}. ${name}`;
+                
+                liItem.addEventListener('click', () => {
+                    CURRENT_TEACHER_NAME = name;
+                    renderCustomTeacherLinks(); 
+                    renderLessonsMenu(GROUPED_TEACHERS_DATA[name]);
+                });
+
+                container.appendChild(liItem);
+            });
+
+            renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+        }
+
+        function renderLessonsMenu(teacherData) {
+            document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle}</span>`;
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
 
-            if (!data.lessons || data.lessons.length === 0) {
+            if (!teacherData.lessons || teacherData.lessons.length === 0) {
                 menuContainer.innerHTML = '<div class="loading-overlay">Chưa có bài học nào được thiết lập.</div>';
                 return;
             }
 
             let isFirstVideoLoaded = false;
 
-            data.lessons.forEach((lesson) => {
+            teacherData.lessons.forEach((lesson) => {
                 const rowBlock = document.createElement('div');
                 rowBlock.className = 'lesson-row-block';
 
@@ -907,9 +949,10 @@
                 menuContainer.appendChild(rowBlock);
             });
 
-            if (!isFirstVideoLoaded && data.lessons.length > 0) {
-                document.getElementById('subject-lesson-append').innerText = data.lessons[0].lessonTitle;
+            if (!isFirstVideoLoaded && teacherData.lessons.length > 0) {
+                document.getElementById('subject-lesson-append').innerText = teacherData.lessons[0].lessonTitle;
                 document.getElementById('current-lesson-title').innerText = "Chọn bài học ở mục lục";
+                updateVideoIframe('', false);
             }
         }
 
@@ -926,7 +969,7 @@
             const rows = data.table.rows;
             const rawCols = data.table.cols; 
             
-            let subjectVal = 'Toán 12', sidebarVal = 'Thầy Nguyễn Phan Tiến', targetPath = 'video/video-toan-12.html';
+            let subjectVal = 'Toán 11', targetPath = 'video/video-toan-11.html';
             
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
@@ -939,40 +982,55 @@
                 }
             }
 
-            if (rows[0] && rows[0].c) {
-                subjectVal = getVal(rows[0].c, 0) || 'Toán 6';    
-                sidebarVal = getVal(rows[0].c, 1) || 'Khóa bồi dưỡng kiến thức'; 
+            if (rows[1] && rows[1].c) {
+                subjectVal = getVal(rows[1].c, 0) || 'Toán 10';    
             }
             
             let structuredData = {
                 subjectTitle: subjectVal,
-                sidebarTitle: sidebarVal,
-                lessons: []
+                byTeachers: {}
             };
 
-            let currentLessonObj = null;
-
-            for (let i = 0; i < rows.length; i++) {
+            for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
                 if (!cols) continue;
 
-                const checkSidebarCol = getVal(cols, 1); 
-                if (!checkSidebarCol) break; 
+                if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
+                let teacherName = getVal(cols, 1); 
                 const lessonTitle = getVal(cols, 2); 
                 const partTitle   = getVal(cols, 3); 
                 const linkUrl     = getVal(cols, 4); 
-                const colorCode   = getVal(cols, 5); 
+                let colorCode     = getVal(cols, 5); 
 
                 if (!lessonTitle) continue;
 
-                if (!currentLessonObj || currentLessonObj.lessonTitle !== lessonTitle) {
+                if (!teacherName) {
+                    const keys = Object.keys(structuredData.byTeachers);
+                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
+                }
+
+                if (!structuredData.byTeachers[teacherName]) {
+                    structuredData.byTeachers[teacherName] = {
+                        sidebarTitle: teacherName,
+                        lessons: []
+                    };
+                }
+
+                let teacherLessons = structuredData.byTeachers[teacherName].lessons;
+                let currentLessonObj = teacherLessons.find(l => l.lessonTitle === lessonTitle);
+
+                if (!currentLessonObj) {
                     currentLessonObj = {
                         lessonTitle: lessonTitle,
                         colorCode: colorCode,
                         parts: []
                     };
-                    structuredData.lessons.push(currentLessonObj);
+                    teacherLessons.push(currentLessonObj);
+                } else {
+                    if (colorCode && (!currentLessonObj.colorCode || currentLessonObj.colorCode === '')) {
+                        currentLessonObj.colorCode = colorCode;
+                    }
                 }
 
                 if (partTitle && partTitle.trim() !== '') {
@@ -1032,7 +1090,7 @@
                             'Accept': 'application/vnd.github.v3+json'
                         },
                         body: JSON.stringify({
-                            message: `⚡ Auto-Sync: ${ghPathFromSheet}`,
+                            message: `⚡ Auto-Sync Toán 10 Đa Khóa Học: ${ghPathFromSheet}`,
                             content: newContentBase64,
                             sha: fileSha
                         })
@@ -1059,16 +1117,14 @@
             });
         }
 
-        // --- KẾT NỐI TỰ ĐỘNG KHỚP URL HIỆN TẠI VỚI HOẠT ĐỘNG THANH NAVBAR ---
         window.addEventListener('DOMContentLoaded', () => {
-            if (STATIC_DATA_STORE) {
-                renderMenuAndVideo(STATIC_DATA_STORE);
+            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
+                initTeachersDataPackage(STATIC_DATA_STORE);
             } else {
                 document.getElementById('base-subject-text').innerText = "ONTHI24 EDUCATION";
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
-            // XỬ LÝ SO KHỚP URL ĐỂ ACTIVE TAB NAVBAR TRÊN TRANG BÀI GIẢNG
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
             
@@ -1084,7 +1140,6 @@
                 document.getElementById('menu-home').classList.add('active');
             }
 
-            // Đóng menu mobile khi click ra ngoài màn hình trống
             document.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
                     const menu = document.getElementById('mobileNavMenu');
