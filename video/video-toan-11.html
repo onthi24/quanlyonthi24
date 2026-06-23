@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -436,7 +434,7 @@
         }
 
         /* ========================================================
-           CẤU HÌNH THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
+           SỬA CSS: THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -463,7 +461,7 @@
             flex-direction: column;
             gap: 10px;
             padding: 0;
-            max-width: 320px; /* Đới giới hạn chiều rộng cột nút bấm mượt mà */
+            max-width: 320px; /* Giới hạn chiều rộng cột nút bấm mượt mà */
         }
         
         /* Thiết kế nút bấm trạng thái bình thường (Không nền trắng, chữ xanh) */
@@ -520,7 +518,7 @@
             border-radius: 25px;
             border: 1px solid #85630f;
             font-weight: bold;
-            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
+            font-size: 20px; /* Kích thước chuẩn bằng tiêu đề Danh mục khóa học */
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-transform: uppercase;
@@ -532,7 +530,7 @@
         .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
 
         /* ========================================================
-            📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
+            📱 GIAO DIỆN TRÊN ĐIỆN THOẠI RESPONSIVE KHỐI MỚI
            ======================================================== */
         @media (max-width: 768px) {
             .top-navbar {
@@ -636,7 +634,7 @@
 
             <div class="logo-box">
                 <a href="https://onthi24.com/" class="logo-link" target="_self">
-                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/LOGO24.TRONG.png" alt="ONTHI24 LOGO" class="logo-img">
+                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/onthi24.chu.thuong.trong.png" alt="ONTHI24 LOGO" class="logo-img">
                 </a>
             </div>
             
@@ -683,7 +681,7 @@
 
         <div class="subject-header-container">
             <div class="subject-title">
-                <span id="base-subject-text">Toán 10</span>
+                <span id="base-subject-text">Toán 11</span>
             </div>
             <div class="search-box">
                 <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
@@ -740,7 +738,7 @@
         // ==========================================================
         // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
         // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Toán 11","byTeachers":{"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Hàm số lượng giác và phương trình lượng giác","colorCode":"","parts":[{"partTitle":"Bài 1. Cung và Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=FtPUVgmqxrA&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Giá trị Lượng Giác của một Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=orEzIXc68ag&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Giá trị Lượng Giác Góc Liên Quan Đặc Biệt","linkUrl":"https://www.youtube.com/watch?v=GLjIFMFv_a4&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 4. Tuyệt Kĩ Rút Gọn Biểu Thức Lượng Giác Góc Đặc Biệt","linkUrl":"https://www.youtube.com/watch?v=gq_QPHkFBps&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 5. Công Thức Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=o8mUeJetUqo&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 6. Hàm Số Lượng Giác và Vẽ Đồ Thị","linkUrl":"https://www.youtube.com/watch?v=lA5r8JXiOFk&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 7. Phương Trình Lượng Giác Cơ Bản","linkUrl":"https://www.youtube.com/watch?v=updNBYF5MVA&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 8. Biểu Diễn và Kết Hợp Nghiệm Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=6Gn_W9yjawY&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 9. Hàm Số Lượng Giác- Phần 1: Tập Xác Định và Tính Chẵn Lẻ","linkUrl":"https://www.youtube.com/watch?v=3mTCem6_Q3g&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 10. Hàm Số Lượng Giác - Phần 2: Tính Giá Trị Lớn Nhất - Nhỏ Nhấ","linkUrl":"https://www.youtube.com/watch?v=Y4jf_Kh4_8o&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 11. Hàm Số Lượng Giác- Phần 3: Tính Đơn Điệu - Chu Kì và Đồ Thị","linkUrl":"https://www.youtube.com/watch?v=4u6QJbI5ISk&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=7"},{"partTitle":"&Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 12. Đếm Số Nghiệm Lượng Giác Trên Khoảng, Đoạn","linkUrl":"https://www.youtube.com/watch?v=Fk9ZdFBgTLM&list=PLXmeri-X8nVxS_C49IEI5uR3sG60rPa4E&index=8"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 2. Dãy số. Cấp số cộng. Cấp số nhân","colorCode":"#b37d32","parts":[]}]}}};
+        const STATIC_DATA_STORE = {"subjectTitle":"Toán 11","byTeachers":{"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Hàm số lượng giác và phương trình lượng giác","colorCode":"","parts":[{"partTitle":"Bài 1. Cung và Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=FtPUVgmqxrA&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Giá trị Lượng Giác của một Góc Lượng Giác","linkUrl":"https://www.youtube.com/watch?v=orEzIXc68ag&list=PLXmeri-X8nVw53S8BQvV4j4squlADhdUa&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]}]}}};
         // ==========================================================
 
         let GROUPED_TEACHERS_DATA = {};
@@ -796,14 +794,14 @@
             GROUPED_TEACHERS_DATA = {};
             if (data.byTeachers) {
                 GROUPED_TEACHERS_DATA = data.byTeachers;
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 10";
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 11";
             } else {
                 const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
                 GROUPED_TEACHERS_DATA[tName] = {
                     sidebarTitle: tName,
                     lessons: data.lessons || []
                 };
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 10";
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || "Toán 11";
             }
             renderCustomTeacherLinks();
         }
@@ -964,11 +962,13 @@
             }
         }
 
+        // HÀM ĐƯỢC CHUẨN HÓA SỬA LỖI CORE CHO TOÁN 11
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
             const rawCols = data.table.cols; 
             
+            // ĐÃ ĐIỀU CHỈNH CHUẨN ĐƯỜNG DẪN LƯU FILE HTML TOÁN 11
             let subjectVal = 'Toán 11', targetPath = 'video/video-toan-11.html';
             
             function getVal(cols, index) {
@@ -983,7 +983,7 @@
             }
 
             if (rows[1] && rows[1].c) {
-                subjectVal = getVal(rows[1].c, 0) || 'Toán 10';    
+                subjectVal = getVal(rows[1].c, 0) || 'Toán 11';    
             }
             
             let structuredData = {
@@ -1090,7 +1090,7 @@
                             'Accept': 'application/vnd.github.v3+json'
                         },
                         body: JSON.stringify({
-                            message: `⚡ Auto-Sync Toán 10 Đa Khóa Học: ${ghPathFromSheet}`,
+                            message: `⚡ Auto-Sync Toán 11 Đa Khóa Học: ${ghPathFromSheet}`,
                             content: newContentBase64,
                             sha: fileSha
                         })
