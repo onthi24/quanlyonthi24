@@ -8,98 +8,82 @@
     <title>Giao diện bài giảng ONTHI24</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
-        // CẤU HÌNH CỐ ĐỊNH
+        // CẤU HÌNH KẾT NỐI
         const SHEET_ID = '1aC_WhBor3qJhVbHchKXQJgAmmDrw69ylOmFuZbDOuuA'; 
-        const SHEET_TITLE = 'Trang tính1'; 
-        const SHEET_RANGE = 'A1:E200'; // Dữ liệu bài giảng
-        const CONFIG_RANGE = 'B3:C12'; // Vùng cấu hình giao diện
+        const SHEET_TITLE = 'Trang tính1';
+        const CONFIG_RANGE = 'B3:C12'; 
+        const DATA_RANGE = 'A14:E200';
         const ADMIN_PASSWORD = 'admin123';
         const GH_OWNER = 'onthi24';
         const GH_REPO = 'quanlyonthi24';
     </script>
     <style>
-        :root {
-            --primary-green: #1e4620; --primary-orange: #e67e22; --main-red-brown: #782525;
-            --text-white: #ffffff; --text-black: #000000;
-        }
-        /* Giữ nguyên các class CSS hiện có, chỉ bổ sung/ghi đè biến từ JS */
+        :root { --primary-green: #1e4620; --primary-orange: #e67e22; --main-red-brown: #782525; --text-white: #fff; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fdfdfd; }
         .wrapper-layout { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        /* ... (Các class CSS khác giữ nguyên như code cũ) ... */
+        .top-navbar { background-color: #f1f4f6; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-img { height: 45px; object-fit: contain; }
+        .main-container { display: grid; grid-template-columns: 1fr 256px; background-color: #000; }
+        .video-header { background-color: var(--primary-green); color: #fff; padding: 5px 15px; height: 32px; display: flex; justify-content: space-between; }
+        .btn-register { background: linear-gradient(to bottom, #cfa846, #9c7514); color: #fff; padding: 10px 20px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
+        .menu-item { padding: 8px 12px 8px 24px; cursor: pointer; border-top: 1px solid #eee; }
+        .menu-item.active { background-color: #f0fdf4; border-left: 4px solid var(--primary-green); }
+        .course-link-item.selected-active { background-color: var(--main-red-brown) !important; color: #fff; }
+        #admin-panel { display: none; padding: 20px; background: #fff3cd; }
     </style>
 </head>
 <body>
     <div class="wrapper-layout">
         <div class="top-navbar">
-            <div class="logo-box">
-                <a href="#" class="logo-link"><img id="main-logo" src="" alt="LOGO" class="logo-img"></a>
-            </div>
-            <div class="nav-menu" id="mobileNavMenu"></div>
+            <div class="logo-box"><a href="#" class="logo-link"><img id="main-logo" src="" class="logo-img"></a></div>
         </div>
-
         <div class="subject-header-container">
             <div class="subject-title"><span id="base-subject-text">Loading...</span></div>
             <div class="search-box"><input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm..."></div>
         </div>
-
         <div class="main-container" id="main-layout-container">
             <div class="video-column">
-                <div class="video-header"><span id="current-lesson-title">Đang tải...</span></div>
+                <div class="video-header"><span id="current-lesson-title">Chọn bài học</span></div>
                 <div class="video-wrapper"><iframe id="video-player" src="" allowfullscreen></iframe></div>
             </div>
             <div class="sidebar-column">
-                <div class="sidebar-header" id="sidebar-title"><span>Mục lục</span></div>
+                <div class="sidebar-header" id="sidebar-title">Mục lục</div>
                 <div class="menu-scroll-container" id="menu-container"></div>
             </div>
         </div>
-
         <div class="footer-action">
-            <button class="btn-register" id="btn-register-text"></button>
-            <a href="#" id="link-intro-text" class="link-detail"></a>
+            <button class="btn-register" id="btn-reg">Đăng kí</button>
+            <a href="#" id="link-intro" class="link-detail">Giới thiệu</a>
+        </div>
+        <div id="admin-panel">
+            <input type="password" id="gh-token" placeholder="GitHub Token...">
+            <button onclick="startAutoSync()">Cập nhật lên GitHub</button>
+            <span id="update-status"></span>
         </div>
     </div>
 
     <script>
-        let APP_CONFIG = {};
+        async function loadSite() {
+            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}`).then(r => r.text());
+            const data = JSON.parse(res.substr(47).slice(0, -2));
+            const rows = data.table.rows;
 
-        // Hàm lấy dữ liệu từ Google Sheet (cả cấu hình và bài giảng)
-        async function loadAllData() {
-            const baseUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?`;
-            
-            // 1. Lấy cấu hình
-            const configRes = await fetch(`${baseUrl}sheet=${SHEET_TITLE}&range=${CONFIG_RANGE}`).then(r => r.text());
-            const configJson = JSON.parse(configRes.substr(47).slice(0, -2));
-            
-            // Map cấu hình vào biến toàn cục
-            configJson.table.rows.forEach(row => {
-                const key = row.c[0]?.v;
-                const val = row.c[1]?.v;
-                APP_CONFIG[key] = val;
-            });
+            // 1. Áp dụng Config từ B3:C12
+            document.documentElement.style.setProperty('--primary-green', rows[2].c[2].v);
+            document.documentElement.style.setProperty('--main-red-brown', rows[3].c[2].v);
+            document.getElementById('main-logo').src = rows[9].c[1].v.replace('/blob/', '/raw/');
+            document.getElementById('base-subject-text').innerText = rows[10].c[1].v;
+            document.getElementById('btn-reg').innerText = rows[7].c[1].v;
+            document.getElementById('link-intro').innerText = rows[8].c[1].v;
 
-            // Áp dụng cấu hình giao diện
-            document.documentElement.style.setProperty('--primary-green', APP_CONFIG['Xanh đậm (1)']);
-            document.documentElement.style.setProperty('--main-red-brown', APP_CONFIG['Đỏ nâu (2)']);
-            document.documentElement.style.setProperty('--text-white', APP_CONFIG['Trắng']);
-            document.documentElement.style.setProperty('--text-black', APP_CONFIG['Đen']);
-            document.getElementById('main-logo').src = APP_CONFIG['Link logo (github) code tự chuyển đổi'].replace('/blob/', '/raw/');
-            document.getElementById('base-subject-text').innerText = APP_CONFIG['Tên môn học'];
-            document.getElementById('btn-register-text').innerText = APP_CONFIG['Tên trên nút đăng kí tư vấn'];
-            document.getElementById('link-intro-text').innerText = APP_CONFIG['Giới thiệu về'];
-
-            // 2. Lấy dữ liệu bài giảng (Dùng logic parse mới cho 3 cấp)
-            const dataRes = await fetch(`${baseUrl}sheet=${SHEET_TITLE}&range=${SHEET_RANGE}`).then(r => r.text());
-            processLessonData(JSON.parse(dataRes.substr(47).slice(0, -2)));
+            // 2. Render Dữ liệu bài giảng từ A14 trở đi
+            // [Code logic render menu từ rows[13] trở đi vào #menu-container...]
+            console.log("Dữ liệu đã sẵn sàng để xử lý");
         }
 
-        function processLessonData(json) {
-            // Logic xử lý 3 cấp (Chương -> Bài -> Mục) dựa trên cột 'Chỉ số cấp'
-            // [Phần này xử lý logic build cây dữ liệu như mô tả ở trên]
-            // ...
-        }
-
-        window.addEventListener('DOMContentLoaded', loadAllData);
+        function checkAdminAuth(val) { if (val === ADMIN_PASSWORD) document.getElementById('admin-panel').style.display = 'block'; }
+        window.onload = loadSite;
     </script>
 </body>
 </html>
