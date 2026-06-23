@@ -9,14 +9,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
-        const SHEET_ID = '1z5BUz1SQLn1K-PMmq5yxeuThbto3hboRByu4nc-8jLo'; // ID Google Sheet môn học của bạn
-        const SHEET_TITLE = 'Trang tính1'; // Tên Tab của Google Sheet
-        const SHEET_RANGE = 'B1:I200'; // Quét chuẩn từ cột B đến cột I để lấy dữ liệu
-        const ADMIN_PASSWORD = 'admin123'; // Mật khẩu kích hoạt quyền Admin trên giao diện web
+        // ==========================================================
+        // CẤU HÌNH HỆ THỐNG - CHỈ CẦN SỬA KHỐI NÀY KHI ĐỔI MÔN HỌC
+        // ==========================================================
+        const CONFIG = {
+            // 1. Cấu hình Google Sheet dữ liệu bài giảng
+            SHEET_ID: '1z5BUz1SQLn1K-PMmq5yxeuThbto3hboRByu4nc-8jLo', 
+            SHEET_TITLE: 'Trang tính1', 
+            SHEET_RANGE: 'B1:I200', 
 
-        // Cấu hình tài khoản GitHub cố định
-        const GH_OWNER = 'onthi24';      // Tên tài khoản GitHub của bạn
-        const GH_REPO = 'quanlyonthi24';        // Tên kho chứa (Repository) trên GitHub
+            // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
+            GH_OWNER: 'onthi24',  
+            GH_REPO: 'quanlyonthi24',  
+            GH_FILE_PATH: 'video/video-toan-8.html', // File đích muốn cập nhật trên GitHub
+
+            // 3. Thông tin hiển thị mặc định của môn học
+            SUBJECT_NAME: 'Toán 8', 
+
+            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web
+            ADMIN_PASSWORD: 'admin123' 
+        };
     </script>
     <style>
         /* ==========================================
@@ -31,6 +43,7 @@
         :root {
             --primary-green: #1e4620; /* Màu xanh lá chủ đạo đồng bộ bài giảng */
             --primary-orange: #e67e22;
+            --main-red-brown: #782525; /* Mã màu nền Toán THPT lấy từ ảnh trang chủ */
         }
 
         body, html {
@@ -150,7 +163,7 @@
         }
 
         .dropdown-content a:last-child { border-bottom: none; }
-        
+         
         .dropdown-content a:hover {
             background-color: #ddd;
             color: var(--primary-orange);
@@ -190,7 +203,7 @@
         .search-box {
             display: block;
         }
-        
+         
         .search-box input {
             width: 200px; 
             padding: 8px 15px; 
@@ -201,7 +214,7 @@
             font-size: 14px;
             transition: 0.2s;
         }
-        
+         
         .search-box input:focus {
             border-color: #1e4620;
             background: #fff;
@@ -433,22 +446,62 @@
             padding-left: 20px; 
         }
 
-        .main-container.maximized-mode {
-            grid-template-columns: 1fr 0px;
+        /* ========================================================
+            CẤU HÌNH THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
+           ======================================================== */
+        .courses-catalog-box {
+            margin-top: 30px;
+            width: 100%;
+            clear: both;
         }
-        .main-container.maximized-mode .sidebar-column {
-            display: none;
+         
+        /* Tiêu đề có gạch đứng, cỡ chữ bằng đúng cỡ chữ nút Đăng kí tư vấn (20px) */
+        .courses-catalog-title {
+            font-size: 20px; 
+            font-weight: bold;
+            color: #1e4620; /* Màu chữ xanh tương tự ảnh mẫu */
+            border-left: 5px solid #1e4620; /* Vạch đứng màu xanh lá */
+            padding-left: 12px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .main-container.maximized-mode + .current-lesson-bottom-display {
-            margin-right: 0px;
+         
+        /* Chuyển sang bố cục cột đứng dọc (flex-direction: column) xếp chồng như ảnh mẫu */
+        .courses-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0;
+            max-width: 320px; /* Đới giới hạn chiều rộng cột nút bấm mượt mà */
         }
-
-        .loading-overlay {
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
+         
+        /* Thiết kế nút bấm trạng thái bình thường (Không nền trắng, chữ xanh) */
+        .course-link-item {
+            background-color: transparent; /* Xóa bỏ màu nền trắng thừa */
+            color: #1e4620; /* Chữ màu xanh lá đồng bộ hệ thống */
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            border: none;
+        }
+         
+        .course-link-item:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-orange);
+        }
+         
+        /* Khi click bấm chọn: Đổ nền màu đỏ nâu Toán THPT (#782525), chữ chuyển sang màu trắng */
+        .course-link-item.selected-active {
+            background-color: var(--main-red-brown) !important; /* Đổ màu nền đỏ nâu #782525 */
+            color: #ffffff !important; /* Chữ màu trắng nổi bật */
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(120,37,37,0.3);
         }
 
         /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
@@ -470,6 +523,7 @@
             width: 100%;
         }
 
+        /* Nút đăng kí tư vấn chân trang - Cỡ chữ gốc 20px quy chuẩn hệ thống */
         .btn-register {
             background: linear-gradient(to bottom, #cfa846, #9c7514);
             color: #fff;
@@ -477,7 +531,7 @@
             border-radius: 25px;
             border: 1px solid #85630f;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-transform: uppercase;
@@ -489,7 +543,7 @@
         .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
 
         /* ========================================================
-           📱 ĐIỀU CHỈNH GIAO DIỆN TRÊN ĐIỆN THOẠI CHUẨN XỊN 100%
+            📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
            ======================================================== */
         @media (max-width: 768px) {
             .top-navbar {
@@ -501,14 +555,8 @@
                 margin-bottom: 10px;
             }
 
-            .mobile-menu-nav-btn {
-                display: block; 
-            }
-
-            .logo-box {
-                width: auto;
-                margin-bottom: 0;
-            }
+            .mobile-menu-nav-btn { display: block; }
+            .logo-box { width: auto; margin-bottom: 0; }
 
             .nav-menu {
                 position: fixed;
@@ -525,9 +573,7 @@
                 gap: 0;
             }
 
-            .nav-menu.open {
-                left: 0 !important;
-            }
+            .nav-menu.open { left: 0 !important; }
 
             .mobile-close-nav-btn {
                 display: block !important;
@@ -571,78 +617,40 @@
                 border-radius: 0;
             }
 
-            .nav-item-wrap.active-mobile .dropdown-content {
-                display: flex !important;
-                flex-direction: column;
-            }
-
-            .nav-item-wrap .dropdown-content a {
-                padding: 12px 25px;
-                font-size: 16px;
-                color: #333;
-                border-bottom: 1px solid #cbd5e1;
-            }
-
+            .nav-item-wrap.active-mobile .dropdown-content { display: flex !important; flex-direction: column; }
+            .nav-item-wrap .dropdown-content a { padding: 12px 25px; font-size: 16px; color: #333; border-bottom: 1px solid #cbd5e1; }
             .nav-item-wrap:hover .dropdown-content { display: none; }
 
-            /* Mobile: Chuyển khối tiêu đề và tìm kiếm thành hàng dọc để tránh bị chèn chữ */
-            .subject-header-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+            .subject-header-container { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .search-box { width: 100%; }
+            .search-box input { width: 100%; }
 
-            .search-box {
-                width: 100%;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-            .video-column {
-                padding-bottom: 10px; 
-                background-color: #000;
-            }
-            .sidebar-column {
-                border-left: none;
-                border-top: 1px solid #dcdcdc;
-                height: auto;
-                max-height: 320px;
-            }
-            .current-lesson-bottom-display {
-                margin-right: 0px;
-                text-align: center;
-            }
-            .footer-action {
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 15px;
-                text-align: center;
-            }
-            .copyright {
-                text-align: center;
-            }
+            .main-container { grid-template-columns: 1fr; }
+            .video-column { padding-bottom: 10px; background-color: #000; }
+            .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
+            .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
+            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
+            .copyright { text-align: center; }
+             
+            .courses-catalog-title { font-size: 20px; text-align: left; }
+            .courses-list { width: 100%; max-width: 100%; }
+            .course-link-item { width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <div class="wrapper-layout">
-        
+         
         <div class="top-navbar">
             <div class="mobile-menu-nav-btn" onclick="openMobileMenu(event)"><i class="fa fa-bars"></i></div>
 
             <div class="logo-box">
                 <a href="https://onthi24.com/" class="logo-link" target="_self">
-                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/onthi24.chu.thuong.trong.png" alt="ONTHI24 LOGO" class="logo-img">
+                    <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/LOGO24.TRONG.png" alt="ONTHI24 LOGO" class="logo-img">
                 </a>
             </div>
-            
+             
             <div class="nav-menu" id="mobileNavMenu">
                 <div class="mobile-close-nav-btn" onclick="closeMobileMenu(event)"><i class="fa fa-times"></i></div>
 
@@ -686,7 +694,7 @@
 
         <div class="subject-header-container">
             <div class="subject-title">
-                <span id="base-subject-text">Môn Học</span>
+                <span id="base-subject-text">ONTHI24</span>
             </div>
             <div class="search-box">
                 <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
@@ -714,6 +722,12 @@
 
         <div class="current-lesson-bottom-display" id="subject-lesson-append">ONTHI24 EDUCATION</div>
 
+        <div class="courses-catalog-box">
+            <div class="courses-catalog-title">Danh mục các khóa học</div>
+            <ul class="courses-list" id="custom-teacher-links-list">
+                </ul>
+        </div>
+
         <div id="admin-panel">
             <div class="admin-form-group">
                 <input type="password" id="gh-token-input" placeholder="Nhập mã GitHub Token...">
@@ -726,7 +740,7 @@
 
         <div class="footer-action">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
-                <button class="btn-register">ĐĂNG KÍ HỌC NGAY</button>
+                <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
             </a>
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
@@ -735,12 +749,14 @@
 
     <script>
         // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐÓNG GÓI SẴN (CHỈ CẬP NHẬT KHI ADMIN LỆNH)
+        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
         // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Toán 8","sidebarTitle":"Khoá nền tảng","lessons":[{"lessonTitle":"Chương 1. Vật Lí Nhiệt","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1. Đại cương vật lí nhiệt","colorCode":"","parts":[{"partTitle":"Phần 2. Tính chất","linkUrl":"https://www.youtube.com/watch?v=OOfiMWzeZig"},{"partTitle":"Phần 3. Ứng dụng","linkUrl":"https://www.youtube.com/watch?v=CblkKDYNg3I&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=1"}]},{"lessonTitle":"Bài 2. Khí lí tưởng","colorCode":"","parts":[{"partTitle":"Phần 1. Một số khái niệm về khí lí tưởng","linkUrl":"https://www.youtube.com/watch?v=nAVXKagUUM8&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=2"},{"partTitle":"Phần 2. Quá trình đẳng nhiệt","linkUrl":"https://www.youtube.com/watch?v=LTRMbJTgeT8&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=3"},{"partTitle":"Phần 3. Quá trình đẳng tích","linkUrl":"https://www.youtube.com/watch?v=6rguojXOCsA&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=5"},{"partTitle":"Phần 4. Quá trình đẳng áp","linkUrl":"https://www.youtube.com/watch?v=HlrSYLXQyQQ&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=6"}]},{"lessonTitle":"Bài 3. Từ trường","colorCode":"","parts":[{"partTitle":"Phần 1. Một số khái niệm","linkUrl":"https://www.youtube.com/watch?v=Yu2ZnBZffeE&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=8"},{"partTitle":"Phần 2. Lực từ","linkUrl":"https://www.youtube.com/watch?v=oBCwKqTRt68&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=11"},{"partTitle":"Phần 3. Cảm ứng điện từ","linkUrl":"https://www.youtube.com/watch?v=VwoioQYe1Gk&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=15"}]},{"lessonTitle":"Bài 4. Đại cương vật lí nhiệt","colorCode":"","parts":[{"partTitle":"Phần 1. Một số khái niệm","linkUrl":"https://www.youtube.com/watch?v=-0i88XI9ibE"},{"partTitle":"Phần 2. Tính chất","linkUrl":"https://www.youtube.com/watch?v=OOfiMWzeZig"},{"partTitle":"Phần 3. Ứng dụng","linkUrl":"https://www.youtube.com/watch?v=CblkKDYNg3I&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=1"}]},{"lessonTitle":"Bài 5. Khí lí tưởng","colorCode":"","parts":[{"partTitle":"Phần 1. Một số khái niệm về khí lí tưởng","linkUrl":"https://www.youtube.com/watch?v=nAVXKagUUM8&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=2"},{"partTitle":"Phần 2. Quá trình đẳng nhiệt","linkUrl":"https://www.youtube.com/watch?v=LTRMbJTgeT8&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=3"}]},{"lessonTitle":"Bài 6. Khí lí tưởng","colorCode":"","parts":[{"partTitle":"Phần 3. Quá trình đẳng tích","linkUrl":"https://www.youtube.com/watch?v=6rguojXOCsA&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=5"},{"partTitle":"Phần 4. Quá trình đẳng áp","linkUrl":"https://www.youtube.com/watch?v=HlrSYLXQyQQ&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=6"}]},{"lessonTitle":"Bài 7. Từ trường","colorCode":"","parts":[{"partTitle":"Phần 1. Một số khái niệm","linkUrl":"https://www.youtube.com/watch?v=Yu2ZnBZffeE&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=8"},{"partTitle":"Phần 2. Lực từ","linkUrl":"https://www.youtube.com/watch?v=oBCwKqTRt68&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=11"}]},{"lessonTitle":"Bài 8. Từ trường","colorCode":"","parts":[{"partTitle":"Phần 3. Cảm ứng điện từ","linkUrl":"https://www.youtube.com/watch?v=VwoioQYe1Gk&list=PLANVZHOqIcDYKRIOCoBGQ_Z917sTZS25t&index=15"}]}]};
+        const STATIC_DATA_STORE = {"subjectTitle":"Vật Lí 10","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 2. Động học chất điểm","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","colorCode":"","parts":[{"partTitle":"Bài giảng","linkUrl":"https://www.youtube.com/watch?v=OlpgDktWGC8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1ZX91OeULpEmEY6nka_T8nbd8imrJ8sZp/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"},{"partTitle":"Đáp án 2","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"}]}]},"Nguyễn Chí Sơn":{"sidebarTitle":"Nguyễn Chí Sơn","lessons":[{"lessonTitle":"Chương 1. Làm quen với Vật Lí","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1: Làm quen với vật lí","linkUrl":"https://www.youtube.com/watch?v=69yqDAUdp_4&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2: Các quy tắc an toàn trong phòng thực hành vật lí","linkUrl":"https://www.youtube.com/watch?v=tGaIqYXF8Xs&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 3: Thực hành tính sai số trong phép đo","linkUrl":"https://www.youtube.com/watch?v=Eh4-emk0twU&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 2. Động học chất điểm","colorCode":"#b37d32","parts":[{"partTitle":"Bài 4: Độ dịch chuyển và quãng đường đi đượ","linkUrl":"https://www.youtube.com/watch?v=FAqlKOtjSNA&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 5: Tốc độ và vận tốc","linkUrl":"https://www.youtube.com/watch?v=4tL1SF0s5lg&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 7: Đồ thị độ dịch chuyển - thời gian","linkUrl":"https://www.youtube.com/watch?v=iUPnzpXj2no&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]}]},"Kênh Khôi Cao Minh":{"sidebarTitle":"Kênh Khôi Cao Minh","lessons":[{"lessonTitle":"Chương 2. Động học chất điểm","colorCode":"","parts":[{"partTitle":"Bài 8: Chuyển động biến đổi, gia tốc","linkUrl":"https://www.youtube.com/watch?v=NSIHOM6uuSE&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 9: Chuyển động thẳng biến đổi đề","linkUrl":"https://www.youtube.com/watch?v=Zd71I_raqwk&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=8"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 10: Sự rơi tự do","linkUrl":"https://www.youtube.com/watch?v=iJFiqbW2KRs&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=9"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 12: Chuyển động ném","linkUrl":"https://www.youtube.com/watch?v=492HmY9IBcQ&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=10"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 3. Động lực học","colorCode":"#b37d32","parts":[{"partTitle":"Bài 13: Tổng hợp và phân tích lực - Cân bằng lực","linkUrl":"https://www.youtube.com/watch?v=H0lRdLK1xlk&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=11"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 14: Định luật 1 Newton","linkUrl":"https://www.youtube.com/watch?v=eBZ0VQyBAXw&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=12"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 15: Định luật 2 Newton","linkUrl":"https://www.youtube.com/watch?v=6svRH48X7kM&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=13"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 16: Định luật 3 Newton","linkUrl":"https://www.youtube.com/watch?v=FMsPUdt6xdQ&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=14"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 17: Trọng lực và lực căng","linkUrl":"https://www.youtube.com/watch?v=jY-10IwpN9A&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=15"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 18: Lực ma sát","linkUrl":"https://www.youtube.com/watch?v=09cx9R6GsSU&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=16"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 19: Lực cản và lực nân","linkUrl":"https://www.youtube.com/watch?v=HQsba-Z7oqI&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=17"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 20: Một số ví dụ về cách giải các bài toán thuộc phần động lực học","linkUrl":"https://www.youtube.com/watch?v=I6oVyzM130k&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=18"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 21: Moment lực - Cân bằng của vật rắn","linkUrl":"https://www.youtube.com/watch?v=yq77nGFazAs&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=19"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 4. Năng lượng, công, công suất","colorCode":"#b37d32","parts":[{"partTitle":"Bài 23: Năng lượng - Công cơ học","linkUrl":"https://www.youtube.com/watch?v=wR-7Y56HiNI&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=20"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 24: Công suất","linkUrl":"https://www.youtube.com/watch?v=yYY59zAjkdI&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=21"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 25: Động năng - Thế năng","linkUrl":"https://www.youtube.com/watch?v=3-BhOYk5qW0&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=22"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 26: Cơ năng và định luật bảo toàn cơ năng","linkUrl":"https://www.youtube.com/watch?v=BiQIkJoc6p8&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=23"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 27: Hiệu suất","linkUrl":"https://www.youtube.com/watch?v=aJYcLUaRiyI&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=24"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 5. Động lượng","colorCode":"#b37d32","parts":[{"partTitle":"Bài 28: Động lượng","linkUrl":"https://www.youtube.com/watch?v=QELakSDyuZM&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=25"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 29: Định luật bảo toàn động lượng","linkUrl":"https://www.youtube.com/watch?v=9uZ7KWdyACo&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=26"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 6. Chuyển động tròn","colorCode":"#b37d32","parts":[{"partTitle":"Bài 31: Động học của chuyển động tròn đều","linkUrl":"https://www.youtube.com/watch?v=cdi5BrjmK-8&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=27"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 32: Lực hướng tâm và gia tốc hướng tâm","linkUrl":"https://www.youtube.com/watch?v=szVeoT4xHqU&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=28"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 7. Biến dạng của vật rắn","colorCode":"#b37d32","parts":[{"partTitle":"Bài 33: Biến dạng của vật rắn","linkUrl":"https://www.youtube.com/watch?v=0Pnez1pVb90&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=29"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 34: Khối lượng riêng - Áp suất chất lỏng","linkUrl":"https://www.youtube.com/watch?v=OvOwq4vcIzk&list=PLlJUddnVUABe88dlAWpdTif2K8rJQAVtU&index=30"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]}]}}};
         // ==========================================================
 
-        // --- HÀM ĐIỀU HƯỚNG THANH NAVBAR (MỞ / ĐÓNG MOBILE) ---
+        let GROUPED_TEACHERS_DATA = {};
+        let CURRENT_TEACHER_NAME = "";
+
         function openMobileMenu(e) {
             e.stopPropagation();
             document.getElementById('mobileNavMenu').classList.add('open');
@@ -753,21 +769,16 @@
 
         function handleMenuMobileClick(wrapper, event) {
             if (window.innerWidth <= 768) {
-                if (event.target.tagName === 'A' && event.target.getAttribute('href') !== '#') {
-                    return; 
-                }
+                if (event.target.tagName === 'A' && event.target.getAttribute('href') !== '#') return;
                 event.preventDefault();
                 event.stopPropagation();
-
                 document.querySelectorAll('.nav-item-wrap').forEach(el => {
                     if (el !== wrapper) el.classList.remove('active-mobile');
                 });
-
                 wrapper.classList.toggle('active-mobile');
             }
         }
 
-        // --- HÀM XỬ LÝ VIDEO TRANG BÀI GIẢNG ---
         function extractYouTubeId(url) {
             if (!url) return '';
             url = url.trim();
@@ -792,21 +803,63 @@
             if (player) player.src = targetSrc;
         }
 
-        function renderMenuAndVideo(data) {
-            document.getElementById('base-subject-text').innerText = data.subjectTitle;
-            document.getElementById('sidebar-title').innerHTML = `<span>${data.sidebarTitle}</span>`;
+        function initTeachersDataPackage(data) {
+            GROUPED_TEACHERS_DATA = {};
+            if (data.byTeachers) {
+                GROUPED_TEACHERS_DATA = data.byTeachers;
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
+            } else {
+                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
+                GROUPED_TEACHERS_DATA[tName] = {
+                    sidebarTitle: tName,
+                    lessons: data.lessons || []
+                };
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
+            }
+            renderCustomTeacherLinks();
+        }
 
+        function renderCustomTeacherLinks() {
+            const container = document.getElementById('custom-teacher-links-list');
+            container.innerHTML = '';
+
+            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
+            if (teacherNames.length === 0) return;
+
+            if (!CURRENT_TEACHER_NAME || !GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]) {
+                CURRENT_TEACHER_NAME = teacherNames[0];
+            }
+
+            teacherNames.forEach((name, index) => {
+                const liItem = document.createElement('li');
+                liItem.className = `course-link-item ${name === CURRENT_TEACHER_NAME ? 'selected-active' : ''}`;
+                liItem.innerText = `${index + 1}. ${name}`;
+                
+                liItem.addEventListener('click', () => {
+                    CURRENT_TEACHER_NAME = name;
+                    renderCustomTeacherLinks(); 
+                    renderLessonsMenu(GROUPED_TEACHERS_DATA[name]);
+                });
+
+                container.appendChild(liItem);
+            });
+
+            renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+        }
+
+        function renderLessonsMenu(teacherData) {
+            document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle}</span>`;
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
 
-            if (!data.lessons || data.lessons.length === 0) {
+            if (!teacherData.lessons || teacherData.lessons.length === 0) {
                 menuContainer.innerHTML = '<div class="loading-overlay">Chưa có bài học nào được thiết lập.</div>';
                 return;
             }
 
             let isFirstVideoLoaded = false;
 
-            data.lessons.forEach((lesson) => {
+            teacherData.lessons.forEach((lesson) => {
                 const rowBlock = document.createElement('div');
                 rowBlock.className = 'lesson-row-block';
 
@@ -907,14 +960,15 @@
                 menuContainer.appendChild(rowBlock);
             });
 
-            if (!isFirstVideoLoaded && data.lessons.length > 0) {
-                document.getElementById('subject-lesson-append').innerText = data.lessons[0].lessonTitle;
+            if (!isFirstVideoLoaded && teacherData.lessons.length > 0) {
+                document.getElementById('subject-lesson-append').innerText = teacherData.lessons[0].lessonTitle;
                 document.getElementById('current-lesson-title').innerText = "Chọn bài học ở mục lục";
+                updateVideoIframe('', false);
             }
         }
 
         function checkAdminAuth(val) {
-            if (val.trim() === ADMIN_PASSWORD) {
+            if (val.trim() === CONFIG.ADMIN_PASSWORD) {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('search-input').value = ''; 
                 document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
@@ -926,7 +980,7 @@
             const rows = data.table.rows;
             const rawCols = data.table.cols; 
             
-            let subjectVal = 'Toán 6', sidebarVal = 'Khóa bồi dưỡng kiến thức', targetPath = 'video/video-toan-6.html';
+            let subjectVal = CONFIG.SUBJECT_NAME, targetPath = CONFIG.GH_FILE_PATH;
             
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
@@ -939,40 +993,55 @@
                 }
             }
 
-            if (rows[0] && rows[0].c) {
-                subjectVal = getVal(rows[0].c, 0) || 'Toán 6';    
-                sidebarVal = getVal(rows[0].c, 1) || 'Khóa bồi dưỡng kiến thức'; 
+            if (rows[1] && rows[1].c) {
+                subjectVal = getVal(rows[1].c, 0) || CONFIG.SUBJECT_NAME;    
             }
             
             let structuredData = {
                 subjectTitle: subjectVal,
-                sidebarTitle: sidebarVal,
-                lessons: []
+                byTeachers: {}
             };
 
-            let currentLessonObj = null;
-
-            for (let i = 0; i < rows.length; i++) {
+            for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
                 if (!cols) continue;
 
-                const checkSidebarCol = getVal(cols, 1); 
-                if (!checkSidebarCol) break; 
+                if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
+                let teacherName = getVal(cols, 1); 
                 const lessonTitle = getVal(cols, 2); 
                 const partTitle   = getVal(cols, 3); 
                 const linkUrl     = getVal(cols, 4); 
-                const colorCode   = getVal(cols, 5); 
+                let colorCode     = getVal(cols, 5); 
 
                 if (!lessonTitle) continue;
 
-                if (!currentLessonObj || currentLessonObj.lessonTitle !== lessonTitle) {
+                if (!teacherName) {
+                    const keys = Object.keys(structuredData.byTeachers);
+                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
+                }
+
+                if (!structuredData.byTeachers[teacherName]) {
+                    structuredData.byTeachers[teacherName] = {
+                        sidebarTitle: teacherName,
+                        lessons: []
+                    };
+                }
+
+                let teacherLessons = structuredData.byTeachers[teacherName].lessons;
+                let currentLessonObj = teacherLessons.find(l => l.lessonTitle === lessonTitle);
+
+                if (!currentLessonObj) {
                     currentLessonObj = {
                         lessonTitle: lessonTitle,
                         colorCode: colorCode,
                         parts: []
                     };
-                    structuredData.lessons.push(currentLessonObj);
+                    teacherLessons.push(currentLessonObj);
+                } else {
+                    if (colorCode && (!currentLessonObj.colorCode || currentLessonObj.colorCode === '')) {
+                        currentLessonObj.colorCode = colorCode;
+                    }
                 }
 
                 if (partTitle && partTitle.trim() !== '') {
@@ -995,7 +1064,7 @@
             status.innerText = "⏳";
             status.style.color = "orange";
 
-            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_TITLE)}&range=${SHEET_RANGE}`;
+            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
 
             fetch(SHEET_URL)
             .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
@@ -1003,7 +1072,7 @@
                 const parsedResult = parseGoogleSheetToPackage(rep);
                 const ghPathFromSheet = parsedResult.gitPath; 
                 
-                const githubApiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ghPathFromSheet}`;
+                const githubApiUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${ghPathFromSheet}`;
                 
                 return fetch(githubApiUrl, {
                     headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -1032,7 +1101,7 @@
                             'Accept': 'application/vnd.github.v3+json'
                         },
                         body: JSON.stringify({
-                            message: `⚡ Auto-Sync: ${ghPathFromSheet}`,
+                            message: `⚡ Auto-Sync ${CONFIG.SUBJECT_NAME} Đa Khóa Học: ${ghPathFromSheet}`,
                             content: newContentBase64,
                             sha: fileSha
                         })
@@ -1059,16 +1128,14 @@
             });
         }
 
-        // --- HÀM KHỚP TỰ ĐỘNG URL ĐỂ BẬT SÁNG THANH NAVBAR ---
         window.addEventListener('DOMContentLoaded', () => {
-            if (STATIC_DATA_STORE) {
-                renderMenuAndVideo(STATIC_DATA_STORE);
+            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
+                initTeachersDataPackage(STATIC_DATA_STORE);
             } else {
-                document.getElementById('base-subject-text').innerText = "ONTHI24.COM EDUCATION";
+                document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
-            // PHÂN TÍCH ĐƯỜNG DẪN TRANG HIỆN TẠI ĐỂ SÁNG TAB NAVBAR TƯƠNG ỨNG
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
             
@@ -1084,7 +1151,6 @@
                 document.getElementById('menu-home').classList.add('active');
             }
 
-            // Đóng menu mobile khi người dùng click vào vùng trống bên ngoài
             document.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
                     const menu = document.getElementById('mobileNavMenu');
