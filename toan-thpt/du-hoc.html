@@ -1,1 +1,469 @@
 
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <base target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Giao diện học liệu ONTHI24</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        const SHEET_ID = '1tkTsNQvV82FU2Y341uqJsNKlrZgXh4BahY4nbObJkCI'; // Mã ID Google Sheet của bạn
+        const SHEET_TITLE = 'Sheet1'; // Tên Tab Trang tính chứa dữ liệu
+        const SHEET_RANGE = 'A1:I150'; // Quét đến cột I để lấy đường dẫn file tự động ở ô I1
+        const ADMIN_PASSWORD = 'admin123'; // Mật khẩu kích hoạt quyền Admin trên giao diện web
+
+        // Cấu hình tài khoản GitHub cố định
+        const GH_OWNER = 'onthi24';      // Tên tài khoản GitHub của bạn
+        const GH_REPO = 'quanlyonthi24';        // Tên kho chứa (Repository) trên GitHub
+    </script>
+    <style>
+        :root {
+            --primary-green: #1a4d2e;
+            --image-orange: #b57318;
+            --primary-orange: #e67e22;
+            --bg-light: #fdfdfd;
+            --border-color: #b5b5b5;
+            --text-dark: #222;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-light); 
+            margin: 0;
+            padding: 20px;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto 10px auto;
+            width: 100%;
+            background-color: #f1f4f6;
+            padding: 0 10px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .logo-box { display: flex; align-items: center; }
+        .logo-img { height: 45px; object-fit: contain; display: block; }
+        .mobile-menu-btn { display: none; font-size: 24px; cursor: pointer; color: #333; padding: 10px; }
+        .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
+        .nav-item-wrap { position: relative; }
+
+        .nav-item {
+            text-decoration: none; color: #333; padding: 14px 15px; font-weight: 500; font-size: 16px;
+            display: flex; align-items: center; gap: 5px; transition: all 0.2s; border-bottom: 4px solid transparent;
+        }
+
+        .nav-item.active { font-weight: bold; background-color: #fff; border-bottom: 4px solid #000; }
+        .nav-item:hover { background-color: #e2e8f0; }
+
+        .dropdown-content {
+            display: none; position: absolute; background-color: #f1f1f1; min-width: 180px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1000; top: 100%; left: 0; border-radius: 0 0 5px 5px;
+        }
+
+        .dropdown-content a {
+            color: #333; padding: 12px 16px; text-decoration: none; display: block; text-align: left; font-size: 15px; border-bottom: 1px solid #ddd;
+        }
+        .dropdown-content a:last-child { border-bottom: none; }
+        .dropdown-content a:hover { background-color: #ddd; color: var(--primary-orange); }
+        .nav-item-wrap:hover .dropdown-content { display: block; }
+        .mobile-close-btn { display: none; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto 25px auto; width: 100%; }
+        .logo-wrap { display: flex; align-items: center; gap: 10px; }
+        .logo-text { font-size: 36px; font-weight: 800; line-height: 1; text-transform: uppercase; }
+        #subject-text { color: var(--primary-green); }
+        #grade-text { color: var(--image-orange); margin-left: 5px; }
+
+        .search-box input {
+            width: 270px; padding: 10px 16px; border-radius: 25px; border: 1px solid #c7d2d8;
+            background: #f1f4f6; outline: none; font-size: 15px; transition: 0.2s;
+        }
+        .search-box input:focus { border-color: var(--primary-orange); background: #fff; }
+
+        .container { display: flex; gap: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .column { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .column-header { padding: 14px 18px; border-radius: 10px; color: white; font-weight: bold; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; }
+        .bg-green { background: var(--primary-green); }
+        .bg-orange { background: var(--image-orange); }
+
+        .item-card { background: #fff; padding: 16px 20px; border-radius: 16px; border: 1.5px solid var(--border-color); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.05); display: block; }
+        .item-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.1); }
+        .item-card h2 { margin: 0; font-weight: 700; color: var(--text-dark); font-size: 18px; transition: color 0.2s ease; }
+        .item-card:hover h2 { color: var(--primary-orange) !important; }
+
+        .dropdown { margin-top: 14px; padding-top: 14px; border-top: 1px dashed #cbd5e1; display: none; }
+        .dropdown a { display: block; text-decoration: none; color: #334155; padding: 5px 4px; margin-bottom: 2px; font-size: 15px; font-weight: 600; transition: color 0.15s ease; }
+        .dropdown a:last-child { margin-bottom: 0; }
+        .dropdown a:hover { color: var(--primary-orange) !important; text-decoration: underline; }
+
+        .loading-overlay { padding: 20px; text-align: center; font-size: 15px; color: #777; background: #fff; border-radius: 12px; border: 1px dashed var(--border-color); }
+
+        /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
+        #admin-panel { max-width: 1100px; margin: 0 auto 20px auto; padding: 15px; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; display: none; }
+        .admin-form-group { display: flex; flex-direction: column; gap: 10px; }
+        .admin-form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ffc107; border-radius: 6px; outline: none; font-size: 14px; background: #fff; }
+        .admin-btn-group { display: flex; gap: 15px; align-items: center; }
+        .btn-admin { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .btn-admin:hover { background: #218838; }
+        #update-status { font-weight: bold; font-size: 14px; }
+
+        .footer-action { margin: 40px auto 20px auto; max-width: 1100px; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 30px; }
+        .btn-register { background: var(--image-orange); color: #fff; padding: 14px 35px; border-radius: 25px; border: 1px solid #945d12; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+        .link-detail { color: var(--primary-green); font-weight: bold; text-decoration: none; font-size: 18px; text-transform: uppercase; } 
+        .copyright { max-width: 1100px; margin: 20px auto; color: #999; font-size: 14px; text-align: left;}
+
+        @media (max-width: 768px) {
+            body { padding: 0px; } 
+            .top-navbar { padding: 8px 15px; border-radius: 0; margin-bottom: 10px; justify-content: flex-start; gap: 15px; background-color: #f1f4f6; }
+            .mobile-menu-btn { display: block; }
+            .nav-menu { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background-color: #f4f6f8; flex-direction: column; z-index: 99999; padding: 60px 0px 20px 0px; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 12px rgba(0,0,0,0.15); display: flex !important; }
+            .nav-menu.open { left: 0 !important; }
+            .mobile-close-btn { display: block !important; position: absolute; top: 15px; left: 20px; font-size: 24px; cursor: pointer; color: #222; font-weight: bold; }
+            .nav-item-wrap { width: 100%; }
+            .nav-item { padding: 14px 24px; font-size: 20px; color: #222; font-weight: 600; border-bottom: none; border-left: 5px solid transparent; justify-content: space-between; width: 100%; background-color: transparent; }
+            .nav-item.active { background-color: #e2e8f0; border-left: 6px solid #000 !important; border-bottom: none !important; font-weight: bold; }
+            .nav-item-wrap .dropdown-content { display: none; position: static; width: 100%; box-shadow: none; background-color: #eaedf1; padding-left: 20px; border-radius: 0; }
+            .nav-item-wrap .dropdown-content a { padding: 12px 25px; font-size: 16px; color: #333; border-bottom: 1px solid #d1d5db; }
+            .nav-item-wrap.active-mobile .dropdown-content { display: block !important; }
+            .nav-item-wrap:hover .dropdown-content { display: none; }
+            .header { flex-direction: column; padding: 0 15px; gap: 12px; align-items: flex-start; }
+            .logo-text { font-size: 32px; font-weight: 800; margin: 5px 0 0 0; }
+            .search-box { width: 100%; padding: 0 15px; }
+            .search-box input { width: 100%; border-radius: 20px; }
+            .container { flex-direction: column; gap: 8px; padding: 0; margin-top: 15px; }
+            .column-header { border-radius: 0; font-size: 18px; padding: 14px; text-align: center; }
+            .item-card { border-radius: 0; border-left: none; border-right: none; padding: 14px; }
+            .item-card h2 { font-size: 16px; text-align: center; }
+            .footer-action { flex-direction: column; align-items: center; gap: 20px; text-align: center; padding: 20px; }
+            .btn-register { width: 100%; }
+            .copyright { text-align: center; font-size: 13px; padding-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-navbar">
+        <div class="mobile-menu-btn" onclick="openMobileMenu(event)"><i class="fa fa-bars"></i></div>
+        <div class="logo-box">
+            <img src="https://raw.githubusercontent.com/onthi24/quanlyonthi24/main/LOGO24.TRONG.png" alt="onthi24 LOGO" class="logo-img">
+        </div>
+        
+        <div class="nav-menu" id="mobileNavMenu">
+            <div class="mobile-close-btn" onclick="closeMobileMenu(event)"><i class="fa fa-times"></i></div>
+            <div class="nav-item-wrap"><a href="https://onthi24.com/" class="nav-item" id="menu-home">Trang chủ</a></div>
+            <div class="nav-item-wrap" onclick="handleMobileClick(this, event)">
+                <a href="#" class="nav-item" id="menu-thpt">Toán THPT <i class="fa fa-chevron-down" style="font-size: 12px;"></i></a>
+                <div class="dropdown-content">
+                    <a href="https://onthi24.com/toan-thpt/toan12.html">Toán 12</a>
+                    <a href="https://onthi24.com/toan-thpt/toan11.html">Toán 11</a>
+                    <a href="https://onthi24.com/toan-thpt/toan10.html">Toán 10</a>
+                </div>
+            </div>
+            <div class="nav-item-wrap" onclick="handleMobileClick(this, event)">
+                <a href="#" class="nav-item" id="menu-thcs">Toán THCS <i class="fa fa-chevron-down" style="font-size: 12px;"></i></a>
+                <div class="dropdown-content">
+                    <a href="https://onthi24.com/toan-thcs/toan9.html">Toán 9</a>
+                    <a href="https://onthi24.com/toan-thcs/toan8.html">Toán 8</a>
+                    <a href="https://onthi24.com/toan-thcs/toan7.html">Toán 7</a>
+                    <a href="https://onthi24.com/toan-thcs/toan6.html">Toán 6</a>
+                </div>
+            </div>
+            <div class="nav-item-wrap" onclick="handleMobileClick(this, event)">
+                <a href="#" class="nav-item" id="menu-vatli">Vật Lí <i class="fa fa-chevron-down" style="font-size: 12px;"></i></a>
+                <div class="dropdown-content">
+                    <a href="https://onthi24.com/vatli/vatli12.html">Vật Lí 12</a>
+                    <a href="https://onthi24.com/vatli/vatli11.html">Vật Lí 11</a>
+                    <a href="https://onthi24.com/vatli/vatli10.html">Vật Lí 10</a>
+                </div>
+            </div>
+            <div class="nav-item-wrap"><a href="https://onthi24.com/video/video-kho.html" class="nav-item" id="menu-video">Video</a></div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="logo-wrap">
+            <h1 class="logo-text">
+                <span id="subject-text">Môn</span>
+                <span id="grade-text">Học</span>
+            </h1>
+        </div>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Tìm qua Google..." oninput="checkAdminAuth(this.value)">
+        </div>
+    </div>
+
+    <div id="admin-panel">
+        <div class="admin-form-group">
+            <input type="password" id="gh-token-input">
+            <div class="admin-btn-group">
+                <button class="btn-admin" id="btn-update-cloud" onclick="startAutoSyncToGitHub()">Cập nhật</button>
+                <span id="update-status" style="color: blue;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="column" id="column-1">
+            <div class="column-header bg-green">1. Bài giảng</div>
+            <div class="loading-overlay">Chờ dữ liệu...</div>
+        </div>
+        <div class="column" id="column-2">
+            <div class="column-header bg-orange">2. Đề cương &amp; Đề thi</div>
+            <div class="loading-overlay">Chờ dữ liệu...</div>
+        </div>
+    </div>
+
+    <div class="footer-action">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
+            <button class="btn-register">ĐĂNG KÍ HỌC NGAY</button>
+        </a>
+        <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
+    </div>
+
+    <div class="copyright">© 2026 ONTHI24</div>
+
+    <script>
+        // ==========================================================
+        // KHU VỰC BỘ NHỚ ĐỆM ĐÓNG GÓI SẴN (CHỈ CẬP NHẬT KHI ADMIN LỆNH)
+        // ==========================================================
+        const STATIC_DATA_STORE = {"meta":{"subject":"Toán","grade":"12","title":"Toán 12"},"columns":{"1":{"Video bài giảng":{"color":"","items":[{"name":"Video Toán 12","link":"https://onthi24.com/video/video-toan-12.html","color":""}]},"Chương 1. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số":{"color":"","items":[{"name":"Bài 1. Tính đơn điệu và cực trị của hàm số","link":"https://drive.google.com/file/d/1CKjH4q8Yv491tyh4RmYcG5QMxwswdXQj/view?usp=drive_link","color":""},{"name":"Đáp án Bài 1","link":"https://drive.google.com/file/d/1h9xSa80TGJBY1npSY5v92aa_PfQgkhXB/view?usp=drive_link","color":""},{"name":"Bài 2. Giá trị lớn nhất và giá trị nhỏ nhất của hàm số","link":"https://drive.google.com/file/d/1aTAWFRlLHqpcpiJo5mh_rqxQFZOLghPA/view?usp=drive_link","color":""},{"name":"Đáp án Bài 2","link":"https://drive.google.com/file/d/1QsJ6sU43PuNZq6jY9TxG1BBXh8OWd9ax/view?usp=drive_link","color":""},{"name":"Bài 3. Đường tiệm cận của đồ thị hàm số","link":"https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/view?usp=drive_link","color":""},{"name":"Đáp án Bài 3","link":"https://drive.google.com/file/d/1VYC-hLLyPquj5sJ61eK-wDWyxbgTBFMJ/view?usp=drive_link","color":""},{"name":"Bài 4. Khảo sát sự biến thiên và vẽ đồ thị hàm số","link":"https://drive.google.com/file/d/18h5vvQPePKiuMuOrbsMi9GAIrdAvFFBP/view?usp=drive_link","color":""},{"name":"Đáp án Bài 4","link":"https://drive.google.com/file/d/1MnYo86QO2nLQ3-l7N5zglUkaA_nj_1vZ/view?usp=drive_link","color":""},{"name":"Bài 5. Khảo sát hàm số và câu hỏi phụ","link":"https://drive.google.com/file/d/1Ec71UrqyzzXut5RU2K7P1xsi_S19JzHU/view?usp=drive_link","color":""},{"name":"Bài 6. Ứng dụng","link":"https://drive.google.com/file/d/1mZ9tiolTsDmKPrTO6ZVZxXgWzGVRnfHw/view?usp=drive_link","color":""},{"name":"Ôn tập","link":"https://drive.google.com/file/d/1Y1xLjJkUZNi-br_So812CbsZEXofqXBc/view?usp=drive_link","color":""},{"name":"Đề 1. Tính đơn điệu của hàm số","link":"https://drive.google.com/file/d/1LVx1uf1487sMhrbrMsMTmeXaXeaBelsg/view?usp=sharing","color":""},{"name":"Đề 2. Giá trị lớn nhất nhỏ nhất của hàm số","link":"https://drive.google.com/file/d/1eO2bRdRSos5iUKNm00ZBr62hA_vb_hJ8/view?usp=sharing","color":""},{"name":"Đề 3. Đường tiệm cận","link":"https://drive.google.com/file/d/15Uqzy_phmziV8pSxg40QpxhfaBENERan/view?usp=sharing","color":""},{"name":"Đề 4. Khảo sát sự biến thiên và vẽ đồ thị hàm số","link":"https://drive.google.com/file/d/12j-ycgfHgBXShUVGcRDamhk8uT1060Rc/view?usp=sharing","color":""},{"name":"Đề 5. Ứng dụng đạo hàm","link":"https://drive.google.com/file/d/1YW3PeYCP4NvhzEXAHCokdn2I3BpMWllY/view?usp=sharing","color":""},{"name":"Đáp án đề 1 đến 5","link":"https://drive.google.com/file/d/14kNF5GB_BhYkyMxkilWV_6Hx4r9hdAsy/view?usp=sharing","color":""},{"name":"Lời giải đề 1 đến 5","link":"https://drive.google.com/file/d/1x1grwrUuZV2FkFR_RCzS9ssscbR0wP2h/view?usp=drive_link","color":""}]},"Chương 2. Véc tơ và trục tọa độ trong không gian":{"color":"","items":[{"name":"Bài 6. Vectơ trong không gian (đang cập nhật)","link":"#","color":""},{"name":"Bài 7. Hệ trục tọa độ trong không gian (đang cập nhật)","link":"#","color":""},{"name":"Bài 8. Biểu thức tọa độ của các phép toán vectơ (đang cập nhật)","link":"#","color":""},{"name":"Bài tập cuối chương 2 (đang cập nhật)","link":"#","color":""}]},"Chương 3. Các số đo đặc trưng":{"color":"","items":[{"name":"Bài 9. Khoảng biến thiên và khoảng tứ phân vị (đang cập nhật)","link":"#","color":""},{"name":"Bài 10. Phương sai và độ lệch chuẩn (đang cập nhật)","link":"#","color":""}]},"Chuyên đề học kì 1":{"color":"","items":[{"name":"Chuyên đề 1: Tính đơn điệu và cực trị của hàm số chứa tham số, hàm hợp, hàm ẩn (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 2: Bài toán tối ưu, Max - Min chứa dấu giá trị tuyệt đối và hàm hợp (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 3: Khảo sát chuyên sâu về tiệm cận và sự tương giao của đồ thị hàm số (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 4: Ứng dụng đạo hàm giải bài toán thực tế và tối ưu hóa chi phí, năng suất (đang cập nhật)","link":"#","color":""},{"name":"Bài tập cuối chương II (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 5: Khối hình học không gian thuần túy giải bằng phương pháp Vectơ (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 6: Cực trị hình học không gian sử dụng phương pháp Vectơ và Tọa độ (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 7: Phương pháp tọa độ hóa (Gắn trục tọa độ Oxyz) giải bài toán hình học cổ điển (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 9: Ứng dụng phương sai, độ lệch chuẩn đánh giá rủi ro kinh tế và kiểm định hiệu quả (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 10: Ứng dụng tích hợp Đạo hàm, Tọa độ không gian và Thống kê trong các bài toán tích hợp (đang cập nhật)","link":"#","color":""}]},"Chương 4. Nguyên hàm và tích phân":{"color":"","items":[{"name":"Bài 11. Nguyên hàm (đang cập nhật)","link":"#","color":""},{"name":"Bài 12. Tích phân (đang cập nhật)","link":"#","color":""},{"name":"Bài 13. Ứng dụng hình học của tích phân (đang cập nhật)","link":"#","color":""},{"name":"Bài tập cuối chương 4 (đang cập nhật)","link":"#","color":""}]},"Chương 5. Phương pháp tọa độ trong không gian":{"color":"","items":[{"name":"Bài 14. Phương trình mặt phẳng (đang cập nhật)","link":"#","color":""},{"name":"Bài 15. Phương trình đường thẳng trong không gian (đang cập nhật)","link":"#","color":""},{"name":"Bài 16. Công thức tính góc trong không gian (đang cập nhật)","link":"#","color":""},{"name":"Bài 17. Phương trình mặt cầu (đang cập nhật)","link":"#","color":""},{"name":"Bài tập cuối chương 5 (đang cập nhật)","link":"#","color":""}]},"Chương 6. Xác suất có điều kiện":{"color":"","items":[{"name":"Bài 18. Xác suất có điều kiện (đang cập nhật)","link":"#","color":""},{"name":"Bài 19. Công thức xác suất toàn phần và công thức Bayes (đang cập nhật)","link":"#","color":""},{"name":"Bài tập cuối chương 6 (đang cập nhật)","link":"#","color":""}]},"Chuyên đề học kì 2":{"color":"","items":[{"name":"Chuyên đề 1: Kỹ thuật xử lý Nguyên hàm - Tích phân của hàm hợp và hàm ẩn (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 2: Các phương pháp tính tích phân đặc biệt và hàm số chứa dấu giá trị tuyệt đối (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 3: Ứng dụng tích phân giải quyết bài toán Diện tích, Thể tích phức tạp và Hình phẳng ghép (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 4: Bài toán vị trí tương đối và tương giao giữa Đường thẳng, Mặt phẳng, Mặt cầu (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 5: Các bài toán về Góc và Khoảng cách nâng cao trong không gian Oxyz (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 6: Biện luận Cực trị hình học Oxyz bằng phương pháp Hình học cổ điển (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 7: Biện luận Cực trị hình học Oxyz bằng phương pháp Đại số và Khảo sát hàm số (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 8: Xác suất có điều kiện và kỹ thuật xây dựng Sơ đồ cây (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 9: Công thức xác suất toàn phần và Định lý Bayes nâng cao (đang cập nhật)","link":"#","color":""},{"name":"Chuyên đề 10: Một số bài tính xác suất đặc biệt (đang cập nhật)","link":"#","color":""}]}},"2":{"1.1 Đề cương giữa kì 1":{"color":"","items":[{"name":"Đề cương 1( Đã có)","link":"https://drive.google.com/file/d/1q8-OCf-AsA2rF3q9xoTUs4bZ8DmY6b-2/view?usp=drive_link","color":""},{"name":"Đề cương 2 (đang cập nhật)","link":"#","color":""},{"name":"Đề cương 3 (đang cập nhật)","link":"#","color":""},{"name":"Đề cương 4 (đang cập nhật)","link":"#","color":""}]},"1.2 Đề thi giữ kì 1":{"color":"","items":[{"name":"Bộ đề thi 1 (đang cập nhật)","link":"#","color":""},{"name":"Bộ đề thi 2 (đang cập nhật)","link":"#","color":""}]},"1.3 Đề cương học kì 1":{"color":"","items":[{"name":"Đề cương 1 (đang cập nhật)","link":"#","color":""},{"name":"Đề cương 2 (đang cập nhật)","link":"#","color":""},{"name":"Đề cương 3 (đang cập nhật)","link":"#","color":""},{"name":"Đề cương 4 (đang cập nhật)","link":"#","color":""}]},"1.4 Đề thi học kì 1":{"color":"","items":[{"name":"Bộ đề thi 1 (đang cập nhật)","link":"#","color":""},{"name":"Bộ đề thi 2 (đang cập nhật)","link":"#","color":""}]}}}};
+        // ==========================================================
+
+        function openMobileMenu(e) { e.stopPropagation(); document.getElementById('mobileNavMenu').classList.add('open'); }
+        function closeMobileMenu(e) { e.stopPropagation(); document.getElementById('mobileNavMenu').classList.remove('open'); }
+        function handleMobileClick(wrapper, event) { if (window.innerWidth <= 768) { if (event.target.tagName === 'A' && event.target.getAttribute('href') !== '#') return; event.preventDefault(); event.stopPropagation(); wrapper.classList.toggle('active-mobile'); } }
+
+        function toggleMenu(id) {
+            let targetMenu = document.getElementById(id);
+            if (targetMenu) {
+                const currentDisplay = window.getComputedStyle(targetMenu).display;
+                document.querySelectorAll('.container .dropdown').forEach(menu => { menu.style.display = 'none'; });
+                if (currentDisplay === "none") { targetMenu.style.display = "block"; }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Khởi tạo trạng thái thanh navbar
+            const currentUrl = window.location.href;
+            document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
+            if (currentUrl.includes('/toan-thpt/')) document.getElementById('menu-thpt').classList.add('active');
+            else if (currentUrl.includes('/toan-thcs/')) document.getElementById('menu-thcs').classList.add('active');
+            else if (currentUrl.includes('/vatli/')) document.getElementById('menu-vatli').classList.add('active');
+            else if (currentUrl.includes('/video/')) document.getElementById('menu-video').classList.add('active');
+            else document.getElementById('menu-home').classList.add('active');
+
+            // Render giao diện HOÀN TOÀN TỪ FILE TĨNH (Học sinh tuyệt đối không gọi API Sheet)
+            if (STATIC_DATA_STORE) {
+                document.getElementById('subject-text').innerText = STATIC_DATA_STORE.meta.subject || "Toán";
+                document.getElementById('grade-text').innerText = STATIC_DATA_STORE.meta.grade || "10";
+                document.getElementById('page-title').innerText = STATIC_DATA_STORE.meta.title || "ONTHI24 Education";
+                
+                renderColumn(1, STATIC_DATA_STORE.columns[1]);
+                renderColumn(2, STATIC_DATA_STORE.columns[2]);
+            } else {
+                // File mới tinh chưa từng được Admin đồng bộ đóng gói
+                document.getElementById('column-1').innerHTML = `<div class="column-header bg-green">1. Bài giảng</div><div class="loading-overlay" style="color:orange; font-weight:bold;">🛠️ TRANG MỚI: Vui lòng gõ mật khẩu Quản trị vào ô Tìm kiếm để Đồng bộ dữ liệu lên GitHub!</div>`;
+                document.getElementById('column-2').innerHTML = `<div class="column-header bg-orange">2. Đề cương &amp; Đề thi</div><div class="loading-overlay">Chờ dữ liệu...</div>`;
+            }
+
+            document.addEventListener('click', (e) => {
+                if(window.innerWidth <= 768) {
+                    const menu = document.getElementById('mobileNavMenu');
+                    if(menu && !menu.contains(e.target)) menu.classList.remove('open');
+                }
+            });
+        });
+
+        function renderColumn(colNum, chapters) {
+            const columnEl = document.getElementById(`column-${colNum}`);
+            if (!columnEl) return;
+            const headerEl = columnEl.querySelector('.column-header');
+            columnEl.innerHTML = headerEl ? headerEl.outerHTML : '';
+
+            let index = 0;
+            for (let chuongName in chapters) {
+                index++;
+                const menuId = `chuong_col${colNum}_${index}`;
+                const chapterData = chapters[chuongName];
+                
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.style.marginBottom = '12px';
+                card.setAttribute('onclick', `toggleMenu('${menuId}')`);
+
+                const h2 = document.createElement('h2');
+                h2.innerText = chuongName;
+                if (chapterData.color) h2.style.color = chapterData.color; 
+                card.appendChild(h2);
+
+                const dropdown = document.createElement('div');
+                dropdown.className = 'dropdown';
+                dropdown.id = menuId;
+
+                if (!chapterData.items || chapterData.items.length === 0) {
+                    dropdown.innerHTML = '<span style="color:#888; font-style:italic; font-size:14px; padding: 5px 4px; display:block;">(Chưa có học liệu con)</span>';
+                } else {
+                    chapterData.items.forEach(item => {
+                        const a = document.createElement('a');
+                        a.href = item.link; a.target = '_blank';
+                        a.onclick = (e) => e.stopPropagation(); 
+                        if (item.color) a.style.color = item.color; 
+                        const span = document.createElement('span');
+                        span.innerText = item.name;
+                        a.appendChild(span);
+                        dropdown.appendChild(a);
+                    });
+                }
+                card.appendChild(dropdown);
+                columnEl.appendChild(card);
+            }
+            if (!chapters || Object.keys(chapters).length === 0) {
+                const emptyNotify = document.createElement('div');
+                emptyNotify.className = 'loading-overlay';
+                emptyNotify.innerText = 'Hiện tại mục này chưa cập nhật nội dung.';
+                columnEl.appendChild(emptyNotify);
+            }
+        }
+
+        function checkAdminAuth(val) {
+            if (val.trim() === ADMIN_PASSWORD) {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('search-input').value = ''; 
+                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function parseGoogleSheetToPackage(rawText) {
+            const data = JSON.parse(rawText.substr(47).slice(0, -2));
+            const rows = data.table.rows;
+            
+            let subjectVal = 'Toán', gradeVal = '10', titleVal = 'Toán 10', targetPath = 'toan-thpt/toan10.html';
+            
+            if (rows[0] && rows[0].c) {
+                if (rows[0].c[5] && rows[0].c[5].v) subjectVal = rows[0].c[5].v.toString().trim(); 
+                if (rows[0].c[6] && rows[0].c[6].v) gradeVal = rows[0].c[6].v.toString().trim();    
+                if (rows[0].c[7] && rows[0].c[7].v) titleVal = rows[0].c[7].v.toString().trim();    
+                if (rows[0].c[8] && rows[0].c[8].v) targetPath = rows[0].c[8].v.toString().trim();  
+            }
+            
+            let columnsData = { 1: {}, 2: {} };
+            rows.forEach((row, rowIndex) => {
+                if (!row.c) return;
+                if (rowIndex === 0 && !row.c[0]) return;
+                const colNum = (row.c[0] && row.c[0].v) ? parseInt(row.c[0].v) : 1;
+                const chuongName = (row.c[1] && row.c[1].v) ? row.c[1].v.toString().trim() : '';
+                const baiName = (row.c[2] && row.c[2].v) ? row.c[2].v.toString().trim() : '';
+                const linkUrl = (row.c[3] && row.c[3].v) ? row.c[3].v.toString().trim() : '#';
+                const customColor = (row.c[4] && row.c[4].v) ? row.c[4].v.toString().trim() : '';
+                if (chuongName) {
+                    if (!columnsData[colNum]) columnsData[colNum] = {};
+                    if (!columnsData[colNum][chuongName]) {
+                        columnsData[colNum][chuongName] = { color: '', items: [] };
+                    }
+                    if (baiName) columnsData[colNum][chuongName].items.push({ name: baiName, link: linkUrl, color: customColor });
+                    else if (customColor) columnsData[colNum][chuongName].color = customColor;
+                }
+            });
+            
+            return { 
+                meta: { subject: subjectVal, grade: gradeVal, title: titleVal }, 
+                columns: columnsData,
+                gitPath: targetPath 
+            };
+        }
+
+        function startAutoSyncToGitHub() {
+            const token = document.getElementById('gh-token-input').value.trim();
+            const status = document.getElementById('update-status');
+            
+            if(!token) { return; }
+            
+            status.innerText = "⏳ Đang kết nối Sheet...";
+            status.style.color = "orange";
+
+            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_TITLE)}&range=${SHEET_RANGE}`;
+
+            fetch(SHEET_URL)
+            .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
+            .then(rep => {
+                const freshPackage = parseGoogleSheetToPackage(rep);
+                const ghPathFromSheet = freshPackage.gitPath; 
+                
+                status.innerText = "⏳ Đang kết nối GitHub...";
+                const githubApiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ghPathFromSheet}`;
+                
+                return fetch(githubApiUrl, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                })
+                .then(res => {
+                    if (res.status === 401) throw new Error("Mã Token sai hoặc hết hạn!");
+                    if (!res.ok) throw new Error(`Không tìm thấy file [${ghPathFromSheet}] trên GitHub!`);
+                    return res.json();
+                })
+                .then(fileData => {
+                    status.innerText = "⏳ Đang đóng gói dữ liệu...";
+                    
+                    const fileSha = fileData.sha; 
+                    const oldSourceBase64 = fileData.content;
+                    let oldHtmlText = decodeURIComponent(escape(atob(oldSourceBase64.replace(/\s/g, ''))));
+                    
+                    const cleanSaveData = { meta: freshPackage.meta, columns: freshPackage.columns };
+                    const jsonStringData = JSON.stringify(cleanSaveData);
+                    
+                    const regexReplace = /const STATIC_DATA_STORE = \{.*?\};|const STATIC_DATA_STORE = null;/;
+                    let newHtmlText = oldHtmlText.replace(regexReplace, `const STATIC_DATA_STORE = ${jsonStringData};`);
+                    
+                    const newContentBase64 = btoa(unescape(encodeURIComponent(newHtmlText)));
+                    
+                    status.innerText = "⏳ Đang đồng bộ file...";
+                    
+                    return fetch(githubApiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            message: `⚡ Auto-Sync: ${ghPathFromSheet}`,
+                            content: newContentBase64,
+                            sha: fileSha
+                        })
+                    });
+                });
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Đồng bộ GitHub thất bại!");
+                return res.json();
+            })
+            .then(() => {
+                status.innerText = "✅ THÀNH CÔNG!";
+                status.style.color = "green";
+                document.getElementById('gh-token-input').value = ""; // Tiêu hủy Token ngay lập tức
+                
+                // Tự động làm mới trang sau 1 giây để nạp lại giao diện tĩnh mới
+                setTimeout(() => {
+                    location.reload(); 
+                }, 1000);
+            })
+            .catch(err => {
+                console.error(err);
+                status.innerText = "❌ Lỗi: " + err.message;
+                status.style.color = "red";
+            });
+        }
+    </script>
+</body>
+</html>
