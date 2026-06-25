@@ -741,29 +741,109 @@
     <script>
         // Khối lưu trữ cấu trúc tĩnh được tạo tự động từ Google Sheet (Giữ nguyên cấu trúc của bạn)
         const STATIC_DATA_STORE = {
-            "subjectTitle": "Toán 12",
-            "byTeachers": {
-                "Thầy Nguyễn Ngọc Hải": {
-                    "sidebarTitle": "Thầy Nguyễn Ngọc Hải",
-                    "lessons": [
+    "subjectTitle": "Tên môn (Vật lí 12)",
+    "byTeachers": {
+        "Mục lục bài bài giảng (Khoá nền tảng)": {
+            "sidebarTitle": "Tên bài giảng (Bài 1. Đại cương Vật lí nhiệt)",
+            "lessons": [
+                {
+                    "lessonTitle": "Tên phần (Phần 1. Một số khái niệm)",
+                    "colorCode": "Link bài giảng",
+                    "parts": [
                         {
-                            "lessonTitle": "Chương 1. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
-                            "colorCode": "#b37d32",
-                            "parts": []
-                        },
-                        {
-                            "lessonTitle": "Bài 3.Đường tiệm cận",
-                            "colorCode": "",
-                            "parts": [
-                                {"partTitle": "Bài giảng", "linkUrl": "https://www.youtube.com/watch?v=7Z2zn8gvI3w"},
-                                {"partTitle": "Bài tập", "linkUrl": "https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/view"},
-                                {"partTitle": "Đáp án", "linkUrl": "https://drive.google.com/file/d/1VYC-hLLyPquj5sJ61eK-wDWyxbgTBFMJ/view"}
-                            ]
+                            "partTitle": "Mã màu của bài",
+                            "linkUrl": "Toán"
                         }
                     ]
                 }
-            }
-        };
+            ]
+        },
+        "Giới thiệu về onthi24.com": {
+            "sidebarTitle": "Onthi24.com",
+            "lessons": []
+        },
+        "Toán THPT": {
+            "sidebarTitle": "Toán THPT",
+            "lessons": [
+                {
+                    "lessonTitle": "Toán 12",
+                    "colorCode": "https://onthi24.com/video/video-toan-12.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán 11",
+                    "colorCode": "https://onthi24.com/video/video-toan-11.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán 10",
+                    "colorCode": "https://onthi24.com/video/video-toan-10.html",
+                    "parts": []
+                }
+            ]
+        },
+        "Toán THCS": {
+            "sidebarTitle": "Toán THCS",
+            "lessons": [
+                {
+                    "lessonTitle": "Toán 9",
+                    "colorCode": "https://onthi24.com/video/video-toan-9.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán 8",
+                    "colorCode": "https://onthi24.com/video/video-toan-8.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán 7",
+                    "colorCode": "https://onthi24.com/video/video-toan-7.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán 6",
+                    "colorCode": "https://onthi24.com/video/video-toan-6.html",
+                    "parts": []
+                }
+            ]
+        },
+        "Vật Lí": {
+            "sidebarTitle": "Vật Lí",
+            "lessons": [
+                {
+                    "lessonTitle": "Vật Lí 12",
+                    "colorCode": "https://onthi24.com/video/video-vatli-12.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Vật Lí 11",
+                    "colorCode": "https://onthi24.com/video/video-vatli-11.html",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Vật Lí 10",
+                    "colorCode": "https://onthi24.com/video/video-vatli-10.html",
+                    "parts": []
+                }
+            ]
+        },
+        "Toán - Lí du học": {
+            "sidebarTitle": "Toán - Lí du học",
+            "lessons": [
+                {
+                    "lessonTitle": "Toán",
+                    "colorCode": "",
+                    "parts": []
+                },
+                {
+                    "lessonTitle": "Toán",
+                    "colorCode": "https://onthi24.com/video/video-du-hoc.html",
+                    "parts": []
+                }
+            ]
+        }
+    }
+}
 
         let currentTeacher = Object.keys(STATIC_DATA_STORE.byTeachers)[0];
 
