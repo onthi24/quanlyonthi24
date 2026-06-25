@@ -411,7 +411,7 @@
             padding-right: 5px;
         }
 
-        /* NÚT TẢI ĐỔI THÀNH NÚT HÌNH VUÔNG ĐỎ CÓ ICON PLAY THEO YÊU CẦU */
+        /* CHỈ CHỈNH SỬA TÍNH NĂNG GIẢM KÍCH THƯỚC NÚT PLAY 50% TẠI ĐÂY */
         .btn-download-icon-only {
             background: #ff0000 !important;
             border: none;
@@ -424,14 +424,14 @@
             z-index: 10;
             text-decoration: none;
             flex-shrink: 0;
-            width: 12px !important;
-            height: 12px !important;
-            border-radius: 3px !important;
+            width: 12px !important;    /* Đã giảm kích thước 50% */
+            height: 12px !important;   /* Đã giảm kích thước 50% */
+            border-radius: 2px !important;
         }
         
         .btn-download-icon-only i {
             color: #ffffff !important;
-            font-size: 6px !important;
+            font-size: 6px !important;  /* Thu nhỏ icon tam giác trắng cho vừa vặn */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -762,8 +762,6 @@
         // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN (FALLBACK)
         // ==========================================================
         const STATIC_DATA_STORE = {"subjectTitle":"Trang chủ","byTeachers":{"Giới thiệu về onthi24.com":{"sidebarTitle":"Giới thiệu về onthi24.com","lessons":[{"lessonTitle":"Onthi24.com","colorCode":"#b37d32","parts":[]}]},"Toán THPT":{"sidebarTitle":"Toán THPT","lessons":[{"lessonTitle":"Toán THPT","colorCode":"","parts":[{"partTitle":"Toán 12","linkUrl":"https://onthi24.com/video/video-toan-12.html"},{"partTitle":"Toán 11","linkUrl":"https://onthi24.com/video/video-toan-11.html"},{"partTitle":"Toán 10","linkUrl":"https://onthi24.com/video/video-toan-10.html"}]}]},"Toán THCS":{"sidebarTitle":"Toán THCS","lessons":[{"lessonTitle":"Toán THCS","colorCode":"","parts":[{"partTitle":"Toán 9","linkUrl":"https://onthi24.com/video/video-toan-9.html"},{"partTitle":"Toán 8","linkUrl":"https://onthi24.com/video/video-toan-8.html"},{"partTitle":"Toán 7","linkUrl":"https://onthi24.com/video/video-toan-7.html"},{"partTitle":"Toán 6","linkUrl":"https://onthi24.com/video/video-toan-6.html"}]}]},"Vật Lí":{"sidebarTitle":"Vật Lí","lessons":[{"lessonTitle":"Vật Lí","colorCode":"#b37d32","parts":[{"partTitle":"Vật Lí 12","linkUrl":"https://onthi24.com/video/video-vatli-12.html"},{"partTitle":"Vật Lí 11","linkUrl":"https://onthi24.com/video/video-vatli-11.html"},{"partTitle":"Vật Lí 10","linkUrl":"https://onthi24.com/video/video-vatli-10.html"}]}]},"Toán - Lí du học":{"sidebarTitle":"Toán - Lí du học","lessons":[{"lessonTitle":"Toán - Lí du học","colorCode":"#b37d32","parts":[{"partTitle":"Toán","linkUrl":""},{"partTitle":"Toán","linkUrl":"https://onthi24.com/video/video-du-hoc.html"}]}]}}};
-        // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Trang chủ","byTeachers":{"Giới thiệu về onthi24.com":{"sidebarTitle":"Giới thiệu về onthi24.com","lessons":[{"lessonTitle":"Onthi24.com","colorCode":"#b37d32","parts":[]}]},"Toán THPT":{"sidebarTitle":"Toán THPT","lessons":[{"lessonTitle":"Toán THPT","colorCode":"","parts":[{"partTitle":"Toán 12","linkUrl":"https://onthi24.com/video/video-toan-12.html"},{"partTitle":"Toán 11","linkUrl":"https://onthi24.com/video/video-toan-11.html"},{"partTitle":"Toán 10","linkUrl":"https://onthi24.com/video/video-toan-10.html"}]}]},"Toán THCS":{"sidebarTitle":"Toán THCS","lessons":[{"lessonTitle":"Toán THCS","colorCode":"","parts":[{"partTitle":"Toán 9","linkUrl":"https://onthi24.com/video/video-toan-9.html"},{"partTitle":"Toán 8","linkUrl":"https://onthi24.com/video/video-toan-8.html"},{"partTitle":"Toán 7","linkUrl":"https://onthi24.com/video/video-toan-7.html"},{"partTitle":"Toán 6","linkUrl":"https://onthi24.com/video/video-toan-6.html"}]}]},"Vật Lí":{"sidebarTitle":"Vật Lí","lessons":[{"lessonTitle":"Vật Lí","colorCode":"#b37d32","parts":[{"partTitle":"Vật Lí 12","linkUrl":"https://onthi24.com/video/video-vatli-12.html"},{"partTitle":"Vật Lí 11","linkUrl":"https://onthi24.com/video/video-vatli-11.html"},{"partTitle":"Vật Lí 10","linkUrl":"https://onthi24.com/video/video-vatli-10.html"}]}]},"Toán - Lí du học":{"sidebarTitle":"Toán - Lí du học","lessons":[{"lessonTitle":"Toán - Lí du học","colorCode":"#b37d32","parts":[{"partTitle":"Toán","linkUrl":""},{"partTitle":"Toán","linkUrl":"https://onthi24.com/video/video-du-hoc.html"}]}]}}};
 
         let GROUPED_TEACHERS_DATA = {};
         let CURRENT_TEACHER_NAME = "";
@@ -808,293 +806,295 @@
             document.getElementById("main-layout-container").classList.toggle("maximized-mode");
         }
 
-        // ==========================================================
-        // KHU VỰC SỬA ĐỔI HIỂN THỊ VÀ HÀNH VI CLICK CHO HÀNG BÀI HỌC
-        // ==========================================================
+        // KHÔI PHỤC TOÀN BỘ LOGIC RENDER SIDEBAR GỐC
         function renderSidebarMenu(teacherName) {
             const container = document.getElementById('menu-container');
             if (!container) return;
 
             const teacherData = GROUPED_TEACHERS_DATA[teacherName];
             if (!teacherData || !teacherData.lessons) {
-                container.innerHTML = '<div class="loading-overlay">Không có dữ liệu bài giảng.</div>';
+                container.innerHTML = '<div style="padding:15px; color:#666;">Không có dữ liệu bài giảng.</div>';
                 return;
             }
 
             document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle || 'Mục lục bài giảng'}</span>`;
-            
-            let html = '';
-            let isFirstVideoSet = false;
+            container.innerHTML = '';
 
-            teacherData.lessons.forEach((lesson, index) => {
+            teacherData.lessons.forEach((lesson, lIdx) => {
+                const block = document.createElement('div');
+                block.className = 'lesson-row-block';
+
+                const header = document.createElement('div');
                 const hasParts = lesson.parts && lesson.parts.length > 0;
+                header.className = `menu-lesson-header ${hasParts ? 'has-child' : 'active-flat'}`;
+                header.innerHTML = `<span>${lesson.lessonTitle}</span>`;
                 
-                html += `<div class="lesson-row-block">`;
-                html += `   <div class="menu-lesson-header ${hasParts ? 'has-child' : 'active-flat'}" onclick="toggleLessonCollapse(this)">`;
-                html += `       <span>${lesson.lessonTitle}</span>`;
-                html += `   </div>`;
-                
-                if (hasParts) {
-                    html += `<div class="lesson-parts-container">`;
-                    lesson.parts.forEach(part => {
-                        const isYT = isYouTubeLink(part.linkUrl);
-                        let actionAttribute = '';
-                        
-                        // Nếu là link YouTube, bấm vào hàng sẽ phát trên Player của web
-                        if (isYT) {
-                            actionAttribute = `onclick="playSelectedVideoInline('${part.linkUrl}', '${part.partTitle}', this)"`;
-                        } else {
-                            // Nếu không phải YouTube (nhập link trang mục lục), bấm toàn bộ hàng mở Tab mới
-                            actionAttribute = `onclick="window.open('${part.linkUrl}', '_blank')"`;
-                        }
-
-                        html += `   <div class="menu-item" ${actionAttribute}>`;
-                        html += `       <span class="lesson-name">${part.partTitle}</span>`;
-                        
-                        if (part.linkUrl) {
-                            if (isYT) {
-                                // Đối với Video YouTube: Nút vuông đỏ, click vào không bị nhân đôi tab
-                                html += `   <button class="btn-download-icon-only" onclick="event.stopPropagation(); playSelectedVideoInline('${part.linkUrl}', '${part.partTitle}', this.parentElement)">`;
-                                html += `       <i class="fa fa-play"></i>`;
-                                html += `   </button>`;
-                            } else {
-                                // Đối với Link danh mục bài học: Nút vuông đỏ, click mở Tab mới, chặn lặp sự kiện click của hàng cha
-                                html += `   <a href="${part.linkUrl}" class="btn-download-icon-only" target="_blank" onclick="event.stopPropagation();">`;
-                                html += `       <i class="fa fa-play"></i>`;
-                                html += `   </a>`;
-                            }
-                        }
-                        
-                        html += `   </div>`;
-
-                        // Tự động kích hoạt phát video YouTube đầu tiên tìm thấy
-                        if (isYT && !isFirstVideoSet) {
-                            setTimeout(() => {
-                                playSelectedVideoInline(part.linkUrl, part.partTitle, null);
-                                const allItems = container.querySelectorAll('.menu-item');
-                                if (allItems.length > 0) allItems[0].classList.add('active');
-                            }, 50);
-                            isFirstVideoSet = true;
-                        }
-                    });
-                    html += `</div>`;
+                if (lesson.colorCode) {
+                    header.style.color = lesson.colorCode;
                 }
-                html += `</div>`;
+
+                const partsContainer = document.createElement('div');
+                partsContainer.className = 'lesson-parts-container';
+
+                if (hasParts) {
+                    header.onclick = () => {
+                        header.classList.toggle('collapsed');
+                        partsContainer.classList.toggle('hidden');
+                    };
+
+                    lesson.parts.forEach((part, pIdx) => {
+                        const item = document.createElement('div');
+                        item.className = 'menu-item';
+                        
+                        let actionHtml = '';
+                        if (part.linkUrl) {
+                            actionHtml = `<a href="${part.linkUrl}" class="btn-download-icon-only" title="Xem bài học"><i class="fa fa-play"></i></a>`;
+                        }
+
+                        item.innerHTML = `<span class="lesson-name">${part.partTitle}</span>${actionHtml}`;
+                        
+                        item.onclick = (e) => {
+                            if (e.target.closest('.btn-download-icon-only')) return;
+                            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                            document.querySelectorAll('.menu-lesson-header').forEach(el => el.classList.remove('active-flat'));
+                            item.classList.add('active');
+                            loadVideoSource(part.partTitle, part.linkUrl);
+                        };
+
+                        partsContainer.appendChild(item);
+                    });
+                } else {
+                    header.onclick = () => {
+                        document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                        document.querySelectorAll('.menu-lesson-header').forEach(el => el.classList.remove('active-flat'));
+                        header.classList.add('active-flat');
+                        loadVideoSource(lesson.lessonTitle, lesson.linkUrl || '');
+                    };
+                }
+
+                block.appendChild(header);
+                block.appendChild(partsContainer);
+                container.appendChild(block);
             });
 
-            container.innerHTML = html;
-
-            // Nếu không có video YouTube nào được chạy, dọn trống đầu phát
-            if (!isFirstVideoSet) {
-                document.getElementById('video-player').src = '';
-                document.getElementById('current-lesson-title').textContent = 'Chọn bài học để xem';
-            }
-        }
-
-        function playSelectedVideoInline(url, title, element) {
-            const ytId = extractYouTubeId(url);
-            if (ytId) {
-                document.getElementById('video-player').src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-                document.getElementById('current-lesson-title').textContent = title;
-                document.getElementById('subject-lesson-append').textContent = title;
-
-                if (element) {
-                    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-                    element.classList.add('active');
+            // Tự động kích hoạt phát phần tử đầu tiên nếu có
+            if (teacherData.lessons[0]) {
+                const firstLesson = teacherData.lessons[0];
+                if (firstLesson.parts && firstLesson.parts.length > 0) {
+                    const firstPart = firstLesson.parts[0];
+                    loadVideoSource(firstPart.partTitle, firstPart.linkUrl);
+                    setTimeout(() => {
+                        const firstItem = container.querySelector('.menu-item');
+                        if (firstItem) firstItem.classList.add('active');
+                    }, 50);
+                } else {
+                    loadVideoSource(firstLesson.lessonTitle, firstLesson.linkUrl || '');
                 }
             }
         }
 
-        function toggleLessonCollapse(header) {
-            header.classList.toggle('collapsed');
-            const container = header.nextElementSibling;
-            if (container && container.classList.contains('lesson-parts-container')) {
-                container.classList.toggle('hidden');
+        function loadVideoSource(title, url) {
+            document.getElementById('current-lesson-title').innerText = title;
+            document.getElementById('subject-lesson-append').innerText = title.toUpperCase();
+            
+            const player = document.getElementById('video-player');
+            if (!url) {
+                player.src = "";
+                return;
+            }
+
+            if (isYouTubeLink(url)) {
+                const ytId = extractYouTubeId(url);
+                player.src = ytId ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0` : url;
+            } else {
+                player.src = url;
             }
         }
 
-        function buildTeacherCatalogButtons() {
-            const list = document.getElementById('custom-teacher-links-list');
-            if (!list) return;
-            list.innerHTML = '';
-            Object.keys(GROUPED_TEACHERS_DATA).forEach((name, idx) => {
+        function renderTeacherCatalogButtons() {
+            const listContainer = document.getElementById('custom-teacher-links-list');
+            if (!listContainer) return;
+            listContainer.innerHTML = '';
+
+            Object.keys(GROUPED_TEACHERS_DATA).forEach(teacherName => {
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.className = 'course-link-item';
-                btn.textContent = name;
+                if (teacherName === CURRENT_TEACHER_NAME) {
+                    btn.classList.add('selected-active');
+                }
+                btn.innerText = teacherName;
                 btn.onclick = () => {
                     document.querySelectorAll('.course-link-item').forEach(b => b.classList.remove('selected-active'));
                     btn.classList.add('selected-active');
-                    CURRENT_TEACHER_NAME = name;
-                    renderSidebarMenu(name);
+                    CURRENT_TEACHER_NAME = teacherName;
+                    renderSidebarMenu(teacherName);
                 };
-                if (idx === 0) {
-                    btn.classList.add('selected-active');
-                    CURRENT_TEACHER_NAME = name;
-                }
                 li.appendChild(btn);
-                list.appendChild(li);
+                listContainer.appendChild(li);
             });
         }
 
-        // ==========================================================
-        // TOÀN BỘ GIỮ NGUYÊN TÍNH NĂNG TỰ ĐỘNG ĐỒNG BỘ & ĐỌC SHEET
-        // ==========================================================
-        async function fetchGoogleSheetData() {
+        function buildGroupedDataStructure(rows) {
+            if (!rows || rows.length === 0) return STATIC_DATA_STORE.byTeachers;
+            
+            const grouped = {};
+            rows.forEach((row, index) => {
+                if (index === 0 || !row[0]) return; // Bỏ qua tiêu đề nhóm hoặc dòng trống
+
+                const tName = row[0] ? row[0].trim() : "Khóa học khác";
+                const lTitle = row[1] ? row[1].trim() : "";
+                const pTitle = row[2] ? row[2].trim() : "";
+                const link = row[3] ? row[3].trim() : "";
+                const color = row[4] ? row[4].trim() : "";
+                const sTitle = row[5] ? row[5].trim() : tName;
+
+                if (!lTitle) return;
+
+                if (!grouped[tName]) {
+                    grouped[tName] = { sidebarTitle: sTitle, lessons: [] };
+                }
+
+                let lessonObj = grouped[tName].lessons.find(l => l.lessonTitle === lTitle);
+                if (!lessonObj) {
+                    lessonObj = { lessonTitle: lTitle, colorCode: color, parts: [] };
+                    grouped[tName].lessons.push(lessonObj);
+                }
+
+                if (pTitle) {
+                    lessonObj.parts.push({ partTitle: pTitle, linkUrl: link });
+                } else if (link) {
+                    lessonObj.linkUrl = link;
+                }
+            });
+
+            return Object.keys(grouped).length > 0 ? grouped : STATIC_DATA_STORE.byTeachers;
+        }
+
+        // KHÔI PHỤC HOÀN TOÀN HÀM TẢI DỮ LIỆU ĐỘNG TỪ GOOGLE SHEET GỐC
+        async function fetchDynamicSheetData() {
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
                 const res = await fetch(url);
-                if (!res.ok) throw new Error("Mạng lỗi");
                 const text = await res.text();
                 
-                const jsonText = text.substring(text.indexOf("google.visualization.Query.setResponse(") + 38, text.length - 2);
-                const data = JSON.parse(jsonText);
+                const jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+                const jsonData = JSON.parse(jsonText);
                 
-                if (!data.table || !data.table.rows) return;
+                if (!jsonData.table || !jsonData.table.rows) {
+                    throw new Error("Cấu trúc bảng Google Sheet không hợp lệ.");
+                }
+
+                const rows = jsonData.table.rows.map(r => r.c ? r.c.map(v => v ? (v.v !== null ? v.v : '') : '') : []);
+                RAW_SHEET_ROWS_CACHE = rows;
                 
-                RAW_SHEET_ROWS_CACHE = data.table.rows;
-                processRawRowsToGroupedStructure(RAW_SHEET_ROWS_CACHE);
+                GROUPED_TEACHERS_DATA = buildGroupedDataStructure(rows);
                 
+                const keys = Object.keys(GROUPED_TEACHERS_DATA);
+                if (keys.length > 0) {
+                    CURRENT_TEACHER_NAME = keys[0];
+                }
+                
+                renderTeacherCatalogButtons();
+                if (CURRENT_TEACHER_NAME) {
+                    renderSidebarMenu(CURRENT_TEACHER_NAME);
+                }
             } catch (err) {
-                console.warn("Không thể tải Google Sheet trực tiếp, dùng cache static.");
-                GROUPED_TEACHERS_DATA = STATIC_DATA_STORE.byTeachers || {};
-                document.getElementById('base-subject-text').textContent = STATIC_DATA_STORE.subjectTitle || CONFIG.SUBJECT_NAME;
-                buildTeacherCatalogButtons();
+                console.warn("Lỗi tải dữ liệu Google Sheet, hệ thống chuyển sang dùng bộ nhớ đệm STATIC_DATA_STORE:", err);
+                GROUPED_TEACHERS_DATA = STATIC_DATA_STORE.byTeachers;
+                const keys = Object.keys(GROUPED_TEACHERS_DATA);
+                if (keys.length > 0) CURRENT_TEACHER_NAME = keys[0];
+                renderTeacherCatalogButtons();
                 if (CURRENT_TEACHER_NAME) renderSidebarMenu(CURRENT_TEACHER_NAME);
             }
         }
 
-        function processRawRowsToGroupedStructure(rows) {
-            const tempGroup = {};
-            let globalSubjectTitle = CONFIG.SUBJECT_NAME;
-
-            rows.forEach((row, rIdx) => {
-                if (rIdx === 0) return; // Bỏ hàng tiêu đề
-                const c = row.c || [];
-                
-                const subjectTitleVal = c[0] ? String(c[0].v || '').trim() : '';
-                const teacherName = c[1] ? String(c[1].v || '').trim() : '';
-                const sidebarTitle = c[2] ? String(c[2].v || '').trim() : '';
-                const lessonTitle = c[3] ? String(c[3].v || '').trim() : '';
-                const colorCode = c[4] ? String(c[4].v || '').trim() : '';
-                const partTitle = c[5] ? String(c[5].v || '').trim() : '';
-                const linkUrl = c[6] ? String(c[6].v || '').trim() : '';
-
-                if (subjectTitleVal && rIdx === 1) {
-                    globalSubjectTitle = subjectTitleVal;
-                }
-
-                if (!teacherName) return;
-
-                if (!tempGroup[teacherName]) {
-                    tempGroup[teacherName] = {
-                        sidebarTitle: sidebarTitle || teacherName,
-                        lessons: []
-                    };
-                }
-
-                let currentLesson = tempGroup[teacherName].lessons.find(l => l.lessonTitle === lessonTitle);
-                if (!currentLesson && lessonTitle) {
-                    currentLesson = {
-                        lessonTitle: lessonTitle,
-                        colorCode: colorCode,
-                        parts: []
-                    };
-                    tempGroup[teacherName].lessons.push(currentLesson);
-                }
-
-                if (currentLesson && partTitle) {
-                    currentLesson.parts.push({
-                        partTitle: partTitle,
-                        linkUrl: linkUrl
-                    });
-                }
-            });
-
-            if (Object.keys(tempGroup).length > 0) {
-                GROUPED_TEACHERS_DATA = tempGroup;
-                document.getElementById('base-subject-text').textContent = globalSubjectTitle;
-                buildTeacherCatalogButtons();
-                if (CURRENT_TEACHER_NAME) {
-                    renderSidebarMenu(CURRENT_TEACHER_NAME);
-                }
-            }
-        }
-
+        // KHÔI PHỤC TOÀN BỘ LOGIC ADMIN VÀ ĐỒNG BỘ GITHUB CHUẨN GỐC
         function checkAdminAuth(val) {
-            if (val === CONFIG.ADMIN_PASSWORD) {
-                document.getElementById('admin-panel').style.display = 'block';
+            const panel = document.getElementById('admin-panel');
+            if (val && val.trim() === CONFIG.ADMIN_PASSWORD) {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
             }
         }
 
-        // Cập nhật tự động lên hệ thống Github đóng gói dữ liệu
         async function startAutoSyncToGitHub() {
             const token = document.getElementById('gh-token-input').value.trim();
-            const statusSpan = document.getElementById('update-status');
+            const statusText = document.getElementById('update-status');
             
             if (!token) {
-                alert("Vui lòng điền GitHub Token");
+                alert("Vui lòng nhập mã GitHub Token hợp lệ.");
                 return;
             }
 
-            statusSpan.style.color = "orange";
-            statusSpan.textContent = "Đang đồng bộ và đóng gói dữ liệu...";
+            statusText.innerText = "Đang đồng bộ hóa lên đám mây...";
+            statusText.style.color = "orange";
 
             try {
-                let currentGlobalSubject = document.getElementById('base-subject-text').textContent;
-                const newPayload = {
-                    subjectTitle: currentGlobalSubject,
-                    byTeachers: GROUPED_TEACHERS_DATA
-                };
-
-                const getFileUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${CONFIG.GH_FILE_PATH}`;
-                const fileRes = await fetch(getFileUrl, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-
-                if (!fileRes.ok) throw new Error("Không thể kết nối kho lưu trữ GitHub");
-                const fileData = await fileRes.json();
-                const fileSha = fileData.sha;
-                const oldContentDecoded = decodeURIComponent(escape(atob(fileData.content)));
-
-                const regexMarker = /\/\/ ==========================================================\s*\/\/ KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN[\s\S]*?\/\/ ==========================================================/;
-                const freshGeneratedBlock = `// ==========================================================\n        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN (FALLBACK)\n        // ==========================================================\n        const STATIC_DATA_STORE = ${JSON.stringify(newPayload)};\n        // ==========================================================`;
-
-                if (!regexMarker.test(oldContentDecoded)) {
-                    throw new Error("Không tìm thấy thẻ đánh dấu STATIC_DATA_STORE trong file mẫu.");
+                if (RAW_SHEET_ROWS_CACHE.length === 0) {
+                    alert("Không tìm thấy dữ liệu bộ nhớ đệm mới để cập nhật.");
+                    statusText.innerText = "Thất bại.";
+                    statusText.style.color = "red";
+                    return;
                 }
 
-                const finalCodeUpdated = oldContentDecoded.replace(regexMarker, freshGeneratedBlock);
+                const freshGrouped = buildGroupedDataStructure(RAW_SHEET_ROWS_CACHE);
+                const finalPackagedObj = {
+                    subjectTitle: CONFIG.SUBJECT_NAME,
+                    byTeachers: freshGrouped
+                };
 
-                const updateRes = await fetch(getFileUrl, {
+                const url = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${CONFIG.GH_FILE_PATH}`;
+                
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+
+                if (!getRes.ok) throw new Error("Không thể truy cập tệp tin đích trên kho chứa GitHub.");
+                const getData = await getRes.json();
+                const sha = getData.sha;
+                const oldContent = decodeURIComponent(escape(atob(getData.content)));
+
+                const regex = /(const\s+STATIC_DATA_STORE\s*=\s*)([\s\S]*?)(;\s*\/\/\s*=+\s*\n\s*const\s+STATIC_DATA_STORE)/;
+                if (!regex.test(oldContent)) {
+                    throw new Error("Không tìm thấy khối mã vùng đệm STATIC_DATA_STORE hợp lệ để dán đè.");
+                }
+
+                const updatedStoreString = JSON.stringify(finalPackagedObj);
+                const newContent = oldContent.replace(regex, `$1${updatedStoreString}$3`);
+
+                const putRes = await fetch(url, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: "Auto-synced Google Sheet database directly into client cache",
-                        content: btoa(unescape(encodeURIComponent(finalCodeUpdated))),
-                        sha: fileSha
+                        message: `Auto-updated STATIC_DATA_STORE core payload via Onthi24 Web Admin Engine`,
+                        content: btoa(unescape(encodeURIComponent(newContent))),
+                        sha: sha
                     })
                 });
 
-                if (updateRes.ok) {
-                    statusSpan.style.color = "green";
-                    statusSpan.textContent = "Cập nhật đóng gói thành công lên máy chủ!";
-                    alert("Hệ thống đã đồng bộ hóa thành công!");
+                if (putRes.ok) {
+                    statusText.innerText = "Cập nhật dữ liệu hệ thống đám mây thành công!";
+                    statusText.style.color = "green";
+                    alert("Hệ thống đồng bộ dữ liệu hoàn tất!");
                 } else {
-                    throw new Error("Lỗi đẩy mã lên GitHub");
+                    const errData = await putRes.json();
+                    throw new Error(errData.message || "Lỗi phản hồi API từ GitHub.");
                 }
 
-            } catch (e) {
-                statusSpan.style.color = "red";
-                statusSpan.textContent = "Thất bại: " + e.message;
-                alert("Đã xảy ra lỗi: " + e.message);
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "Lỗi: " + err.message;
+                statusText.style.color = "red";
+                alert("Đồng bộ thất bại: " + err.message);
             }
         }
 
-        window.addEventListener('DOMContentLoaded', fetchGoogleSheetData);
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
+            fetchDynamicSheetData();
+        });
     </script>
 </body>
 </html>
