@@ -388,6 +388,7 @@
             display: none;
         }
 
+        /* THIẾT KẾ MỚI CHO HÀNG BÀI HỌC CLICK ĐƯỢC TOÀN BỘ */
         .menu-item {
             padding: 8px 12px 8px 24px;
             font-size: 12.5px;
@@ -410,10 +411,11 @@
             padding-right: 5px;
         }
 
+        /* THIẾT KẾ MỚI: ICON NÚT PLAY HÌNH VUÔNG ĐỎ THEO YÊU CẦU */
         .btn-download-icon-only {
-            background: transparent !important;
+            background: #ff0000 !important; /* Đổi nền thành màu đỏ */
             border: none;
-            padding: 2px;
+            padding: 0;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -422,18 +424,22 @@
             z-index: 10;
             text-decoration: none;
             flex-shrink: 0;
-            width: 20px;
-            height: 20px;
+            width: 24px !important;   /* Tăng kích thước nút vuông */
+            height: 24px !important;
+            border-radius: 3px !important; /* Bo góc vuông nhẹ */
         }
-        .btn-download-icon-only svg {
-            width: 100%;
-            height: 100%;
-            fill: #0076a3;
-            transition: transform 0.2s;
+        
+        /* Icon hình tam giác Play màu trắng bên trong */
+        .btn-download-icon-only i {
+            color: #ffffff !important;
+            font-size: 11px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .btn-download-icon-only:hover svg {
-            transform: translateY(1px);
-            fill: #00567a;
+        
+        .btn-download-icon-only:hover {
+            background: #cc0000 !important; /* Đỏ đậm hơn khi dí chuột */
         }
 
         .menu-item.active, .menu-lesson-header.active-flat {
@@ -724,8 +730,7 @@
 
         <div class="courses-catalog-box">
             <div class="courses-catalog-title">Danh mục các khóa học</div>
-            <ul class="courses-list" id="custom-teacher-links-list">
-                </ul>
+            <ul class="courses-list" id="custom-teacher-links-list"></ul>
         </div>
 
         <div id="admin-panel">
@@ -796,370 +801,101 @@
             document.getElementById("main-layout-container").classList.toggle("maximized-mode");
         }
 
-        function updateVideoIframe(videoId, isAutoplay) {
-            const player = document.getElementById('video-player');
-            const autoplayVal = isAutoplay ? 1 : 0;
-            const targetSrc = `https://www.youtube.com/embed/${videoId}?autoplay=${autoplayVal}&rel=0&showinfo=0&controls=1&playsinline=1&enablejsapi=1`;
-            if (player) player.src = targetSrc;
-        }
+        // ==========================================================
+        // HÀM RENDER ĐÃ ĐƯỢC CẬP NHẬT THEO YÊU CẦU:
+        // 1. Icon đổi thành fa-play nằm trong hộp đỏ (.btn-download-icon-only)
+        // 2. Thêm sự kiện click toàn bộ hàng .menu-item
+        // 3. Dùng stopPropagation để tránh lỗi nhảy 2 tab cùng lúc
+        // ==========================================================
+        function renderSidebarMenu(teacherName) {
+            const container = document.getElementById('menu-container');
+            if (!container) return;
 
-        function initTeachersDataPackage(data) {
-            GROUPED_TEACHERS_DATA = {};
-            if (data.byTeachers) {
-                GROUPED_TEACHERS_DATA = data.byTeachers;
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
-            } else {
-                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
-                GROUPED_TEACHERS_DATA[tName] = {
-                    sidebarTitle: tName,
-                    lessons: data.lessons || []
-                };
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
-            }
-            renderCustomTeacherLinks();
-        }
-
-        function renderCustomTeacherLinks() {
-            const container = document.getElementById('custom-teacher-links-list');
-            container.innerHTML = '';
-
-            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
-            if (teacherNames.length === 0) return;
-
-            if (!CURRENT_TEACHER_NAME || !GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]) {
-                CURRENT_TEACHER_NAME = teacherNames[0];
-            }
-
-            teacherNames.forEach((name, index) => {
-                const liItem = document.createElement('li');
-                liItem.className = `course-link-item ${name === CURRENT_TEACHER_NAME ? 'selected-active' : ''}`;
-                liItem.innerText = `${index + 1}. ${name}`;
-                
-                liItem.addEventListener('click', () => {
-                    CURRENT_TEACHER_NAME = name;
-                    renderCustomTeacherLinks(); 
-                    renderLessonsMenu(GROUPED_TEACHERS_DATA[name]);
-                });
-
-                container.appendChild(liItem);
-            });
-
-            renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
-        }
-
-        function renderLessonsMenu(teacherData) {
-            document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle}</span>`;
-            const menuContainer = document.getElementById('menu-container');
-            menuContainer.innerHTML = '';
-
-            if (!teacherData.lessons || teacherData.lessons.length === 0) {
-                menuContainer.innerHTML = '<div class="loading-overlay">Chưa có bài học nào được thiết lập.</div>';
+            const teacherData = GROUPED_TEACHERS_DATA[teacherName];
+            if (!teacherData || !teacherData.lessons) {
+                container.innerHTML = '<div class="loading-overlay">Không có dữ liệu bài giảng.</div>';
                 return;
             }
 
-            let isFirstVideoLoaded = false;
-
-            teacherData.lessons.forEach((lesson) => {
-                const rowBlock = document.createElement('div');
-                rowBlock.className = 'lesson-row-block';
-
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'menu-lesson-header';
+            document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle || 'Mục lục bài giảng'}</span>`;
+            
+            let html = '';
+            teacherData.lessons.forEach((lesson, index) => {
+                const hasParts = lesson.parts && lesson.parts.length > 0;
+                html += `<div class="lesson-row-block">`;
+                html += `   <div class="menu-lesson-header ${hasParts ? 'has-child' : 'active-flat'}" onclick="toggleLessonCollapse(this)">`;
+                html += `       <span>${lesson.lessonTitle}</span>`;
+                html += `   </div>`;
                 
-                const titleTextSpan = document.createElement('span');
-                titleTextSpan.innerText = lesson.lessonTitle;
-                headerDiv.appendChild(titleTextSpan);
-
-                if (lesson.colorCode && lesson.colorCode.trim() !== '' && lesson.colorCode.toLowerCase() !== 'none') {
-                    headerDiv.style.color = lesson.colorCode.trim();
-                }
-
-                const partsContainer = document.createElement('div');
-                partsContainer.className = 'lesson-parts-container';
-
-                if (!lesson.parts || lesson.parts.length === 0) {
-                    headerDiv.classList.remove('has-child');
-                    rowBlock.appendChild(headerDiv);
-                } else {
-                    headerDiv.classList.add('has-child', 'collapsed');
-                    partsContainer.classList.add('hidden');
-
-                    headerDiv.addEventListener('click', function() {
-                        const isCollapsed = this.classList.contains('collapsed');
-                        if (isCollapsed) {
-                            document.querySelectorAll('.menu-lesson-header.has-child').forEach(h => h.classList.add('collapsed'));
-                            document.querySelectorAll('.lesson-parts-container').forEach(c => c.classList.add('hidden'));
-                            this.classList.remove('collapsed');
-                            partsContainer.classList.remove('hidden');
-                        } else {
-                            this.classList.add('collapsed');
-                            partsContainer.classList.add('hidden');
+                if (hasParts) {
+                    html += `<div class="lesson-parts-container">`;
+                    lesson.parts.forEach(part => {
+                        // Thêm thuộc tính click toàn hàng mở link, đồng thời đổi icon con thành fa-play
+                        html += `   <div class="menu-item" onclick="window.open('${part.linkUrl}', '_blank')">`;
+                        html += `       <span class="lesson-name">${part.partTitle}</span>`;
+                        if (part.linkUrl) {
+                            html += `   <a href="${part.linkUrl}" class="btn-download-icon-only" target="_blank" onclick="event.stopPropagation();">`;
+                            html += `       <i class="fa fa-play"></i>`;
+                            html += `   </a>`;
                         }
+                        html += `   </div>`;
                     });
-
-                    lesson.parts.forEach((part) => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'menu-item';
-                        itemDiv.setAttribute('data-parent-lesson', lesson.lessonTitle);
-                        
-                        const nameSpan = document.createElement('span');
-                        nameSpan.className = 'lesson-name';
-                        nameSpan.innerText = part.partTitle;
-                        itemDiv.appendChild(nameSpan);
-
-                        if (isYouTubeLink(part.linkUrl)) {
-                            const videoId = extractYouTubeId(part.linkUrl);
-                            
-                            itemDiv.addEventListener('click', function(e) {
-                                if(e.target.closest('a')) return; 
-                                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                                document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
-                                itemDiv.classList.add('active');
-
-                                updateVideoIframe(videoId, true);
-                                document.getElementById('current-lesson-title').innerText = part.partTitle;
-                                document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
-                            });
-
-                            if (!isFirstVideoLoaded && videoId) {
-                                headerDiv.classList.remove('collapsed');
-                                partsContainer.classList.remove('hidden');
-                                itemDiv.classList.add('active');
-
-                                updateVideoIframe(videoId, false);
-                                document.getElementById('current-lesson-title').innerText = part.partTitle;
-                                document.getElementById('subject-lesson-append').innerText = itemDiv.getAttribute('data-parent-lesson');
-                                isFirstVideoLoaded = true;
-                            }
-                        } else {
-                            if (part.linkUrl && part.linkUrl.trim() !== '') {
-                                const dlBtn = document.createElement('a');
-                                dlBtn.className = 'btn-download-icon-only';
-                                dlBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>`;
-                                dlBtn.href = part.linkUrl;
-                                dlBtn.target = '_blank';
-                                dlBtn.addEventListener('click', (e) => e.stopPropagation());
-                                itemDiv.appendChild(dlBtn);
-                            }
-
-                            itemDiv.addEventListener('click', function(e) {
-                                if(e.target.closest('a')) return;
-                                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                                document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
-                                itemDiv.classList.add('active');
-                                document.getElementById('current-lesson-title').innerText = part.partTitle;
-                                document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
-                            });
-                        }
-                        partsContainer.appendChild(itemDiv);
-                    });
-
-                    rowBlock.appendChild(headerDiv);
-                    rowBlock.appendChild(partsContainer);
+                    html += `</div>`;
                 }
-                menuContainer.appendChild(rowBlock);
+                html += `</div>`;
             });
 
-            if (!isFirstVideoLoaded && teacherData.lessons.length > 0) {
-                document.getElementById('subject-lesson-append').innerText = teacherData.lessons[0].lessonTitle;
-                document.getElementById('current-lesson-title').innerText = "Chọn bài học ở mục lục";
-                updateVideoIframe('', false);
+            container.innerHTML = html;
+        }
+
+        function toggleLessonCollapse(header) {
+            header.classList.toggle('collapsed');
+            const container = header.nextElementSibling;
+            if (container && container.classList.contains('lesson-parts-container')) {
+                container.classList.toggle('hidden');
+            }
+        }
+
+        function buildTeacherCatalogButtons() {
+            const list = document.getElementById('custom-teacher-links-list');
+            if (!list) return;
+            list.innerHTML = '';
+            Object.keys(GROUPED_TEACHERS_DATA).forEach((name, idx) => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.className = 'course-link-item';
+                btn.textContent = name;
+                btn.onclick = () => {
+                    document.querySelectorAll('.course-link-item').forEach(b => b.classList.remove('selected-active'));
+                    btn.classList.add('selected-active');
+                    CURRENT_TEACHER_NAME = name;
+                    renderSidebarMenu(name);
+                };
+                if (idx === 0) {
+                    btn.classList.add('selected-active');
+                    CURRENT_TEACHER_NAME = name;
+                }
+                li.appendChild(btn);
+                list.appendChild(li);
+            });
+        }
+
+        function initSystemData() {
+            GROUPED_TEACHERS_DATA = STATIC_DATA_STORE.byTeachers || {};
+            document.getElementById('base-subject-text').textContent = STATIC_DATA_STORE.subjectTitle || CONFIG.SUBJECT_NAME;
+            buildTeacherCatalogButtons();
+            if (CURRENT_TEACHER_NAME) {
+                renderSidebarMenu(CURRENT_TEACHER_NAME);
             }
         }
 
         function checkAdminAuth(val) {
-            if (val.trim() === CONFIG.ADMIN_PASSWORD) {
+            if (val === CONFIG.ADMIN_PASSWORD) {
                 document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('search-input').value = ''; 
-                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        function parseGoogleSheetToPackage(rawText) {
-            const data = JSON.parse(rawText.substr(47).slice(0, -2));
-            const rows = data.table.rows;
-            const rawCols = data.table.cols; 
-            
-            let subjectVal = CONFIG.SUBJECT_NAME, targetPath = CONFIG.GH_FILE_PATH;
-            
-            function getVal(cols, index) {
-                if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
-                return cols[index].v.toString().trim();
-            }
-
-            if (rawCols && rawCols.length >= 8) {
-                if (rawCols[7] && rawCols[7].label) {
-                    targetPath = rawCols[7].label.toString().trim();
-                }
-            }
-
-            if (rows[1] && rows[1].c) {
-                subjectVal = getVal(rows[1].c, 0) || CONFIG.SUBJECT_NAME;    
-            }
-            
-            let structuredData = {
-                subjectTitle: subjectVal,
-                byTeachers: {}
-            };
-
-            for (let i = 1; i < rows.length; i++) {
-                const cols = rows[i].c;
-                if (!cols) continue;
-
-                if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
-
-                let teacherName = getVal(cols, 1); 
-                const lessonTitle = getVal(cols, 2); 
-                const partTitle   = getVal(cols, 3); 
-                const linkUrl     = getVal(cols, 4); 
-                let colorCode     = getVal(cols, 5); 
-
-                if (!lessonTitle) continue;
-
-                if (!teacherName) {
-                    const keys = Object.keys(structuredData.byTeachers);
-                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
-                }
-
-                if (!structuredData.byTeachers[teacherName]) {
-                    structuredData.byTeachers[teacherName] = {
-                        sidebarTitle: teacherName,
-                        lessons: []
-                    };
-                }
-
-                let teacherLessons = structuredData.byTeachers[teacherName].lessons;
-                let currentLessonObj = teacherLessons.find(l => l.lessonTitle === lessonTitle);
-
-                if (!currentLessonObj) {
-                    currentLessonObj = {
-                        lessonTitle: lessonTitle,
-                        colorCode: colorCode,
-                        parts: []
-                    };
-                    teacherLessons.push(currentLessonObj);
-                } else {
-                    if (colorCode && (!currentLessonObj.colorCode || currentLessonObj.colorCode === '')) {
-                        currentLessonObj.colorCode = colorCode;
-                    }
-                }
-
-                if (partTitle && partTitle.trim() !== '') {
-                    currentLessonObj.parts.push({
-                        partTitle: partTitle,
-                        linkUrl: linkUrl
-                    });
-                }
-            }
-            
-            return { data: structuredData, gitPath: targetPath };
-        }
-
-        function startAutoSyncToGitHub() {
-            const token = document.getElementById('gh-token-input').value.trim();
-            const status = document.getElementById('update-status');
-            
-            if(!token) return;
-            
-            status.innerText = "⏳";
-            status.style.color = "orange";
-
-            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
-
-            fetch(SHEET_URL)
-            .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
-            .then(rep => {
-                const parsedResult = parseGoogleSheetToPackage(rep);
-                const ghPathFromSheet = parsedResult.gitPath; 
-                
-                const githubApiUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${ghPathFromSheet}`;
-                
-                return fetch(githubApiUrl, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                })
-                .then(res => {
-                    if (res.status === 401) throw new Error("Mã Token sai hoặc hết hạn!");
-                    if (!res.ok) throw new Error(`Không tìm thấy file [${ghPathFromSheet}] trên GitHub!`);
-                    return res.json();
-                })
-                .then(fileData => {
-                    const fileSha = fileData.sha; 
-                    const oldSourceBase64 = fileData.content;
-                    let oldHtmlText = decodeURIComponent(escape(atob(oldSourceBase64.replace(/\s/g, ''))));
-                    
-                    const jsonStringData = JSON.stringify(parsedResult.data);
-                    const regexReplace = /const STATIC_DATA_STORE = \{.*?\};|const STATIC_DATA_STORE = null;/;
-                    let newHtmlText = oldHtmlText.replace(regexReplace, `const STATIC_DATA_STORE = ${jsonStringData};`);
-                    
-                    const newContentBase64 = btoa(unescape(encodeURIComponent(newHtmlText)));
-                    
-                    return fetch(githubApiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/vnd.github.v3+json'
-                        },
-                        body: JSON.stringify({
-                            message: `⚡ Auto-Sync ${CONFIG.SUBJECT_NAME} Đa Khóa Học: ${ghPathFromSheet}`,
-                            content: newContentBase64,
-                            sha: fileSha
-                        })
-                    });
-                });
-            })
-            .then(res => {
-                if(!res.ok) throw new Error("Đồng bộ GitHub thất bại!");
-                return res.json();
-            })
-            .then(() => {
-                status.innerText = "✅ THÀNH CÔNG!";
-                status.style.color = "green";
-                document.getElementById('gh-token-input').value = ""; 
-                
-                setTimeout(() => {
-                    location.reload(); 
-                }, 1000);
-            })
-            .catch(err => {
-                console.error(err);
-                status.innerText = "❌ Lỗi: " + err.message;
-                status.style.color = "red";
-            });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
-                initTeachersDataPackage(STATIC_DATA_STORE);
-            } else {
-                document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
-                document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
-            }
-
-            const currentUrl = window.location.href.toLowerCase();
-            document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
-            
-            if (currentUrl.includes('toan-thpt') || currentUrl.includes('video-toan-12') || currentUrl.includes('video-toan-11') || currentUrl.includes('video-toan-10')) {
-                document.getElementById('menu-thpt').classList.add('active');
-            } else if (currentUrl.includes('toan-thcs') || currentUrl.includes('video-toan-9') || currentUrl.includes('video-toan-8') || currentUrl.includes('video-toan-7') || currentUrl.includes('video-toan-6')) {
-                document.getElementById('menu-thcs').classList.add('active');
-            } else if (currentUrl.includes('vatli') || currentUrl.includes('vat-li')) {
-                document.getElementById('menu-vatli').classList.add('active');
-            } else if (currentUrl.includes('video-kho') || currentUrl.includes('/video/')) {
-                document.getElementById('menu-video').classList.add('active');
-            } else {
-                document.getElementById('menu-home').classList.add('active');
-            }
-
-            document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768) {
-                    const menu = document.getElementById('mobileNavMenu');
-                    if (menu && !menu.contains(e.target)) {
-                        menu.classList.remove('open');
-                    }
-                }
-            });
-        });
+        window.addEventListener('DOMContentLoaded', initSystemData);
     </script>
 </body>
 </html>
