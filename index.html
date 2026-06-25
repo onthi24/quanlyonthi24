@@ -16,7 +16,7 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'Trang tính1', 
-            SHEET_RANGE: 'B2:I200', 
+            SHEET_RANGE: 'B1:I200', 
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
@@ -658,21 +658,14 @@
                     <a href="https://onthi24.com/" class="nav-item" id="menu-home" target="_self">Trang chủ</a>
                 </div>
 
-<div class="nav-menu" id="mobileNavMenu">
-    <div class="mobile-close-nav-btn" onclick="closeMobileMenu(event)"><i class="fa fa-times"></i></div>
-
-    <div class="nav-item-wrap">
-        <a href="https://onthi24.com/" class="nav-item active" id="menu-home" target="_self">Trang chủ</a>
-    </div>
-
-    <div class="nav-item-wrap" onclick="handleMenuMobileClick(this, event)">
-        <a href="#" class="nav-item" id="menu-thpt">Video Toán THPT <i class="fa fa-chevron-down" style="font-size: 11px;"></i></a>
-        <div class="dropdown-content">
-            <a href="https://onthi24.com/video/video-toan-12.html" target="_self">Video Toán 12</a>
-            <a href="https://onthi24.com/video/video-toan-11.html" target="_self">Video Toán 11</a>
-            <a href="https://onthi24.com/video/video-toan-10.html" target="_self">Video Toán 10</a>
-        </div>
-    </div>
+                <div class="nav-item-wrap" onclick="handleMenuMobileClick(this, event)">
+                    <a href="#" class="nav-item" id="menu-thpt">Video Toán THPT <i class="fa fa-chevron-down" style="font-size: 11px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="https://onthi24.com/video/video-toan-12.html" target="_self">Video Toán 12</a>
+                        <a href="https://onthi24.com/video/video-toan-11.html" target="_self">Video Toán 11</a>
+                        <a href="https://onthi24.com/video/video-toan-10.html" target="_self">Video Toán 10</a>
+                    </div>
+                </div>
 
                 <div class="nav-item-wrap" onclick="handleMenuMobileClick(this, event)">
                     <a href="#" class="nav-item" id="menu-thcs">Video Toán THCS <i class="fa fa-chevron-down" style="font-size: 11px;"></i></a>
