@@ -958,6 +958,22 @@
                             } */
 
 
+                            itemDiv.style.cursor = 'pointer'; // Tạo hiệu ứng bàn tay khi rê chuột vào chữ
+                                itemDiv.addEventListener('click', function(e) {
+                                    // 1. Cập nhật hiệu ứng màu sắc cho menu như cũ
+                                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                                    document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
+                                    itemDiv.classList.add('active');
+                                    document.getElementById('current-lesson-title').innerText = part.partTitle;
+                                    document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
+                                    
+                                    // 2. Kích hoạt nút Play (Nếu người dùng không bấm trực tiếp vào nút Play thì ta tự bấm hộ họ)
+                                    if (!e.target.closest('.btn-download-icon-only')) {
+                                        dlBtn.click();
+                                    }
+                                });
+
+                            /*
 
                             itemDiv.style.cursor = 'pointer'; // 1. THÊM DÒNG NÀY: Tạo hiệu ứng bàn tay khi rê chuột vào chữ
                             itemDiv.addEventListener('click', function(e) {
@@ -973,8 +989,8 @@
                                     dlBtn.click();
                                 }
                             });
+
                             
-                            /*
                             itemDiv.addEventListener('click', function(e) {
                                 if(e.target.closest('a')) return;
                                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
