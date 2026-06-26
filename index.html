@@ -939,8 +939,8 @@
                                 dlBtn.title = 'Phát bài giảng';
                                 dlBtn.innerHTML = `
                                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="11" fill="#0076a3"/>
-                                        <path d="M10 8.5v7l5.5-3.5z" fill="#ffffff"/>
+                                        <rect x="2" y="4" width="20" height="16" rx="5" fill="#0076a3"/>
+                                        <path d="M10 9v6l5-3z" fill="#ffffff"/>
                                     </svg>
                                 `;
                                 dlBtn.href = part.linkUrl;
@@ -957,6 +957,24 @@
                                 itemDiv.appendChild(dlBtn);
                             } */
 
+
+
+                            itemDiv.style.cursor = 'pointer'; // 1. THÊM DÒNG NÀY: Tạo hiệu ứng bàn tay khi rê chuột vào chữ
+                            itemDiv.addEventListener('click', function(e) {
+                                if(e.target.closest('a')) return;
+                                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                                document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
+                                itemDiv.classList.add('active');
+                                document.getElementById('current-lesson-title').innerText = part.partTitle;
+                                document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
+                                
+                                // 2. THÊM 3 DÒNG NÀY: Tự động bấm nút Play khi bấm vào dòng chữ (nếu chưa bấm trúng nút)
+                                if (!e.target.closest('.btn-download-icon-only')) {
+                                    dlBtn.click();
+                                }
+                            });
+                            
+                            /*
                             itemDiv.addEventListener('click', function(e) {
                                 if(e.target.closest('a')) return;
                                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
@@ -965,6 +983,8 @@
                                 document.getElementById('current-lesson-title').innerText = part.partTitle;
                                 document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
                             });
+
+                            */
                         }
                         partsContainer.appendChild(itemDiv);
                     });
