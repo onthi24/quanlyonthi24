@@ -26,7 +26,7 @@
             // 3. Thông tin hiển thị mặc định của môn học
             SUBJECT_NAME: 'Toán 12', 
 
-            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web
+            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web (Đã lược bỏ tính năng Admin)
             ADMIN_PASSWORD: 'admin123' 
         };
     </script>
@@ -504,15 +504,6 @@
             box-shadow: 0 2px 6px rgba(120,37,37,0.3);
         }
 
-        /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
-        #admin-panel { max-width: 1100px; margin: 0 auto 20px auto; padding: 15px; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; display: none; }
-        .admin-form-group { display: flex; flex-direction: column; gap: 10px; }
-        .admin-form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ffc107; border-radius: 6px; outline: none; font-size: 14px; background: #fff; }
-        .admin-btn-group { display: flex; gap: 15px; align-items: center; }
-        .btn-admin { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-        .btn-admin:hover { background: #218838; }
-        #update-status { font-weight: bold; font-size: 14px; }
-
         .footer-action {
             margin: 40px 0 15px 0;
             display: flex;
@@ -646,8 +637,6 @@
         }
     </style>
 </head>
-    </style>
-</head>
 <body>
 
     <div class="wrapper-layout">
@@ -707,7 +696,7 @@
                 <span id="base-subject-text">ONTHI24</span>
             </div>
             <div class="search-box">
-                <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
+                <input type="text" id="search-input" placeholder="Tìm kiếm...">
             </div>
         </div>
 
@@ -738,16 +727,6 @@
                 </ul>
         </div>
 
-        <div id="admin-panel">
-            <div class="admin-form-group">
-                <input type="password" id="gh-token-input" placeholder="Nhập mã GitHub Token...">
-                <div class="admin-btn-group">
-                    <button class="btn-admin" id="btn-update-cloud" onclick="startAutoSyncToGitHub()">Cập nhật</button>
-                    <span id="update-status" style="color: blue;"></span>
-                </div>
-            </div>
-        </div>
-
         <div class="footer-action">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
                 <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
@@ -758,12 +737,6 @@
     </div>
 
     <script>
-        // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
-        // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Toán 12","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 1. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 3.Đường tiệm cận","colorCode":"","parts":[{"partTitle":"Bài giảng","linkUrl":"https://www.youtube.com/watch?v=7Z2zn8gvI3w&feature=youtu.be"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1VYC-hLLyPquj5sJ61eK-wDWyxbgTBFMJ/view"}]},{"lessonTitle":"Bài 4. Khảo sát và vẽ đồ thị","colorCode":"","parts":[{"partTitle":"Bài giảng","linkUrl":"https://www.youtube.com/watch?v=ljj5N8dSct8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/18h5vvQPePKiuMuOrbsMi9GAIrdAvFFBP/view"}]},{"lessonTitle":"Chương 2. Véc tơ và trục tọa độ trong không gian","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1.Véc tơ trong không gian: Tổng - hiệu hai véc tơ","colorCode":"","parts":[{"partTitle":"Phần 1","linkUrl":"https://youtu.be/1Bw3YMNPwEw"},{"partTitle":"Phần 2","linkUrl":"https://youtu.be/Y9546SwUD0I"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view"}]}]},"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1.1 Tính Đơn Điệu Của Hàm Số","linkUrl":"https://www.youtube.com/watch?v=zsxktJWNxVI&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 1.2 Cực Trị Của Hàm Số","linkUrl":"https://www.youtube.com/watch?v=BbFj2KgZy6Q&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Giá Trị Lớn Nhất - Nhỏ Nhất của Hàm Số","linkUrl":"https://www.youtube.com/watch?v=WsMJEaCQsoA&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Đường Tiệm Cận của Đồ Thị hàm Số","linkUrl":"https://www.youtube.com/watch?v=o6g5ZpOczLc&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 4. Khảo Sát và Vẽ Đồ Thị Hàm Số","linkUrl":"https://www.youtube.com/watch?v=990wEB5yo2k&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 5. Ứng Dụng Đạo Hàm Giải Quyết Bài Toán Thực Tế","linkUrl":"https://www.youtube.com/watch?v=DYFeDU9oFG4&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=8"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 6. Đơn Điệu Chứa Tham Số m (Tính đồng biến - nghịch biến)","linkUrl":"https://www.youtube.com/watch?v=g7InuFPi7Yo&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=9"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 7. Cực Trị Chứa Tham Số m","linkUrl":"https://www.youtube.com/watch?v=hSe9VbM95o4&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=10"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 8. Cực Trị của Hàm Trị Tuyệt Đối","linkUrl":"https://www.youtube.com/watch?v=KmiyIn6H_Kk&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=12"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 9. Giá trị lớn nhất và Nhỏ Nhất của Hàm S","linkUrl":"https://www.youtube.com/watch?v=FukzNMLJt6s&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=13"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 10. Đồ thị Đạo Hàm (Hàm Hợp) - Phần 1","linkUrl":"https://www.youtube.com/watch?v=yNQRywzrR5M&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=14"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 11. Nhận diện Đồ thị Hàm Số (Phần 1): Hàm Bậc 3, Bậc 4","linkUrl":"https://www.youtube.com/watch?v=TJrY8OO8Nqw&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=15"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 12. Tiệm Cận chứa Tham Số m","linkUrl":"https://www.youtube.com/watch?v=jqKJAmWblEc&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=16"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 13. Phương Pháp Ghép Trục - Tương Giao Hàm Số Chứa m","linkUrl":"https://www.youtube.com/watch?v=x416ddGvt5k&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=17"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 14. Tổng ôn tập chương 1. Hàm số và ứng dụng","linkUrl":"https://www.youtube.com/watch?v=RtuWyBrEq9g&list=PLXmeri-X8nVwKZM86S_TmWS2UsvB_mi45&index=22"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 2. Véc tơ và trục tọa độ trong không gian","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Vecto Trong Không Gian","linkUrl":"https://www.youtube.com/watch?v=phvpqxLNTUQ&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Hệ Trục Tọa Độ Oxyz - Tọa Độ Điểm và Vecto","linkUrl":"https://www.youtube.com/watch?v=uzN97cFH1II&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Biểu Thức Tọa Độ Phép Toán Vecto Trong Không Gian","linkUrl":"https://www.youtube.com/watch?v=G-9G2nDnwqA&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 4. Ôn Tập Hình Tọa Độ Oxyz - Giữa Kì 2","linkUrl":"https://www.youtube.com/watch?v=9xj5ExISius&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=16"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 3. Các số đo đặc trưng","colorCode":"#b37d32","parts":[{"partTitle":"Mẫu Số Liệu Ghép Nhóm và Các Số Đặc Trưng Đo Xu Thế Trung Tâm","linkUrl":"https://www.youtube.com/watch?v=Z2ssSY4atIA"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 4. Nguyên hàm và tích phân","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1.1 Nguyên Hàm Cơ Bản và Công Thức Nguyên Hàm","linkUrl":"https://www.youtube.com/watch?v=j615s9znk4U&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=1"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 1.2 Nguyên Hàm Thường Gặp","linkUrl":"https://www.youtube.com/watch?v=7urfQ8s20oY&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Tích Phân Và Toán Thực Tế Tích Phân","linkUrl":"https://www.youtube.com/watch?v=cNDQkKzfsfw&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Ứng Dụng Hình Học của Tích Phân","linkUrl":"https://www.youtube.com/watch?v=4DE9Cz-e2mo&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bấm Máy Tính Tích Phân 2, 3 ẩn","linkUrl":"https://www.youtube.com/watch?v=4v7TAgoz2FI&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=13"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Ứng Dụng Tích Phân (Toán 12): Bài Toán Chuyển Động","linkUrl":"https://www.youtube.com/watch?v=ZWNGDJqTSSU&list=PLXmeri-X8nVzh1d_AjoKoTqZI1D3iqU5q&index=24"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 5. Phương pháp tọa độ trong không gian","colorCode":"#b37d32","parts":[{"partTitle":"Chương 5. Phương pháp tọa độ trong không gian","linkUrl":""},{"partTitle":"Bài 1. Phương Trình Mặt Phẳng","linkUrl":"https://www.youtube.com/watch?v=PciV6qoMQXU&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Phương Trình Đường Thẳng","linkUrl":"https://www.youtube.com/watch?v=pE0nx6XGwD0&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 3. Phương Trình Mặt Cầu","linkUrl":"https://www.youtube.com/watch?v=D3TjlXqPaz0&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=8"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 4. Góc và Khoảng Cách - Phần 1","linkUrl":"https://www.youtube.com/watch?v=GbZxmfrD6j0&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=14"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 5. Tìm Điểm Đối Xứng và Các Loại Hình Chiếu","linkUrl":"https://www.youtube.com/watch?v=5mGlYIQHiOI&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=15"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 6. Tâm Tỉ Cự Giải Nhanh Max Min Oxyz","linkUrl":"https://www.youtube.com/watch?v=ulZYfnAWkRo&list=PLXmeri-X8nVz44g73HUIKaN_atMmUc1Uj&index=18"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]},{"lessonTitle":"Chương 6. Xác suất có điều kiện","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Xác Suất có điều kiện. Công Thức Nhân Xác Suất","linkUrl":"https://www.youtube.com/watch?v=73Ft8fDSc3c&list=PLXmeri-X8nVydIoUTujAYaV1uaeavkpjA&index=1"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Bài 2. Công Thức Xác Suất Toàn Phần. Công Thức Bayes","linkUrl":"https://www.youtube.com/watch?v=n7bUihWfW4w&list=PLXmeri-X8nVydIoUTujAYaV1uaeavkpjA&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Phần 2.1 Công Thức Xác Suất Toàn Phần. Xác Suất Có Điều Kiện","linkUrl":"https://www.youtube.com/watch?v=2ZsjfFccH0s&list=PLXmeri-X8nVydIoUTujAYaV1uaeavkpjA&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"},{"partTitle":"Phần 2.2 Công Thức Bayes. Xác suất có Điều kiệ","linkUrl":"https://www.youtube.com/watch?v=ZN4LSnQLEyc&list=PLXmeri-X8nVydIoUTujAYaV1uaeavkpjA&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/1XYXocUdpEtKQj4hUShVnNH93Sv1q6u4z/view?usp=drive_link"}]}]}}};
-        // ==========================================================
-
         let GROUPED_TEACHERS_DATA = {};
         let CURRENT_TEACHER_NAME = "";
 
@@ -977,30 +950,15 @@
             }
         }
 
-        function checkAdminAuth(val) {
-            if (val.trim() === CONFIG.ADMIN_PASSWORD) {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('search-input').value = ''; 
-                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
-            const rawCols = data.table.cols; 
             
-            let subjectVal = CONFIG.SUBJECT_NAME, targetPath = CONFIG.GH_FILE_PATH;
+            let subjectVal = CONFIG.SUBJECT_NAME;
             
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
                 return cols[index].v.toString().trim();
-            }
-
-            if (rawCols && rawCols.length >= 8) {
-                if (rawCols[7] && rawCols[7].label) {
-                    targetPath = rawCols[7].label.toString().trim();
-                }
             }
 
             if (rows[1] && rows[1].c) {
@@ -1062,90 +1020,61 @@
                 }
             }
             
-            return { data: structuredData, gitPath: targetPath };
+            return structuredData;
         }
 
-        function startAutoSyncToGitHub() {
-            const token = document.getElementById('gh-token-input').value.trim();
-            const status = document.getElementById('update-status');
-            
-            if(!token) return;
-            
-            status.innerText = "⏳";
-            status.style.color = "orange";
-
+        // ==========================================================
+        // CƠ CHẾ STALE-WHILE-REVALIDATE (TỰ ĐỘNG CHẠY NGẦM GOOGLE SHEET)
+        // ==========================================================
+        function fetchAndRefreshDataFromSheet() {
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
-
+            
             fetch(SHEET_URL)
             .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
             .then(rep => {
-                const parsedResult = parseGoogleSheetToPackage(rep);
-                const ghPathFromSheet = parsedResult.gitPath; 
-                
-                const githubApiUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${ghPathFromSheet}`;
-                
-                return fetch(githubApiUrl, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                })
-                .then(res => {
-                    if (res.status === 401) throw new Error("Mã Token sai hoặc hết hạn!");
-                    if (!res.ok) throw new Error(`Không tìm thấy file [${ghPathFromSheet}] trên GitHub!`);
-                    return res.json();
-                })
-                .then(fileData => {
-                    const fileSha = fileData.sha; 
-                    const oldSourceBase64 = fileData.content;
-                    let oldHtmlText = decodeURIComponent(escape(atob(oldSourceBase64.replace(/\s/g, ''))));
-                    
-                    const jsonStringData = JSON.stringify(parsedResult.data);
-                    const regexReplace = /const STATIC_DATA_STORE = \{.*?\};|const STATIC_DATA_STORE = null;/;
-                    let newHtmlText = oldHtmlText.replace(regexReplace, `const STATIC_DATA_STORE = ${jsonStringData};`);
-                    
-                    const newContentBase64 = btoa(unescape(encodeURIComponent(newHtmlText)));
-                    
-                    return fetch(githubApiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/vnd.github.v3+json'
-                        },
-                        body: JSON.stringify({
-                            message: `⚡ Auto-Sync ${CONFIG.SUBJECT_NAME} Đa Khóa Học: ${ghPathFromSheet}`,
-                            content: newContentBase64,
-                            sha: fileSha
-                        })
-                    });
-                });
-            })
-            .then(res => {
-                if(!res.ok) throw new Error("Đồng bộ GitHub thất bại!");
-                return res.json();
-            })
-            .then(() => {
-                status.innerText = "✅ THÀNH CÔNG!";
-                status.style.color = "green";
-                document.getElementById('gh-token-input').value = ""; 
-                
-                setTimeout(() => {
-                    location.reload(); 
-                }, 1000);
+                const newDataParsed = parseGoogleSheetToPackage(rep);
+                const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
+                const oldDataString = localStorage.getItem(localKey);
+                const newDataString = JSON.stringify(newDataParsed);
+
+                // So sánh dữ liệu mới từ Sheet với dữ liệu trong localStorage hiện tại
+                if (oldDataString !== newDataString) {
+                    console.log("Tìm thấy bài giảng mới! Tiến hành tự động cập nhật giao diện...");
+                    localStorage.setItem(localKey, newDataString);
+                    initTeachersDataPackage(newDataParsed);
+                } else {
+                    console.log("Dữ liệu bài giảng đã trùng khớp với bộ nhớ đệm.");
+                }
             })
             .catch(err => {
-                console.error(err);
-                status.innerText = "❌ Lỗi: " + err.message;
-                status.style.color = "red";
+                console.error("Không thể kết nối lấy dữ liệu mới từ Google Sheet ngầm: ", err);
             });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
-                initTeachersDataPackage(STATIC_DATA_STORE);
+            const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
+            const cachedDataString = localStorage.getItem(localKey);
+
+            // BƯỚC 1: KIỂM TRA BỘ NHỚ ĐỆM CỤC BỘ (LOCAL STORAGE) VÀ HIỂN THỊ NGAY
+            if (cachedDataString) {
+                try {
+                    const cachedData = JSON.parse(cachedDataString);
+                    initTeachersDataPackage(cachedData);
+                    console.log("Đã tải nhanh mục lục bài giảng từ bộ nhớ đệm trình duyệt.");
+                } catch (e) {
+                    localStorage.removeItem(localKey);
+                    document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
+                    document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
+                }
             } else {
                 document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
+            // BƯỚC 2: CHẠY TIẾN TRÌNH NGẦM GỌI API GOOGLE SHEET ĐỂ REVALIDATE
+            fetchAndRefreshDataFromSheet();
+
+            // Cấu hình active thanh menu điều hướng
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
             
