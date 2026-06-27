@@ -635,10 +635,20 @@
             .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
             .copyright { text-align: center; }
              
-            .courses-catalog-title { font-size: 20px; text-align: left; }
+           .courses-catalog-title { font-size: 20px; text-align: left; }
             .courses-list { width: 100%; max-width: 100%; }
             .course-link-item { width: 100%; }
         }
+
+        /* --- ĐOẠN CODE BỔ SUNG ĐỂ TÍNH NĂNG PHÓNG TO HOẠT ĐỘNG --- */
+        .main-container.maximized-mode {
+            grid-template-columns: 1fr !important;
+        }
+        .main-container.maximized-mode .sidebar-column {
+            display: none !important;
+        }
+    </style>
+</head>
     </style>
 </head>
 <body>
