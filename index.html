@@ -786,7 +786,7 @@
 
     <script>
         // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
+        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN (LÀM DỰ PHÒNG KHI GOOGLE SHEET LỖI)
         // ==========================================================
         const STATIC_DATA_STORE = {"subjectTitle":"Trang chủ","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Giới thiệu Onthi24","colorCode":"","parts":[{"partTitle":"Video bài giảng","linkUrl":"https://youtu.be/fo8fJZcsIsk"},{"partTitle":"Tài liệu text","linkUrl":"https://onthi24.com/tailieu.html"}]},{"lessonTitle":"1. Toán THPT","colorCode":"","parts":[{"partTitle":"Toán 12","linkUrl":"https://onthi24.com/video/video-toan-12.html"},{"partTitle":"Toán 11","linkUrl":"https://onthi24.com/video/video-toan-11.html"},{"partTitle":"Toán 10","linkUrl":"https://onthi24.com/video/video-toan-10.html"}]},{"lessonTitle":"2. Toán THCS","colorCode":"","parts":[{"partTitle":"Toán 9","linkUrl":"https://onthi24.com/video/video-toan-9.html"},{"partTitle":"Toán 8","linkUrl":"https://onthi24.com/video/video-toan-8.html"},{"partTitle":"Toán 7","linkUrl":"https://onthi24.com/video/video-toan-7.html"},{"partTitle":"Toán 6","linkUrl":"https://onthi24.com/video/video-toan-6.html"}]},{"lessonTitle":"3. Vật Lí","colorCode":"","parts":[{"partTitle":"Vật Lí 12","linkUrl":"https://onthi24.com/video/video-vatli-12.html"},{"partTitle":"Vật Lí 11","linkUrl":"https://onthi24.com/video/video-vatli-11.html"},{"partTitle":"Vật Lí 10","linkUrl":"https://onthi24.com/video/video-vatli-10.html"}]},{"lessonTitle":"4. KHTN","colorCode":"","parts":[{"partTitle":"Vật Lí","linkUrl":"https://onthi24.com/video/khtn.html"},{"partTitle":"Hóa(đang cập nhật)","linkUrl":""},{"partTitle":"Sinh(đang cập nhật)","linkUrl":""}]},{"lessonTitle":"5. Du học","colorCode":"","parts":[{"partTitle":"Toán - Lí du học","linkUrl":"https://onthi24.com/video/video-du-hoc.html"},{"partTitle":"Toán cao cấp","linkUrl":"https://onthi24.com/video/video-du-hoc.html"}]}]}}};
         // ==========================================================
@@ -1196,15 +1196,29 @@
             });
         }
 
+        // ĐÃ SỬA: TỰ ĐỘNG FETCH DỮ LIỆU BÀI GIẢNG REAL-TIME TỪ GOOGLE SHEET KHI LOAD TRANG
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
-                initTeachersDataPackage(STATIC_DATA_STORE);
-            } else {
-                document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
-                document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
-            }
+            // Tạo link kết nối Google Sheet có kèm cachebust chống lưu bộ nhớ đệm cũ
+            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}&cachebust=${new Date().getTime()}`;
+            
+            document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
+            document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Đang tải danh sách bài giảng mới nhất...</div>`;
 
-            // Kích hoạt nạp lời ngỏ động
+            // Gọi dữ liệu trực tiếp từ Google Sheet để dựng mục lục bài giảng tự động
+            fetch(SHEET_URL)
+            .then(res => { if(!res.ok) throw new Error(); return res.text(); })
+            .then(rep => {
+                const parsedResult = parseGoogleSheetToPackage(rep);
+                initTeachersDataPackage(parsedResult.data);
+            })
+            .catch(err => {
+                console.error("Lỗi kết nối Google Sheet, tự động chuyển sang dữ liệu dự phòng:", err);
+                if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
+                    initTeachersDataPackage(STATIC_DATA_STORE);
+                }
+            });
+
+            // Kích hoạt nạp lời ngỏ động liên tục
             loadLiveWelcomeTextOnly();
 
             const currentUrl = window.location.href.toLowerCase();
