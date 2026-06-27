@@ -16,17 +16,17 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'Trang tính1', 
-            SHEET_RANGE: 'A1:I200', // Mở rộng vùng quét bắt đầu từ cột A
+            SHEET_RANGE: 'A1:I200', // Mở rộng vùng quét bắt đầu từ cột A để nhận dấu hiệu số 1
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
             GH_REPO: 'quanlyonthi24',  
-            GH_FILE_PATH: 'index.html', 
+            GH_FILE_PATH: 'index.html', // File đích muốn cập nhật trên GitHub
 
             // 3. Thông tin hiển thị mặc định của môn học
             SUBJECT_NAME: 'Trang chủ', 
 
-            // 4. Mật khẩu kích hoạt quyền Admin (Đã lược bỏ tính năng Admin)
+            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web (Đã lược bỏ tính năng Admin)
             ADMIN_PASSWORD: 'admin123' 
         };
     </script>
@@ -41,9 +41,9 @@
         }
 
         :root {
-            --primary-green: #1e4620; 
+            --primary-green: #1e4620; /* Màu xanh lá chủ đạo đồng bộ bài giảng */
             --primary-orange: #e67e22;
-            --main-red-brown: #782525; 
+            --main-red-brown: #782525; /* Mã màu nền Toán THPT lấy từ ảnh trang chủ */
         }
 
         body, html {
@@ -91,6 +91,7 @@
             display: block;
         }
 
+        /* Nút ba gạch ☰ mở menu di động (Ẩn mặc định trên PC) */
         .mobile-menu-nav-btn {
             display: none;
             font-size: 24px;
@@ -99,6 +100,7 @@
             padding: 10px;
         }
 
+        /* Khối chứa danh sách Menu hiển thị nằm ngang trên PC */
         .nav-menu {
             display: flex;
             list-style: none;
@@ -125,6 +127,7 @@
             cursor: pointer;
         }
 
+        /* Vết gạch chân màu đậm dưới mục đang chọn trên PC */
         .nav-item.active {
             font-weight: bold;
             background-color: #fff;
@@ -136,6 +139,7 @@
             background-color: #e2e8f0;
         }
 
+        /* KHỐI DROPDOWN THẢ XUỐNG KHI RE CHUỘT (PC) */
         .dropdown-content {
             display: none; 
             position: absolute;
@@ -165,12 +169,14 @@
             color: var(--primary-orange);
         }
 
+        /* Trên PC: Tự động mở menu con khi di chuột */
         @media (min-width: 769px) {
             .nav-item-wrap:hover .dropdown-content {
                 display: block;
             }
         }
 
+        /* Nút Close X ẩn mặc định trên PC */
         .mobile-close-nav-btn { display: none; }
 
         /* --- KHỐI TIÊU ĐỀ MÔN HỌC & TÌM KIẾM CÙNG DÒNG --- */
@@ -304,7 +310,7 @@
             display: block;
         }
 
-        /* GIẢM 50% ĐỘ DÀY ĐƯỜNG ĐEN DƯỚI VIDEO (32px -> 16px) */
+        /* ĐIỀU CHỈNH SIDEBAR ĐỂ GIẢM 50% ĐỘ DÀY VỆT ĐEN DƯỚI VIDEO (32px -> 16px) */
         .sidebar-column {
             background-color: #ffffff;
             border-left: 1px solid #dcdcdc;
@@ -441,35 +447,41 @@
             padding-left: 20px; 
         }
 
+        /* ========================================================
+            CẤU HÌNH THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
+           ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
             width: 100%;
             clear: both;
         }
          
+        /* Tiêu đề có gạch đứng, cỡ chữ bằng đúng cỡ chữ nút Đăng kí tư vấn (20px) */
         .courses-catalog-title {
             font-size: 20px; 
             font-weight: bold;
-            color: #1e4620; 
-            border-left: 5px solid #1e4620; 
+            color: #1e4620; /* Màu chữ xanh tương tự ảnh mẫu */
+            border-left: 5px solid #1e4620; /* Vạch đứng màu xanh lá */
             padding-left: 12px;
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
          
+        /* Chuyển sang bố cục cột đứng dọc (flex-direction: column) xếp chồng như ảnh mẫu */
         .courses-list {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
             padding: 0;
-            max-width: 320px; 
+            max-width: 320px; /* Đới giới hạn chiều rộng cột nút bấm mượt mà */
         }
          
+        /* Thiết kế nút bấm trạng thái bình thường (Không nền trắng, chữ xanh) */
         .course-link-item {
-            background-color: transparent; 
-            color: #1e4620; 
+            background-color: transparent; /* Xóa bỏ màu nền trắng thừa */
+            color: #1e4620; /* Chữ màu xanh lá đồng bộ hệ thống */
             font-size: 16px;
             font-weight: 600;
             padding: 12px 18px;
@@ -486,8 +498,8 @@
         }
          
         .course-link-item.selected-active {
-            background-color: var(--main-red-brown) !important; 
-            color: #ffffff !important; 
+            background-color: var(--main-red-brown) !important; /* Đổ màu nền đỏ nâu #782525 */
+            color: #ffffff !important; /* Chữ màu trắng nổi bật */
             font-weight: bold;
             box-shadow: 0 2px 6px rgba(120,37,37,0.3);
         }
@@ -498,20 +510,20 @@
             display: flex;
             flex-direction: row; 
             align-items: center;
-            justify-content: flex-start; 
+            justify-content: flex-start; /* Mặc định căn trái trên PC chuẩn file Toán 12 */
             gap: 30px;
             width: 100%;
         }
 
-        /* Nút đăng kí tư vấn chân trang thu nhỏ kích thước 80% */
+        /* Nút đăng kí tư vấn chân trang - Thu nhỏ kích thước và padding xuống đúng 80% giống Toán 12 */
         .btn-register {
-            background: linear-gradient(to bottom, #bfa043, #9e7f22); 
+            background: linear-gradient(to bottom, #bfa043, #9e7f22); /* Màu nền vàng đồng chuẩn ảnh mẫu */
             color: #fff;
-            padding: 11px 28px; 
-            border-radius: 20px; 
+            padding: 11px 28px; /* Giảm padding xuống 80% */
+            border-radius: 20px; /* Bo góc mềm mại */
             border: 1px solid #8c6e19;
             font-weight: bold;
-            font-size: 16px; 
+            font-size: 16px; /* Giảm kích thước chữ xuống còn 80% (từ 20px xuống 16px) */
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.15);
             text-transform: uppercase;
@@ -532,7 +544,7 @@
         .custom-footer-line {
             width: 100%;
             height: 3px;
-            background-color: #1e4620; 
+            background-color: #1e4620; /* Đường kẻ mỏng màu xanh lá ngăn cách */
             margin-bottom: 15px;
             margin-top: 30px;
         }
@@ -547,7 +559,7 @@
             color: #888; 
             font-size: 13.5px; 
             line-height: 1.6;
-            text-align: justify; 
+            text-align: justify; /* Cấu hình căn đều nội dung chữ 2 bên lề trái/phải */
             margin-bottom: 5px;
         }
 
@@ -637,9 +649,11 @@
             .main-container { grid-template-columns: 1fr; }
             .video-column { padding-bottom: 10px; background-color: #000; }
             
+            /* Mobile: Sidebar chiều cao tự động co dãn */
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
             
+            /* Trên thiết bị di động: Tự động chuyển sang căn giữa */
             .footer-action { 
                 flex-direction: column; 
                 align-items: center; 
@@ -653,6 +667,7 @@
             .course-link-item { width: 100%; }
         }
 
+        /* --- ĐOẠN CODE BỔ SUNG ĐỂ TÍNH NĂNG PHÓNG TO HOẠT ĐỘNG --- */
         .main-container.maximized-mode {
             grid-template-columns: 1fr !important;
         }
@@ -768,9 +783,9 @@
     </div>
 
     <script>
-        let GLOBAL_FULL_DATA = null; // Lưu trữ dữ liệu gốc từ Sheet để găm bài học mới
+        let GLOBAL_FULL_DATA = null; 
         let GROUPED_TEACHERS_DATA = {};
-        let NEW_LESSONS_LIST = []; // Lưu danh sách bài học có số 1 ở cột A
+        let NEW_LESSONS_LIST = []; 
 
         function openMobileMenu(e) {
             e.stopPropagation();
@@ -807,6 +822,7 @@
             return url.includes('youtube.com') || url.includes('youtu.be');
         }
 
+        // TÍNH NĂNG PHÓNG TO / THU NHỎ
         function toggleMaximizeVideo() {
             document.getElementById("main-layout-container").classList.toggle("maximized-mode");
         }
@@ -827,7 +843,7 @@
             renderNewLessonsButtons();
         }
 
-        // BIẾN ĐỔI: Vẽ 5 nút bài giảng mới thay vì tên Giáo viên
+        // TẠO 5 NÚT BÀI GIẢNG MỚI
         function renderNewLessonsButtons() {
             const container = document.getElementById('custom-teacher-links-list');
             container.innerHTML = '';
@@ -837,8 +853,8 @@
                 return;
             }
 
-            // Hiển thị tối đa 5 bài giảng mới nhất
-            const displayList = NEW_LESSONS_LIST.slice(0, 5);
+            // Hiển thị tối đa 5 bài giảng mới nhất xếp từ dưới lên hoặc theo thứ tự xuất hiện
+            const displayList = NEW_LESSONS_LIST.slice(-5).reverse();
 
             displayList.forEach((lesson, index) => {
                 const liItem = document.createElement('li');
@@ -846,27 +862,25 @@
                 liItem.innerText = `${index + 1}. [${lesson.subjectName}] ${lesson.lessonTitle}`;
                 
                 liItem.addEventListener('click', () => {
-                    // Loại bỏ trạng thái chọn cũ
                     document.querySelectorAll('.course-link-item').forEach(el => el.classList.remove('selected-active'));
                     liItem.classList.add('selected-active');
                     
-                    // Kích hoạt phát bài giảng mới này
+                    // Kích hoạt phát bài giảng mới này và găm xuống cuối mục lục
                     playNewLessonDirectly(lesson);
                 });
 
                 container.appendChild(liItem);
             });
 
-            // Mặc định ban đầu: Vẽ mục lục bài học gốc của hệ thống lên trước
+            // Mặc định nạp dữ liệu mục lục gốc lên trước
             const firstTeacher = Object.keys(GROUPED_TEACHERS_DATA)[0];
             if (firstTeacher) {
                 renderLessonsMenu(GROUPED_TEACHERS_DATA[firstTeacher]);
             }
         }
 
-        // XỬ LÝ CLICK: Phát video bài mới và găm cấu trúc phần học xuống cuối mục lục
+        // PHÁT VIDEO BÀI MỚI VÀ GĂM CẤU TRÚC PHẦN HỌC XUỐNG CUỐI MỤC LỤC
         function playNewLessonDirectly(targetLesson) {
-            // 1. Phát video hoặc gán link
             if (targetLesson.parts && targetLesson.parts.length > 0) {
                 const firstPart = targetLesson.parts[0];
                 if (isYouTubeLink(firstPart.linkUrl)) {
@@ -882,18 +896,18 @@
             }
             document.getElementById('subject-lesson-append').innerText = targetLesson.lessonTitle;
 
-            // 2. Vẽ lại mục lục gốc của Giáo viên hiện tại
+            // Nạp lại mục lục gốc của hệ thống lên trước
             const firstTeacher = Object.keys(GROUPED_TEACHERS_DATA)[0];
             if (firstTeacher) {
                 renderLessonsMenu(GROUPED_TEACHERS_DATA[firstTeacher]);
             }
 
-            // 3. GĂM THÊM: Tạo cấu trúc bài mới và đẩy xuống dưới cùng cột mục lục bên phải
+            // Tạo khối cấu trúc bài giảng mới găm thêm vào cuối cùng
             const menuContainer = document.getElementById('menu-container');
             
             const rowBlock = document.createElement('div');
             rowBlock.className = 'lesson-row-block';
-            rowBlock.style.borderTop = "3px dashed var(--primary-orange)"; // Đánh dấu bài mới găm thêm
+            rowBlock.style.borderTop = "3px dashed var(--primary-orange)"; 
             rowBlock.style.marginTop = "10px";
 
             const headerDiv = document.createElement('div');
@@ -919,7 +933,7 @@
 
             targetLesson.parts.forEach((part, pIdx) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = `menu-item ${pIdx === 0 ? 'active' : ''}`; // Active luôn phần đầu tiên đang phát
+                itemDiv.className = `menu-item ${pIdx === 0 ? 'active' : ''}`; 
                 itemDiv.setAttribute('data-parent-lesson', targetLesson.lessonTitle);
                 
                 const nameSpan = document.createElement('span');
@@ -940,6 +954,7 @@
                 dlBtn.addEventListener('click', (e) => e.stopPropagation());
                 itemDiv.appendChild(dlBtn);
 
+                // Tự động kích hoạt nút Play khi bấm vào bất kỳ vị trí nào trên dòng chữ
                 itemDiv.addEventListener('click', function(e) {
                     document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                     document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
@@ -962,7 +977,6 @@
             rowBlock.appendChild(partsContainer);
             menuContainer.appendChild(rowBlock);
 
-            // Tự động cuộn xuống dưới cùng để học sinh nhìn thấy bài mới găm vào
             rowBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
@@ -1098,7 +1112,7 @@
             const rows = data.table.rows;
             
             let subjectVal = CONFIG.SUBJECT_NAME;
-            NEW_LESSONS_LIST = []; // Reset danh sách bài mới
+            NEW_LESSONS_LIST = []; 
 
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
@@ -1106,7 +1120,7 @@
             }
 
             if (rows[1] && rows[1].c) {
-                subjectVal = getVal(rows[1].c, 1) || CONFIG.SUBJECT_NAME; // Cột B chứa tên môn học gốc   
+                subjectVal = getVal(rows[1].c, 1) || CONFIG.SUBJECT_NAME; 
             }
             
             let structuredData = {
@@ -1114,7 +1128,6 @@
                 byTeachers: {}
             };
 
-            // Biến tạm để hỗ trợ lọc gom nhóm bài mới độc lập
             let temporaryLessonsMap = {};
 
             for (let i = 1; i < rows.length; i++) {
@@ -1123,9 +1136,9 @@
 
                 if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
-                const checkNewMark = getVal(cols, 0); // Cột A chứa dấu hiệu số 1 bài mới
-                let subjectName  = getVal(cols, 1);
-                let teacherName  = getVal(cols, 2); 
+                const checkNewMark = getVal(cols, 0); // Nhận diện số 1 bài mới tại cột A
+                let subjectName   = getVal(cols, 1);
+                let teacherName   = getVal(cols, 2); 
                 const lessonTitle = getVal(cols, 3); 
                 const partTitle   = getVal(cols, 4); 
                 const linkUrl     = getVal(cols, 5); 
@@ -1138,7 +1151,6 @@
                     teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
                 }
 
-                // XỬ LÝ DỮ LIỆU GỐC TRANG CHỦ
                 if (!structuredData.byTeachers[teacherName]) {
                     structuredData.byTeachers[teacherName] = {
                         sidebarTitle: teacherName,
@@ -1169,7 +1181,7 @@
                     });
                 }
 
-                // LỌC BÀI MỚI (Cột A có giá trị là 1)
+                // LỌC BÀI GIẢNG MỚI (CỘT A CÓ GIÁ TRỊ LÀ 1)
                 if (checkNewMark === '1') {
                     const uniqueKey = teacherName + "_" + lessonTitle;
                     if (!temporaryLessonsMap[uniqueKey]) {
