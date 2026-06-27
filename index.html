@@ -16,7 +16,7 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'Trang tính1', 
-            SHEET_RANGE: 'A1:K200', // Mở rộng đến cột K để đọc ô dữ liệu K2
+            SHEET_RANGE: 'B1:I200', // Giữ nguyên khu vực lấy dữ liệu cũ
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
@@ -26,7 +26,7 @@
             // 3. Thông tin hiển thị mặc định của môn học
             SUBJECT_NAME: 'Trang chủ', 
 
-            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web (Đã lược bỏ tính năng Admin)
+            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web
             ADMIN_PASSWORD: 'admin123' 
         };
     </script>
@@ -310,20 +310,19 @@
             display: block;
         }
 
-        /* ĐIỀU CHỈNH SIDEBAR ĐỂ GIẢM 50% ĐỘ DÀY VỆT ĐEN DƯỚI VIDEO (32px -> 16px) */
         .sidebar-column {
             background-color: #ffffff;
             border-left: 1px solid #dcdcdc;
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: calc((1100px - 256px) * 9 / 16 + 16px); 
+            height: calc((1100px - 256px) * 9 / 16 + 32px); 
             transition: all 0.3s ease;
         }
 
         @media (max-width: 1100px) {
             .sidebar-column {
-                height: calc((100vw - 296px) * 9 / 16 + 16px);
+                height: calc((100vw - 296px) * 9 / 16 + 32px);
             }
         }
 
@@ -448,7 +447,7 @@
         }
 
         /* ========================================================
-           CẤU HÌNH GIAO DIỆN HỘP "LỜI NGỎ" ĐẸP CĂN GIỮA
+           CẤU HÌNH KHỐI "LỜI NGỎ" ĐẸP ĐƯỢC THAY THẾ CHUẨN XÁC
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -467,7 +466,7 @@
             letter-spacing: 0.5px;
         }
 
-        .welcome-card-box {
+        .welcome-message-card {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -476,39 +475,40 @@
             width: 100%;
         }
 
-        .welcome-text-container {
-            font-size: 15.5px;
-            color: #334155;
+        .welcome-message-text {
+            font-size: 18.5px; /* Tương đương kích thước cỡ chữ 14 văn bản Word chuẩn chỉnh */
+            color: #000000; /* Màu chữ đen đậm sắc nét */
+            font-weight: 500;
             line-height: 1.7;
-            text-align: center; /* Căn giữa nội dung văn bản lời ngỏ */
-            max-height: 75px; /* Giới hạn hiển thị 1 phần ban đầu */
+            text-align: justify; /* Cấu hình căn đều trọn vẹn cả hai bên lề trái và lề phải */
+            max-height: 157px; /* Giới hạn hiển thị đúng khoảng tầm 5 dòng văn bản ban đầu */
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
-        .welcome-text-container.expanded {
-            max-height: 2000px; /* Mở rộng toàn bộ nội dung */
+        .welcome-message-text.expanded {
+            max-height: 2000px; /* Mở rộng trượt hiển thị toàn bộ nội dung ô H2 */
         }
 
-        /* Hiệu ứng mờ nhẹ ở chân chữ khi bị thu gọn */
-        .welcome-text-container::after {
+        /* Tạo vết mờ nhẹ ở đáy chữ khi bị thu gọn */
+        .welcome-message-text::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 25px;
+            height: 35px;
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
             transition: opacity 0.3s;
             pointer-events: none;
         }
 
-        .welcome-text-container.expanded::after {
-            opacity: 0; /* Ẩn hiệu ứng mờ khi đã mở rộng */
+        .welcome-message-text.expanded::after {
+            opacity: 0;
         }
 
-        .welcome-toggle-btn {
+        .welcome-message-toggle-btn {
             display: block;
             margin: 15px auto 0 auto;
             background-color: transparent;
@@ -518,72 +518,52 @@
             font-weight: bold;
             cursor: pointer;
             outline: none;
-            transition: color 0.2s;
         }
 
-        .welcome-toggle-btn:hover {
+        .welcome-message-toggle-btn:hover {
             color: #d35400;
             text-decoration: underline;
         }
 
-        /* --- CẤU HÌNH KHỐI ĐIỀU HƯỚNG TƯ VẤN (CĂN TRÁI TRÊN PC, CĂN GIỮA TRÊN MOBILE) --- */
+        /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
+        #admin-panel { max-width: 1100px; margin: 0 auto 20px auto; padding: 15px; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; display: none; }
+        .admin-form-group { display: flex; flex-direction: column; gap: 10px; }
+        .admin-form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ffc107; border-radius: 6px; outline: none; font-size: 14px; background: #fff; }
+        .admin-btn-group { display: flex; gap: 15px; align-items: center; }
+        .btn-admin { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .btn-admin:hover { background: #218838; }
+        #update-status { font-weight: bold; font-size: 14px; }
+
         .footer-action {
-            margin: 40px 0 25px 0;
+            margin: 40px 0 15px 0;
             display: flex;
             flex-direction: row; 
             align-items: center;
-            justify-content: flex-start; /* Mặc định căn trái trên PC chuẩn file Toán 12 */
+            justify-content: flex-start;
             gap: 30px;
             width: 100%;
         }
 
-        /* Nút đăng kí tư vấn chân trang - Thu nhỏ kích thước và padding xuống đúng 80% giống Toán 12 */
+        /* Nút đăng kí tư vấn chân trang - Cỡ chữ gốc 20px quy chuẩn hệ thống */
         .btn-register {
-            background: linear-gradient(to bottom, #bfa043, #9e7f22); /* Màu nền vàng đồng chuẩn ảnh mẫu */
+            background: linear-gradient(to bottom, #cfa846, #9c7514);
             color: #fff;
-            padding: 11px 28px; /* Giảm padding xuống 80% */
-            border-radius: 20px; /* Bo góc mềm mại */
-            border: 1px solid #8c6e19;
+            padding: 14px 35px; 
+            border-radius: 25px;
+            border: 1px solid #85630f;
             font-weight: bold;
-            font-size: 16px; /* Giảm kích thước chữ xuống còn 80% (từ 20px xuống 16px) */
+            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
             cursor: pointer;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-transform: uppercase;
+            transform: scale(0.8);
+            transform-origin: left center; /* Giữ nút thẳng hàng lề lách bên trái nguyên bản */
         }
 
-        .btn-register:hover { opacity: 0.95; }
-        
-        .link-detail { 
-            color: #1e4620; 
-            font-weight: bold; 
-            text-decoration: none; 
-            font-size: 15px; 
-            text-transform: uppercase; 
-        } 
+        .btn-register:hover { opacity: 0.9; }
+        .link-detail { color: #1e4620; font-weight: bold; text-decoration: none; font-size: 16px; text-transform: uppercase; } 
         .link-detail:hover { text-decoration: underline; }
-
-        /* KHỐI NỘI DUNG CHÂN TRANG MỚI - ĐƯỜNG KẺ VÀ CHỮ CĂN ĐỀU 2 BÊN LỀ */
-        .custom-footer-line {
-            width: 100%;
-            height: 3px;
-            background-color: #1e4620; /* Đường kẻ mỏng màu xanh lá ngăn cách */
-            margin-bottom: 15px;
-            margin-top: 30px;
-        }
-
-        .copyright-container {
-            width: 100%;
-            padding: 0 5px;
-            margin-bottom: 20px;
-        }
-
-        .copyright { 
-            color: #888; 
-            font-size: 13.5px; 
-            line-height: 1.6;
-            text-align: justify; /* Cấu hình căn đều nội dung chữ 2 bên lề trái/phải */
-            margin-bottom: 5px;
-        }
+        .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
 
         /* ========================================================
             📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
@@ -670,24 +650,14 @@
 
             .main-container { grid-template-columns: 1fr; }
             .video-column { padding-bottom: 10px; background-color: #000; }
-            
-            /* Mobile: Sidebar chiều cao tự động co dãn */
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
-            
-            /* Trên thiết bị di động: Tự động chuyển sang căn giữa */
-            .footer-action { 
-                flex-direction: column; 
-                align-items: center; 
-                justify-content: center; 
-                gap: 15px; 
-                text-align: center; 
-            }
+            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
+            .copyright { text-align: center; }
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
         }
 
-        /* --- ĐOẠN CODE BỔ SUNG ĐỂ TÍNH NĂNG PHÓNG TO HOẠT ĐỘNG --- */
         .main-container.maximized-mode {
             grid-template-columns: 1fr !important;
         }
@@ -755,7 +725,7 @@
                 <span id="base-subject-text">ONTHI24</span>
             </div>
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Tìm kiếm...">
+                <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
             </div>
         </div>
 
@@ -782,11 +752,21 @@
 
         <div class="courses-catalog-box">
             <div class="courses-catalog-title">Lời ngỏ</div>
-            <div class="welcome-card-box">
-                <div class="welcome-text-container" id="welcome-text-content">
-                    Đang tải lời ngỏ từ hệ thống...
+            <div class="welcome-message-card">
+                <div class="welcome-message-text" id="welcome-message-content">
+                    Đang tải nội dung lời ngỏ từ hệ thống...
                 </div>
-                <button class="welcome-toggle-btn" id="welcome-expand-btn" onclick="toggleWelcomeText()" style="display: none;">Xem thêm ▾</button>
+                <button class="welcome-message-toggle-btn" id="welcome-message-expand-btn" onclick="toggleWelcomeMessageText()" style="display: none;">Xem thêm ▾</button>
+            </div>
+        </div>
+
+        <div id="admin-panel">
+            <div class="admin-form-group">
+                <input type="password" id="gh-token-input" placeholder="Nhập mã GitHub Token...">
+                <div class="admin-btn-group">
+                    <button class="btn-admin" id="btn-update-cloud" onclick="startAutoSyncToGitHub()">Cập nhật</button>
+                    <span id="update-status" style="color: blue;"></span>
+                </div>
             </div>
         </div>
 
@@ -797,16 +777,20 @@
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
 
-        <div class="custom-footer-line"></div>
-        <div class="copyright-container">
-            <div class="copyright">
-                Trang web này cung cấp bài giảng của thầy Nguyễn Ngọc Hải và tổng hợp, sắp xếp các bài giảng miễn phí từ YouTube của các thầy cô khác. Quý thầy cô có video được nhúng trên hệ thống nếu không đồng ý vui lòng gửi phản hồi về email: onthi24@gmail.com, ban quản trị ONTHI24 sẽ gỡ bỏ ngay lập tức.
-            </div>
-            <div class="copyright">© 2026 ONTHI24</div>
-        </div>
+        <hr style="border: none; border-top: 6px solid #1e4620; margin: 30px auto 20px auto; width: 100%; max-width: 1100px;">
+
+        <div class="copyright" style="text-align: left; margin: 0 auto 5px auto; width: 100%; max-width: 1100px; padding-left: 0;">Trang web này cung cấp bài giảng của thầy Nguyễn Ngọc Hải và tổng hợp, sắp xếp các bài giảng miễn phí từ YouTube của các thầy cô khác. Quý thầy cô có video được nhúng trên hệ thống nếu không đồng ý vui lòng gửi phản hồi về email: onthi24@gmail.com, ban quản trị ONTHI24 sẽ gỡ bỏ ngay lập tức.</div>
+        <div class="copyright" style="text-align: left; margin: 0 auto; width: 100%; max-width: 1100px; padding-left: 0;">© 2026 ONTHI24</div>
+
     </div>
 
     <script>
+        // ==========================================================
+        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
+        // ==========================================================
+        const STATIC_DATA_STORE = {"subjectTitle":"Trang chủ","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Giới thiệu Onthi24","colorCode":"","parts":[{"partTitle":"Video bài giảng","linkUrl":"https://youtu.be/fo8fJZcsIsk"},{"partTitle":"Tài liệu text","linkUrl":"https://onthi24.com/tailieu.html"}]},{"lessonTitle":"1. Toán THPT","colorCode":"","parts":[{"partTitle":"Toán 12","linkUrl":"https://onthi24.com/video/video-toan-12.html"},{"partTitle":"Toán 11","linkUrl":"https://onthi24.com/video/video-toan-11.html"},{"partTitle":"Toán 10","linkUrl":"https://onthi24.com/video/video-toan-10.html"}]},{"lessonTitle":"2. Toán THCS","colorCode":"","parts":[{"partTitle":"Toán 9","linkUrl":"https://onthi24.com/video/video-toan-9.html"},{"partTitle":"Toán 8","linkUrl":"https://onthi24.com/video/video-toan-8.html"},{"partTitle":"Toán 7","linkUrl":"https://onthi24.com/video/video-toan-7.html"},{"partTitle":"Toán 6","linkUrl":"https://onthi24.com/video/video-toan-6.html"}]},{"lessonTitle":"3. Vật Lí","colorCode":"","parts":[{"partTitle":"Vật Lí 12","linkUrl":"https://onthi24.com/video/video-vatli-12.html"},{"partTitle":"Vật Lí 11","linkUrl":"https://onthi24.com/video/video-vatli-11.html"},{"partTitle":"Vật Lí 10","linkUrl":"https://onthi24.com/video/video-vatli-10.html"}]},{"lessonTitle":"4. KHTN","colorCode":"","parts":[{"partTitle":"Vật Lí","linkUrl":"https://onthi24.com/video/khtn.html"},{"partTitle":"Hóa(đang cập nhật)","linkUrl":""},{"partTitle":"Sinh(đang cập nhật)","linkUrl":""}]},{"lessonTitle":"5. Du học","colorCode":"","parts":[{"partTitle":"Toán - Lí du học","linkUrl":"https://onthi24.com/video/video-du-hoc.html"},{"partTitle":"Toán cao cấp","linkUrl":"https://onthi24.com/video/video-du-hoc.html"}]}]}}};
+        // ==========================================================
+
         let GROUPED_TEACHERS_DATA = {};
         let CURRENT_TEACHER_NAME = "";
 
@@ -856,10 +840,10 @@
             if (player) player.src = targetSrc;
         }
 
-        // TÍNH NĂNG ĐÓNG / MỞ ĐOẠN VĂN BẢN LỜI NGỎ CĂN GIỮA
-        function toggleWelcomeText() {
-            const container = document.getElementById('welcome-text-content');
-            const btn = document.getElementById('welcome-expand-btn');
+        // ĐÓNG / MỞ KHỐI LỜI NGỎ MƯỢT MÀ
+        function toggleWelcomeMessageText() {
+            const container = document.getElementById('welcome-message-content');
+            const btn = document.getElementById('welcome-message-expand-btn');
             const isExpanded = container.classList.contains('expanded');
 
             if (isExpanded) {
@@ -872,10 +856,10 @@
             }
         }
 
-        // XỬ LÝ ĐƯA LỜI NGỎ LÊN GIAO DIỆN VÀ KIỂM TRA NÚT XEM THÊM
-        function renderWelcomeText(text) {
-            const container = document.getElementById('welcome-text-content');
-            const btn = document.getElementById('welcome-expand-btn');
+        // KIỂM TRA ĐỘ CAO VÀ HIỂN THỊ NÚT XEM THÊM THEO HÀNG CHỮ
+        function displayWelcomeMessageText(text) {
+            const container = document.getElementById('welcome-message-content');
+            const btn = document.getElementById('welcome-message-expand-btn');
             
             if (!text || text.trim() === "") {
                 container.innerText = "Chào mừng bạn đến với hệ thống bài giảng ONTHI24!";
@@ -885,20 +869,17 @@
 
             container.innerText = text;
 
-            // Đợi giao diện render xong để kiểm tra độ dài đoạn chữ
             setTimeout(() => {
-                if (container.scrollHeight > 75) {
-                    btn.style.display = "block"; // Chỉ hiện nút xem thêm nếu chữ dài vượt khung
+                if (container.scrollHeight > 157) {
+                    btn.style.display = "block"; // Chỉ xuất hiện nút nếu văn bản vượt quá 5 dòng
                 } else {
                     btn.style.display = "none";
                 }
             }, 100);
         }
 
-        function initTeachersDataPackage(dataPackage) {
+        function initTeachersDataPackage(data) {
             GROUPED_TEACHERS_DATA = {};
-            const data = dataPackage.structuredData;
-            
             if (data.byTeachers) {
                 GROUPED_TEACHERS_DATA = data.byTeachers;
                 document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
@@ -910,15 +891,7 @@
                 };
                 document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
             }
-            
-            // Hiển thị lời ngỏ lấy từ ô K2
-            renderWelcomeText(dataPackage.welcomeText);
-
-            // Mặc định nạp thẳng mục lục của giáo viên đầu tiên vào cột bên phải
-            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
-            if (teacherNames.length > 0) {
-                renderLessonsMenu(GROUPED_TEACHERS_DATA[teacherNames[0]]);
-            }
+            renderLessonsMenu(GROUPED_TEACHERS_DATA[Object.keys(GROUPED_TEACHERS_DATA)[0]]);
         }
 
         function renderLessonsMenu(teacherData) {
@@ -1020,7 +993,6 @@
                                 isFirstVideoLoaded = true;
                             }
                         } else {
-                            // Tự động kích hoạt click mở link của nút Play khi bấm vào bất kỳ vị trí nào trên dòng chữ
                             itemDiv.addEventListener('click', function(e) {
                                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                                 document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
@@ -1041,30 +1013,36 @@
                 }
                 menuContainer.appendChild(rowBlock);
             });
+        }
 
-            if (!isFirstVideoLoaded && teacherData.lessons.length > 0) {
-                document.getElementById('subject-lesson-append').innerText = teacherData.lessons[0].lessonTitle;
-                document.getElementById('current-lesson-title').innerText = "Chọn bài học ở mục lục";
-                updateVideoIframe('', false);
+        function checkAdminAuth(val) {
+            if (val.trim() === CONFIG.ADMIN_PASSWORD) {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('search-input').value = ''; 
+                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        // PHÂN TÁCH DỮ LIỆU TỪ SHEET: LẤY TRỌN VẸN CẤU TRÚC VÀ Ô K2 LỜI NGỎ
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
+            const rawCols = data.table.cols; 
             
-            let subjectVal = CONFIG.SUBJECT_NAME;
-            let welcomeTextVal = "";
+            let subjectVal = CONFIG.SUBJECT_NAME, targetPath = CONFIG.GH_FILE_PATH;
             
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
                 return cols[index].v.toString().trim();
             }
 
+            if (rawCols && rawCols.length >= 8) {
+                if (rawCols[7] && rawCols[7].label) {
+                    targetPath = rawCols[7].label.toString().trim();
+                }
+            }
+
             if (rows[1] && rows[1].c) {
                 subjectVal = getVal(rows[1].c, 0) || CONFIG.SUBJECT_NAME;    
-                welcomeTextVal = getVal(rows[1].c, 10); // Đọc nội dung cột K (chỉ số 10) tại hàng dữ liệu thứ 2 (K2)
             }
             
             let structuredData = {
@@ -1122,61 +1100,112 @@
                 }
             }
             
-            return {
-                structuredData: structuredData,
-                welcomeText: welcomeTextVal
-            };
+            return { data: structuredData, gitPath: targetPath };
         }
 
-        // ==========================================================
-        // CƠ CHẾ STALE-WHILE-REVALIDATE (TỰ ĐỘNG CHẠY NGẦM GOOGLE SHEET)
-        // ==========================================================
-        function fetchAndRefreshDataFromSheet() {
-            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
+        function startAutoSyncToGitHub() {
+            const token = document.getElementById('gh-token-input').value.trim();
+            const status = document.getElementById('update-status');
             
+            if(!token) return;
+            
+            status.innerText = "⏳";
+            status.style.color = "orange";
+
+            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
+
             fetch(SHEET_URL)
             .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
             .then(rep => {
-                const newDataParsed = parseGoogleSheetToPackage(rep);
-                const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
-                const oldDataString = localStorage.getItem(localKey);
-                const newDataString = JSON.stringify(newDataParsed);
-
-                if (oldDataString !== newDataString) {
-                    console.log("Tìm thấy cấu hình bài giảng hoặc lời ngỏ mới! Tự động cập nhật...");
-                    localStorage.setItem(localKey, newDataString);
-                    initTeachersDataPackage(newDataParsed);
-                } else {
-                    console.log("Dữ liệu trang chủ trùng khớp bộ nhớ đệm.");
-                }
+                const parsedResult = parseGoogleSheetToPackage(rep);
+                const ghPathFromSheet = parsedResult.gitPath; 
+                
+                const githubApiUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${ghPathFromSheet}`;
+                
+                return fetch(githubApiUrl, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                })
+                .then(res => {
+                    if (res.status === 401) throw new Error("Mã Token sai hoặc hết hạn!");
+                    if (!res.ok) throw new Error(`Không tìm thấy file [${ghPathFromSheet}] trên GitHub!`);
+                    return res.json();
+                })
+                .then(fileData => {
+                    const fileSha = fileData.sha; 
+                    const oldSourceBase64 = fileData.content;
+                    let oldHtmlText = decodeURIComponent(escape(atob(oldSourceBase64.replace(/\s/g, ''))));
+                    
+                    const jsonStringData = JSON.stringify(parsedResult.data);
+                    const regexReplace = /const STATIC_DATA_STORE = \{.*?\};|const STATIC_DATA_STORE = null;/;
+                    let newHtmlText = oldHtmlText.replace(regexReplace, `const STATIC_DATA_STORE = ${jsonStringData};`);
+                    
+                    const newContentBase64 = btoa(unescape(encodeURIComponent(newHtmlText)));
+                    
+                    return fetch(githubApiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            message: `⚡ Auto-Sync ${CONFIG.SUBJECT_NAME} Đa Khóa Học: ${ghPathFromSheet}`,
+                            content: newContentBase64,
+                            sha: fileSha
+                        })
+                    });
+                });
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Đồng bộ GitHub thất bại!");
+                return res.json();
+            })
+            .then(() => {
+                status.innerText = "✅ THÀNH CÔNG!";
+                status.style.color = "green";
+                document.getElementById('gh-token-input').value = ""; 
+                
+                setTimeout(() => {
+                    location.reload(); 
+                }, 1000);
             })
             .catch(err => {
-                console.error("Không thể lấy dữ liệu mới từ Google Sheet ngầm: ", err);
+                console.error(err);
+                status.innerText = "❌ Lỗi: " + err.message;
+                status.style.color = "red";
+            });
+        }
+
+        // TẢI DUY NHẤT VĂN BẢN LỜI NGỎ ĐỘNG TỪ Ô H2 GOOGLE SHEET MỖI KHI LOAD TRANG
+        function loadLiveWelcomeTextOnly() {
+            const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
+            fetch(SHEET_URL)
+            .then(res => res.text())
+            .then(rep => {
+                const data = JSON.parse(rep.substr(47).slice(0, -2));
+                const rows = data.table.rows;
+                // Ô H2 tương ứng với hàng chỉ số 1 (hàng 2), cột chỉ số 6 (cột H tính từ cột B)
+                if (rows[1] && rows[1].c && rows[1].c[6] && rows[1].c[6].v) {
+                    displayWelcomeMessageText(rows[1].c[6].v.toString().trim());
+                } else {
+                    displayWelcomeMessageText("Chào mừng bạn đến với hệ thống bài giảng ONTHI24!");
+                }
+            })
+            .catch(() => {
+                displayWelcomeMessageText("Chào mừng bạn đến với hệ thống bài giảng ONTHI24!");
             });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
-            const cachedDataString = localStorage.getItem(localKey);
-
-            // BƯỚC 1: TẢI NHANH MỤC LỤC VÀ LỜI NGỎ TỪ BỘ NHỚ ĐỆM LOCAL STORAGE
-            if (cachedDataString) {
-                try {
-                    const cachedData = JSON.parse(cachedDataString);
-                    initTeachersDataPackage(cachedData);
-                    console.log("Đã tải nhanh trang chủ từ bộ nhớ đệm trình duyệt.");
-                } catch (e) {
-                    localStorage.removeItem(localKey);
-                    document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
-                    document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
-                }
+            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
+                initTeachersDataPackage(STATIC_DATA_STORE);
             } else {
                 document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
-            // BƯỚC 2: CHẠY TIẾN TRÌNH TỰ ĐỘNG KHỞI CHẠY LẤY GOOGLE SHEET ĐỂ REVALIDATE
-            fetchAndRefreshDataFromSheet();
+            // Kích hoạt nạp lời ngỏ động
+            loadLiveWelcomeTextOnly();
 
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
