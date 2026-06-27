@@ -16,7 +16,7 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'Trang tính1', 
-            SHEET_RANGE: 'A1:I200', // Mở rộng vùng quét bắt đầu từ cột A để nhận dấu hiệu số 1
+            SHEET_RANGE: 'B1:I200', 
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
@@ -497,6 +497,7 @@
             color: var(--primary-orange);
         }
          
+        /* Khi click bấm chọn: Đổ nền màu đỏ nâu Toán THPT (#782525), chữ chuyển sang màu trắng */
         .course-link-item.selected-active {
             background-color: var(--main-red-brown) !important; /* Đổ màu nền đỏ nâu #782525 */
             color: #ffffff !important; /* Chữ màu trắng nổi bật */
@@ -761,7 +762,7 @@
         <div class="current-lesson-bottom-display" id="subject-lesson-append">ONTHI24 EDUCATION</div>
 
         <div class="courses-catalog-box">
-            <div class="courses-catalog-title">Bài giảng mới</div>
+            <div class="courses-catalog-title">Danh mục các khóa học</div>
             <ul class="courses-list" id="custom-teacher-links-list">
                 </ul>
         </div>
@@ -783,9 +784,8 @@
     </div>
 
     <script>
-        let GLOBAL_FULL_DATA = null; 
         let GROUPED_TEACHERS_DATA = {};
-        let NEW_LESSONS_LIST = []; 
+        let CURRENT_TEACHER_NAME = "";
 
         function openMobileMenu(e) {
             e.stopPropagation();
@@ -822,7 +822,6 @@
             return url.includes('youtube.com') || url.includes('youtu.be');
         }
 
-        // TÍNH NĂNG PHÓNG TO / THU NHỎ
         function toggleMaximizeVideo() {
             document.getElementById("main-layout-container").classList.toggle("maximized-mode");
         }
@@ -839,145 +838,43 @@
             if (data.byTeachers) {
                 GROUPED_TEACHERS_DATA = data.byTeachers;
                 document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
+            } else {
+                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
+                GROUPED_TEACHERS_DATA[tName] = {
+                    sidebarTitle: tName,
+                    lessons: data.lessons || []
+                };
+                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
             }
-            renderNewLessonsButtons();
+            renderCustomTeacherLinks();
         }
 
-        // TẠO 5 NÚT BÀI GIẢNG MỚI
-        function renderNewLessonsButtons() {
+        function renderCustomTeacherLinks() {
             const container = document.getElementById('custom-teacher-links-list');
             container.innerHTML = '';
 
-            if (NEW_LESSONS_LIST.length === 0) {
-                container.innerHTML = '<div style="font-size:14px;color:#888;">Chưa có bài giảng mới được đánh dấu.</div>';
-                return;
+            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
+            if (teacherNames.length === 0) return;
+
+            if (!CURRENT_TEACHER_NAME || !GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]) {
+                CURRENT_TEACHER_NAME = teacherNames[0];
             }
 
-            // Hiển thị tối đa 5 bài giảng mới nhất xếp từ dưới lên hoặc theo thứ tự xuất hiện
-            const displayList = NEW_LESSONS_LIST.slice(-5).reverse();
-
-            displayList.forEach((lesson, index) => {
+            teacherNames.forEach((name, index) => {
                 const liItem = document.createElement('li');
-                liItem.className = `course-link-item`;
-                liItem.innerText = `${index + 1}. [${lesson.subjectName}] ${lesson.lessonTitle}`;
+                liItem.className = `course-link-item ${name === CURRENT_TEACHER_NAME ? 'selected-active' : ''}`;
+                liItem.innerText = `${index + 1}. ${name}`;
                 
                 liItem.addEventListener('click', () => {
-                    document.querySelectorAll('.course-link-item').forEach(el => el.classList.remove('selected-active'));
-                    liItem.classList.add('selected-active');
-                    
-                    // Kích hoạt phát bài giảng mới này và găm xuống cuối mục lục
-                    playNewLessonDirectly(lesson);
+                    CURRENT_TEACHER_NAME = name;
+                    renderCustomTeacherLinks(); 
+                    renderLessonsMenu(GROUPED_TEACHERS_DATA[name]);
                 });
 
                 container.appendChild(liItem);
             });
 
-            // Mặc định nạp dữ liệu mục lục gốc lên trước
-            const firstTeacher = Object.keys(GROUPED_TEACHERS_DATA)[0];
-            if (firstTeacher) {
-                renderLessonsMenu(GROUPED_TEACHERS_DATA[firstTeacher]);
-            }
-        }
-
-        // PHÁT VIDEO BÀI MỚI VÀ GĂM CẤU TRÚC PHẦN HỌC XUỐNG CUỐI MỤC LỤC
-        function playNewLessonDirectly(targetLesson) {
-            if (targetLesson.parts && targetLesson.parts.length > 0) {
-                const firstPart = targetLesson.parts[0];
-                if (isYouTubeLink(firstPart.linkUrl)) {
-                    const videoId = extractYouTubeId(firstPart.linkUrl);
-                    updateVideoIframe(videoId, true);
-                } else if (firstPart.linkUrl) {
-                    window.open(firstPart.linkUrl, '_blank');
-                }
-                document.getElementById('current-lesson-title').innerText = firstPart.partTitle;
-            } else {
-                document.getElementById('current-lesson-title').innerText = "Chọn phần học ở mục lục";
-                updateVideoIframe('', false);
-            }
-            document.getElementById('subject-lesson-append').innerText = targetLesson.lessonTitle;
-
-            // Nạp lại mục lục gốc của hệ thống lên trước
-            const firstTeacher = Object.keys(GROUPED_TEACHERS_DATA)[0];
-            if (firstTeacher) {
-                renderLessonsMenu(GROUPED_TEACHERS_DATA[firstTeacher]);
-            }
-
-            // Tạo khối cấu trúc bài giảng mới găm thêm vào cuối cùng
-            const menuContainer = document.getElementById('menu-container');
-            
-            const rowBlock = document.createElement('div');
-            rowBlock.className = 'lesson-row-block';
-            rowBlock.style.borderTop = "3px dashed var(--primary-orange)"; 
-            rowBlock.style.marginTop = "10px";
-
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'menu-lesson-header has-child';
-            
-            const titleTextSpan = document.createElement('span');
-            titleTextSpan.innerHTML = `<strong style="color:var(--primary-orange)">[MỚI]</strong> ${targetLesson.lessonTitle}`;
-            headerDiv.appendChild(titleTextSpan);
-
-            const partsContainer = document.createElement('div');
-            partsContainer.className = 'lesson-parts-container';
-
-            headerDiv.addEventListener('click', function() {
-                const isCollapsed = this.classList.contains('collapsed');
-                if (isCollapsed) {
-                    this.classList.remove('collapsed');
-                    partsContainer.classList.remove('hidden');
-                } else {
-                    this.classList.add('collapsed');
-                    partsContainer.classList.add('hidden');
-                }
-            });
-
-            targetLesson.parts.forEach((part, pIdx) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = `menu-item ${pIdx === 0 ? 'active' : ''}`; 
-                itemDiv.setAttribute('data-parent-lesson', targetLesson.lessonTitle);
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'lesson-name';
-                nameSpan.innerText = part.partTitle;
-                itemDiv.appendChild(nameSpan);
-
-                const dlBtn = document.createElement('a');
-                dlBtn.className = 'btn-download-icon-only';
-                dlBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="2" y="4" width="20" height="16" rx="5" fill="#0076a3"/>
-                        <path d="M10 9v6l5-3z" fill="#ffffff"/>
-                    </svg>
-                `;
-                dlBtn.href = part.linkUrl;
-                dlBtn.target = '_blank';
-                dlBtn.addEventListener('click', (e) => e.stopPropagation());
-                itemDiv.appendChild(dlBtn);
-
-                // Tự động kích hoạt nút Play khi bấm vào bất kỳ vị trí nào trên dòng chữ
-                itemDiv.addEventListener('click', function(e) {
-                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                    document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
-                    itemDiv.classList.add('active');
-                    document.getElementById('current-lesson-title').innerText = part.partTitle;
-                    document.getElementById('subject-lesson-append').innerText = this.getAttribute('data-parent-lesson');
-                    
-                    if (isYouTubeLink(part.linkUrl)) {
-                        const vId = extractYouTubeId(part.linkUrl);
-                        updateVideoIframe(vId, true);
-                    } else if (!e.target.closest('.btn-download-icon-only')) {
-                        dlBtn.click();
-                    }
-                });
-
-                partsContainer.appendChild(itemDiv);
-            });
-
-            rowBlock.appendChild(headerDiv);
-            rowBlock.appendChild(partsContainer);
-            menuContainer.appendChild(rowBlock);
-
-            rowBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
         }
 
         function renderLessonsMenu(teacherData) {
@@ -1079,6 +976,7 @@
                                 isFirstVideoLoaded = true;
                             }
                         } else {
+                            // ĐÃ SỬA LỖI: Tự động kích hoạt click mở link của nút Play khi bấm vào bất kỳ vị trí nào trên dòng chữ
                             itemDiv.addEventListener('click', function(e) {
                                 document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
                                 document.querySelectorAll('.menu-lesson-header').forEach(h => h.classList.remove('active-flat'));
@@ -1112,15 +1010,14 @@
             const rows = data.table.rows;
             
             let subjectVal = CONFIG.SUBJECT_NAME;
-            NEW_LESSONS_LIST = []; 
-
+            
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
                 return cols[index].v.toString().trim();
             }
 
             if (rows[1] && rows[1].c) {
-                subjectVal = getVal(rows[1].c, 1) || CONFIG.SUBJECT_NAME; 
+                subjectVal = getVal(rows[1].c, 0) || CONFIG.SUBJECT_NAME;    
             }
             
             let structuredData = {
@@ -1128,21 +1025,17 @@
                 byTeachers: {}
             };
 
-            let temporaryLessonsMap = {};
-
             for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
                 if (!cols) continue;
 
                 if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
-                const checkNewMark = getVal(cols, 0); // Nhận diện số 1 bài mới tại cột A
-                let subjectName   = getVal(cols, 1);
-                let teacherName   = getVal(cols, 2); 
-                const lessonTitle = getVal(cols, 3); 
-                const partTitle   = getVal(cols, 4); 
-                const linkUrl     = getVal(cols, 5); 
-                let colorCode     = getVal(cols, 6); 
+                let teacherName = getVal(cols, 1); 
+                const lessonTitle = getVal(cols, 2); 
+                const partTitle   = getVal(cols, 3); 
+                const linkUrl     = getVal(cols, 4); 
+                let colorCode     = getVal(cols, 5); 
 
                 if (!lessonTitle) continue;
 
@@ -1180,25 +1073,6 @@
                         linkUrl: linkUrl
                     });
                 }
-
-                // LỌC BÀI GIẢNG MỚI (CỘT A CÓ GIÁ TRỊ LÀ 1)
-                if (checkNewMark === '1') {
-                    const uniqueKey = teacherName + "_" + lessonTitle;
-                    if (!temporaryLessonsMap[uniqueKey]) {
-                        temporaryLessonsMap[uniqueKey] = {
-                            lessonTitle: lessonTitle,
-                            subjectName: subjectName || CONFIG.SUBJECT_NAME,
-                            parts: []
-                        };
-                        NEW_LESSONS_LIST.push(temporaryLessonsMap[uniqueKey]);
-                    }
-                    if (partTitle && partTitle.trim() !== '') {
-                        temporaryLessonsMap[uniqueKey].parts.push({
-                            partTitle: partTitle,
-                            linkUrl: linkUrl
-                        });
-                    }
-                }
             }
             
             return structuredData;
@@ -1235,6 +1109,7 @@
             const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
             const cachedDataString = localStorage.getItem(localKey);
 
+            // BƯỚC 1: TẢI NHANH MỤC LỤC TỪ BỘ NHỚ ĐỆM LOCAL STORAGE
             if (cachedDataString) {
                 try {
                     const cachedData = JSON.parse(cachedDataString);
@@ -1250,6 +1125,7 @@
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
+            // BƯỚC 2: CHẠY TIẾN TRÌNH TỰ ĐỘNG KHỞI CHẠY LẤY GOOGLE SHEET ĐỂ REVALIDATE
             fetchAndRefreshDataFromSheet();
 
             const currentUrl = window.location.href.toLowerCase();
