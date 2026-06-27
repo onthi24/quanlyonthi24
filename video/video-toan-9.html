@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -26,7 +27,7 @@
             // 3. Thông tin hiển thị mặc định của môn học
             SUBJECT_NAME: 'Toán 9', 
 
-            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web
+            // 4. Mật khẩu kích hoạt quyền Admin trên giao diện web (Đã lược bỏ tính năng Admin)
             ADMIN_PASSWORD: 'admin123' 
         };
     </script>
@@ -310,19 +311,21 @@
             display: block;
         }
 
+        /* ĐIỀU CHỈNH CHIỀU CAO SIDEBAR ĐỂ GIẢM 50% ĐỘ DÀY ĐƯỜNG ĐEN */
         .sidebar-column {
             background-color: #ffffff;
             border-left: 1px solid #dcdcdc;
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: calc((1100px - 256px) * 9 / 16 + 32px); 
+            /* Thay đổi cộng 32px thành cộng 16px để khít khung hình, giảm đúng 50% vệt đen lộ ra */
+            height: calc((1100px - 256px) * 9 / 16 + 16px); 
             transition: all 0.3s ease;
         }
 
         @media (max-width: 1100px) {
             .sidebar-column {
-                height: calc((100vw - 296px) * 9 / 16 + 32px);
+                height: calc((100vw - 296px) * 9 / 16 + 16px);
             }
         }
 
@@ -504,43 +507,61 @@
             box-shadow: 0 2px 6px rgba(120,37,37,0.3);
         }
 
-        /* KHU VỰC QUẢN TRỊ ADMIN TUYỆT ĐỐI TỐI GIẢN */
-        #admin-panel { max-width: 1100px; margin: 0 auto 20px auto; padding: 15px; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; display: none; }
-        .admin-form-group { display: flex; flex-direction: column; gap: 10px; }
-        .admin-form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ffc107; border-radius: 6px; outline: none; font-size: 14px; background: #fff; }
-        .admin-btn-group { display: flex; gap: 15px; align-items: center; }
-        .btn-admin { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
-        .btn-admin:hover { background: #218838; }
-        #update-status { font-weight: bold; font-size: 14px; }
-
+        /* --- CẤU HÌNH KHỐI ĐIỀU HƯỚNG TƯ VẤN (CĂN TRÁI TRÊN PC, CĂN GIỮA TRÊN MOBILE) --- */
         .footer-action {
-            margin: 40px 0 15px 0;
+            margin: 40px 0 25px 0;
             display: flex;
             flex-direction: row; 
             align-items: center;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Mặc định căn trái trên PC theo ảnh mẫu */
             gap: 30px;
             width: 100%;
         }
 
-        /* Nút đăng kí tư vấn chân trang - Cỡ chữ gốc 20px quy chuẩn hệ thống */
+        /* Nút đăng kí tư vấn chân trang - Thu nhỏ kích thước và padding xuống 80% */
         .btn-register {
-            background: linear-gradient(to bottom, #cfa846, #9c7514);
+            background: linear-gradient(to bottom, #bfa043, #9e7f22); /* Màu nền vàng đồng chuẩn ảnh mẫu */
             color: #fff;
-            padding: 14px 35px; 
-            border-radius: 25px;
-            border: 1px solid #85630f;
+            padding: 11px 28px; /* Giảm padding xuống 80% */
+            border-radius: 20px; /* Bo góc mềm mại như ảnh */
+            border: 1px solid #8c6e19;
             font-weight: bold;
-            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
+            font-size: 16px; /* Giảm kích thước chữ xuống còn 80% (từ 20px xuống 16px) */
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
             text-transform: uppercase;
         }
 
-        .btn-register:hover { opacity: 0.9; }
-        .link-detail { color: #1e4620; font-weight: bold; text-decoration: none; font-size: 16px; text-transform: uppercase; } 
+        .btn-register:hover { opacity: 0.95; }
+        
+        .link-detail { 
+            color: #1e4620; 
+            font-weight: bold; 
+            text-decoration: none; 
+            font-size: 15px; 
+            text-transform: uppercase; 
+        } 
         .link-detail:hover { text-decoration: underline; }
-        .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
+
+        /* KHỐI NỘI DUNG CHÂN TRANG MỚI - ĐƯỜNG KẺ VÀ CHỮ CĂN ĐỀU 2 BÊN LỀ */
+        .custom-footer-line {
+            width: 100%;
+            height: 3px;
+            background-color: #1e4620; /* Đường kẻ mỏng màu xanh lá ngăn cách */
+            margin-bottom: 15px;
+        }
+
+        .copyright-container {
+            width: 100%;
+            padding: 0 5px;
+        }
+
+        .copyright { 
+            color: #888; 
+            font-size: 13.5px; 
+            line-height: 1.6;
+            text-align: justify; /* Cấu hình căn đều nội dung chữ 2 bên lề trái/phải */
+        }
 
         /* ========================================================
             📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
@@ -627,10 +648,19 @@
 
             .main-container { grid-template-columns: 1fr; }
             .video-column { padding-bottom: 10px; background-color: #000; }
+            
+            /* Mobile: Sidebar chiều cao tự động co dãn */
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
-            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
-            .copyright { text-align: center; }
+            
+            /* Trên thiết bị di động: Tự động chuyển sang căn giữa */
+            .footer-action { 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
+                gap: 15px; 
+                text-align: center; 
+            }
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
             .courses-list { width: 100%; max-width: 100%; }
@@ -644,8 +674,6 @@
         .main-container.maximized-mode .sidebar-column {
             display: none !important;
         }
-    </style>
-</head>
     </style>
 </head>
 <body>
@@ -707,7 +735,7 @@
                 <span id="base-subject-text">ONTHI24</span>
             </div>
             <div class="search-box">
-                <input type="text" id="search-input" oninput="checkAdminAuth(this.value)" placeholder="Tìm kiếm...">
+                <input type="text" id="search-input" placeholder="Tìm kiếm...">
             </div>
         </div>
 
@@ -738,32 +766,22 @@
                 </ul>
         </div>
 
-        <div id="admin-panel">
-            <div class="admin-form-group">
-                <input type="password" id="gh-token-input" placeholder="Nhập mã GitHub Token...">
-                <div class="admin-btn-group">
-                    <button class="btn-admin" id="btn-update-cloud" onclick="startAutoSyncToGitHub()">Cập nhật</button>
-                    <span id="update-status" style="color: blue;"></span>
-                </div>
-            </div>
-        </div>
-
         <div class="footer-action">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
                 <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
             </a>
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
-        <div class="copyright">© 2026 ONTHI24</div>
+
+        <div class="custom-footer-line"></div>
+        <div class="copyright-container">
+            <div class="copyright">
+                Trang web này cung cấp bài giảng của thầy Nguyễn Ngọc Hải và tổng hợp, sắp xếp các bài giảng miễn phí từ YouTube của các thầy cô khác. Quý thầy cô có video được nhúng trên hệ thống nếu không đồng ý vui lòng gửi phản hồi về email: onthi24@gmail.com, ban quản trị ONTHI24 sẽ gỡ bỏ ngay lập tức.
+            </div>
+        </div>
     </div>
 
     <script>
-        // ==========================================================
-        // KHU VỰC BỘ NHỚ ĐỆM ĐA KHÓA HỌC ĐÓNG GÓI SẴN
-        // ==========================================================
-        const STATIC_DATA_STORE = {"subjectTitle":"Toán 9","byTeachers":{"Thầy Nguyễn Ngọc Hải":{"sidebarTitle":"Thầy Nguyễn Ngọc Hải","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp bằng nhau","colorCode":"#b37d32","parts":[]},{"lessonTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","colorCode":"","parts":[{"partTitle":"Bài giảng","linkUrl":"https://www.youtube.com/watch?v=OlpgDktWGC8"},{"partTitle":"Bài tập","linkUrl":"https://drive.google.com/file/d/1ZX91OeULpEmEY6nka_T8nbd8imrJ8sZp/view"},{"partTitle":"Đáp án","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"},{"partTitle":"Đáp án 2","linkUrl":"https://drive.google.com/file/d/1KNxOPjeWzXDGabsZWWw2-vUslevwroqs/view"}]}]},"Thầy Nguyễn Phan Tiến":{"sidebarTitle":"Thầy Nguyễn Phan Tiến","lessons":[{"lessonTitle":"Chương 1. Mệnh đề và tập hợp","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Mệnh Đề, Mệnh Đề Chứa Biến","linkUrl":"https://www.youtube.com/watch?v=xtYqUS8_pZM&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tập Hợp và Các Phép Toán Trên Tập Hợp","linkUrl":"https://www.youtube.com/watch?v=a4p0uvdJTO8&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=2"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":""}]},{"lessonTitle":"Chương 2. Bất phương trình về hệ bất phương trình","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Bất Phương Trình và Hệ BPT Bậc Nhất Hai Ẩn","linkUrl":"https://www.youtube.com/watch?v=u0Oso1BelZc&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=4"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Bài Toán Thực Tế - Hệ Bất Phương Trình Bậc Nhất 2 Ẩn","linkUrl":"https://www.youtube.com/watch?v=HYoB63CYZ-I"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 3. Hệ thức lượng trong tam giác","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Giá Trị Lượng Giác của 1 Góc Bất Kì Từ 0 đến 180","linkUrl":"https://www.youtube.com/watch?v=jE8zCCSYaSs&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=3"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Hệ thức lượng trong tam giác","linkUrl":"https://www.youtube.com/watch?v=1yEbtgluNpE"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"}]},{"lessonTitle":"Chương 4. Véc tơ","colorCode":"#b37d32","parts":[{"partTitle":"Bài 1. Vecto và các khái niệm, định nghĩa","linkUrl":"https://www.youtube.com/watch?v=zXyDnOHwBf4&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=5"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 2. Tổng và Hiệu của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=RXRXmO44qAw&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=6"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 3. Tích Vecto Với 1 Số","linkUrl":"https://www.youtube.com/watch?v=kbTFOhLc5w0&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=7"},{"partTitle":"Bài tập (đang cập nhật)","linkUrl":"https://drive.google.com/file/d/11tdeYg-i07yEfkNzffTtUZppkzP2_uLn/view?usp=drive_link"},{"partTitle":"Bài 4. Tích Vô Hướng Của Hai Vecto","linkUrl":"https://www.youtube.com/watch?v=npNRm9lZG30&list=PLXmeri-X8nVxGI0dYuO5bsc7UnBM4ZzLP&index=8"}]}]}}};
-        // ==========================================================
-
         let GROUPED_TEACHERS_DATA = {};
         let CURRENT_TEACHER_NAME = "";
 
@@ -977,30 +995,15 @@
             }
         }
 
-        function checkAdminAuth(val) {
-            if (val.trim() === CONFIG.ADMIN_PASSWORD) {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('search-input').value = ''; 
-                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
-            const rawCols = data.table.cols; 
             
-            let subjectVal = CONFIG.SUBJECT_NAME, targetPath = CONFIG.GH_FILE_PATH;
+            let subjectVal = CONFIG.SUBJECT_NAME;
             
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
                 return cols[index].v.toString().trim();
-            }
-
-            if (rawCols && rawCols.length >= 8) {
-                if (rawCols[7] && rawCols[7].label) {
-                    targetPath = rawCols[7].label.toString().trim();
-                }
             }
 
             if (rows[1] && rows[1].c) {
@@ -1062,89 +1065,56 @@
                 }
             }
             
-            return { data: structuredData, gitPath: targetPath };
+            return structuredData;
         }
 
-        function startAutoSyncToGitHub() {
-            const token = document.getElementById('gh-token-input').value.trim();
-            const status = document.getElementById('update-status');
-            
-            if(!token) return;
-            
-            status.innerText = "⏳";
-            status.style.color = "orange";
-
+        // ==========================================================
+        // CƠ CHẾ STALE-WHILE-REVALIDATE (TỰ ĐỘNG CHẠY NGẦM GOOGLE SHEET)
+        // ==========================================================
+        function fetchAndRefreshDataFromSheet() {
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
-
+            
             fetch(SHEET_URL)
             .then(res => { if(!res.ok) throw new Error("Lỗi kết nối Sheet!"); return res.text(); })
             .then(rep => {
-                const parsedResult = parseGoogleSheetToPackage(rep);
-                const ghPathFromSheet = parsedResult.gitPath; 
-                
-                const githubApiUrl = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/${ghPathFromSheet}`;
-                
-                return fetch(githubApiUrl, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                })
-                .then(res => {
-                    if (res.status === 401) throw new Error("Mã Token sai hoặc hết hạn!");
-                    if (!res.ok) throw new Error(`Không tìm thấy file [${ghPathFromSheet}] trên GitHub!`);
-                    return res.json();
-                })
-                .then(fileData => {
-                    const fileSha = fileData.sha; 
-                    const oldSourceBase64 = fileData.content;
-                    let oldHtmlText = decodeURIComponent(escape(atob(oldSourceBase64.replace(/\s/g, ''))));
-                    
-                    const jsonStringData = JSON.stringify(parsedResult.data);
-                    const regexReplace = /const STATIC_DATA_STORE = \{.*?\};|const STATIC_DATA_STORE = null;/;
-                    let newHtmlText = oldHtmlText.replace(regexReplace, `const STATIC_DATA_STORE = ${jsonStringData};`);
-                    
-                    const newContentBase64 = btoa(unescape(encodeURIComponent(newHtmlText)));
-                    
-                    return fetch(githubApiUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/vnd.github.v3+json'
-                        },
-                        body: JSON.stringify({
-                            message: `⚡ Auto-Sync ${CONFIG.SUBJECT_NAME} Đa Khóa Học: ${ghPathFromSheet}`,
-                            content: newContentBase64,
-                            sha: fileSha
-                        })
-                    });
-                });
-            })
-            .then(res => {
-                if(!res.ok) throw new Error("Đồng bộ GitHub thất bại!");
-                return res.json();
-            })
-            .then(() => {
-                status.innerText = "✅ THÀNH CÔNG!";
-                status.style.color = "green";
-                document.getElementById('gh-token-input').value = ""; 
-                
-                setTimeout(() => {
-                    location.reload(); 
-                }, 1000);
+                const newDataParsed = parseGoogleSheetToPackage(rep);
+                const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
+                const oldDataString = localStorage.getItem(localKey);
+                const newDataString = JSON.stringify(newDataParsed);
+
+                if (oldDataString !== newDataString) {
+                    console.log("Tìm thấy bài giảng mới! Tiến hành tự động cập nhật giao diện...");
+                    localStorage.setItem(localKey, newDataString);
+                    initTeachersDataPackage(newDataParsed);
+                } else {
+                    console.log("Dữ liệu bài giảng đã trùng khớp với bộ nhớ đệm.");
+                }
             })
             .catch(err => {
-                console.error(err);
-                status.innerText = "❌ Lỗi: " + err.message;
-                status.style.color = "red";
+                console.error("Không thể kết nối lấy dữ liệu mới từ Google Sheet ngầm: ", err);
             });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
-                initTeachersDataPackage(STATIC_DATA_STORE);
+            const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
+            const cachedDataString = localStorage.getItem(localKey);
+
+            if (cachedDataString) {
+                try {
+                    const cachedData = JSON.parse(cachedDataString);
+                    initTeachersDataPackage(cachedData);
+                    console.log("Đã tải nhanh mục lục bài giảng từ bộ nhớ đệm trình duyệt.");
+                } catch (e) {
+                    localStorage.removeItem(localKey);
+                    document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
+                    document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
+                }
             } else {
                 document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
+
+            fetchAndRefreshDataFromSheet();
 
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
