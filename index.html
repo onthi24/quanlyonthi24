@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <base target="_blank">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao diện bài giảng ONTHI24</title>
+    <title>ONTHI24 - Hệ thống học trực tuyến</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
@@ -534,36 +533,54 @@
         .btn-admin:hover { background: #218838; }
         #update-status { font-weight: bold; font-size: 14px; }
 
+        /* ĐÃ ĐỔI: KHỐI ĐIỀU HƯỚNG TƯ VẤN CĂN TRÁI THEO HƯỚNG CỦA FILE VIDEO-TOAN-10(1) */
         .footer-action {
-            margin: 40px 0 15px 0;
+            margin: 40px 0 25px 0;
             display: flex;
             flex-direction: row; 
             align-items: center;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Căn trái trên PC */
             gap: 30px;
             width: 100%;
         }
 
-        /* Nút đăng kí tư vấn chân trang - Cỡ chữ gốc 20px quy chuẩn hệ thống */
+        /* ĐÃ ĐỔI: NÚT ĐĂNG KÍ TƯ VẤN THU NHỎ GỌN GÀNG THEO MẪU MỚI (GIẢM 80%) */
         .btn-register {
-            background: linear-gradient(to bottom, #cfa846, #9c7514);
+            background: linear-gradient(to bottom, #bfa043, #9e7f22); /* Màu vàng đồng chuẩn */
             color: #fff;
-            padding: 14px 35px; 
-            border-radius: 25px;
-            border: 1px solid #85630f;
+            padding: 11px 28px; /* Tối ưu padding gọn gàng */
+            border-radius: 20px; /* Bo góc mềm mại */
+            border: 1px solid #8c6e19;
             font-weight: bold;
-            font-size: 20px; /* Đảm bảo chuẩn kích thước ép mẫu */
+            font-size: 16px; /* Giảm cỡ chữ xuống 16px */
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
             text-transform: uppercase;
-            transform: scale(0.8);
-            transform-origin: left center; /* Giữ nút thẳng hàng lề lách bên trái nguyên bản */
         }
 
-        .btn-register:hover { opacity: 0.9; }
-        .link-detail { color: #1e4620; font-weight: bold; text-decoration: none; font-size: 16px; text-transform: uppercase; } 
+        .btn-register:hover { opacity: 0.95; }
+        .link-detail { color: #1e4620; font-weight: bold; text-decoration: none; font-size: 15px; text-transform: uppercase; } 
         .link-detail:hover { text-decoration: underline; }
-        .copyright { color: #999; font-size: 14px; margin-top: 15px; text-align: left;}
+
+        /* ĐÃ ĐỔI: ĐƯỜNG KẺ NGĂN CÁCH VÀ KHỐI CHÂN TRANG CĂN ĐỀU HAI BÊN */
+        .custom-footer-line {
+            width: 100%;
+            height: 3px;
+            background-color: #1e4620; /* Đường mỏng thanh lịch */
+            margin-bottom: 15px;
+        }
+
+        .copyright-container {
+            width: 100%;
+            padding: 0 5px;
+        }
+
+        .copyright { 
+            color: #888; 
+            font-size: 13.5px; 
+            line-height: 1.6;
+            text-align: justify; /* Căn đều sắc nét cả 2 bên lề trái/phải trên mọi thiết bị */
+        }
 
         /* ========================================================
             📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
@@ -652,8 +669,15 @@
             .video-column { padding-bottom: 10px; background-color: #000; }
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
-            .footer-action { flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; }
-            .copyright { text-align: center; }
+            
+            /* ĐÃ ĐỔI: TRÊN MOBILE TỰ ĐỘNG CHUYỂN KHỐI NÚT TƯ VẤN SANG CĂN GIỮA ĐỒNG BỘ */
+            .footer-action { 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
+                gap: 15px; 
+                text-align: center; 
+            }
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
         }
@@ -770,6 +794,7 @@
             </div>
         </div>
 
+        <!-- ĐÃ THAY THẾ: NÚT ĐĂNG KÍ TƯ VẤN KIỂU MỚI (CĂN TRÁI TRÊN PC, CĂN GIỮA TRÊN MOBILE) -->
         <div class="footer-action">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
                 <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
@@ -777,10 +802,13 @@
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
 
-        <hr style="border: none; border-top: 6px solid #1e4620; margin: 30px auto 20px auto; width: 100%; max-width: 1100px;">
-
-        <div class="copyright" style="text-align: left; margin: 0 auto 5px auto; width: 100%; max-width: 1100px; padding-left: 0;">Trang web này cung cấp bài giảng của thầy Nguyễn Ngọc Hải và tổng hợp, sắp xếp các bài giảng miễn phí từ YouTube của các thầy cô khác. Quý thầy cô có video được nhúng trên hệ thống nếu không đồng ý vui lòng gửi phản hồi về email: onthi24@gmail.com, ban quản trị ONTHI24 sẽ gỡ bỏ ngay lập tức.</div>
-        <div class="copyright" style="text-align: left; margin: 0 auto; width: 100%; max-width: 1100px; padding-left: 0;">© 2026 ONTHI24</div>
+        <!-- ĐÃ THAY THẾ: ĐƯỜNG KẺ NGĂN CÁCH MỎNG VÀ VĂN BẢN BẢN QUYỀN CĂN ĐỀU HAI BÊN -->
+        <div class="custom-footer-line"></div>
+        <div class="copyright-container">
+            <div class="copyright">
+                Trang web này cung cấp bài giảng của thầy Nguyễn Ngọc Hải và tổng hợp, sắp xếp các bài giảng miễn phí từ YouTube của các thầy cô khác. Quý thầy cô có video được nhúng trên hệ thống nếu không đồng ý vui lòng gửi phản hồi về email: onthi24@gmail.com, ban quản trị ONTHI24 sẽ gỡ bỏ ngay lập tức.
+            </div>
+        </div>
 
     </div>
 
@@ -840,7 +868,6 @@
             if (player) player.src = targetSrc;
         }
 
-        // ĐÓNG / MỞ KHỐI LỜI NGỎ MƯỢT MÀ
         function toggleWelcomeMessageText() {
             const container = document.getElementById('welcome-message-content');
             const btn = document.getElementById('welcome-message-expand-btn');
@@ -856,7 +883,6 @@
             }
         }
 
-        // KIỂM TRA ĐỘ CAO VÀ HIỂN THỊ NÚT XEM THÊM THEO HÀNG CHỮ
         function displayWelcomeMessageText(text) {
             const container = document.getElementById('welcome-message-content');
             const btn = document.getElementById('welcome-message-expand-btn');
@@ -871,7 +897,7 @@
 
             setTimeout(() => {
                 if (container.scrollHeight > 157) {
-                    btn.style.display = "block"; // Chỉ xuất hiện nút nếu văn bản vượt quá 5 dòng
+                    btn.style.display = "block";
                 } else {
                     btn.style.display = "none";
                 }
@@ -1176,7 +1202,6 @@
             });
         }
 
-        // TẢI DUY NHẤT VĂN BẢN LỜI NGỎ ĐỘNG TỪ Ô H2 GOOGLE SHEET MỖI KHI LOAD TRANG
         function loadLiveWelcomeTextOnly() {
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
             fetch(SHEET_URL)
@@ -1184,7 +1209,6 @@
             .then(rep => {
                 const data = JSON.parse(rep.substr(47).slice(0, -2));
                 const rows = data.table.rows;
-                // Ô H2 tương ứng với hàng chỉ số 1 (hàng 2), cột chỉ số 6 (cột H tính từ cột B)
                 if (rows[1] && rows[1].c && rows[1].c[6] && rows[1].c[6].v) {
                     displayWelcomeMessageText(rows[1].c[6].v.toString().trim());
                 } else {
@@ -1196,15 +1220,13 @@
             });
         }
 
-        // ĐÃ SỬA: TỰ ĐỘNG FETCH DỮ LIỆU BÀI GIẢNG REAL-TIME TỪ GOOGLE SHEET KHI LOAD TRANG
+        // TỰ ĐỘNG FETCH DỮ LIỆU BÀI GIẢNG REAL-TIME TỪ GOOGLE SHEET KHI LOAD TRANG
         window.addEventListener('DOMContentLoaded', () => {
-            // Tạo link kết nối Google Sheet có kèm cachebust chống lưu bộ nhớ đệm cũ
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}&cachebust=${new Date().getTime()}`;
             
             document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
             document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Đang tải danh sách bài giảng mới nhất...</div>`;
 
-            // Gọi dữ liệu trực tiếp từ Google Sheet để dựng mục lục bài giảng tự động
             fetch(SHEET_URL)
             .then(res => { if(!res.ok) throw new Error(); return res.text(); })
             .then(rep => {
@@ -1218,7 +1240,6 @@
                 }
             });
 
-            // Kích hoạt nạp lời ngỏ động liên tục
             loadLiveWelcomeTextOnly();
 
             const currentUrl = window.location.href.toLowerCase();
