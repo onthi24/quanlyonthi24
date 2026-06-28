@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -794,7 +795,6 @@
             </div>
         </div>
 
-        <!-- ĐÃ THAY THẾ: NÚT ĐĂNG KÍ TƯ VẤN KIỂU MỚI (CĂN TRÁI TRÊN PC, CĂN GIỮA TRÊN MOBILE) -->
         <div class="footer-action">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
                 <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
@@ -802,7 +802,6 @@
             <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
         </div>
 
-        <!-- ĐÃ THAY THẾ: ĐƯỜNG KẺ NGĂN CÁCH MỎNG VÀ VĂN BẢN BẢN QUYỀN CĂN ĐỀU HAI BÊN -->
         <div class="custom-footer-line"></div>
         <div class="copyright-container">
             <div class="copyright">
@@ -1220,28 +1219,85 @@
             });
         }
 
-        // TỰ ĐỘNG FETCH DỮ LIỆU BÀI GIẢNG REAL-TIME TỪ GOOGLE SHEET KHI LOAD TRANG
+        // TỰ ĐỘNG XỬ LÝ BỘ NHỚ ĐỆM ĐỘNG (LOCALSTORAGE) VÀ FETCH NGẦM REAL-TIME KHI LOAD TRANG
         window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
+            
+            // 1. Tạo các khóa định danh lưu trữ riêng biệt theo mã ID của từng Sheet khóa học
+            const CACHE_KEY_DATA = `onthi24_cache_data_${CONFIG.SHEET_ID}`;
+            const CACHE_KEY_WELCOME = `onthi24_cache_welcome_${CONFIG.SHEET_ID}`;
+            
+            // 2. Thử truy xuất dữ liệu lưu trong bộ nhớ đệm trình duyệt (LocalStorage) ra trước
+            const cachedData = localStorage.getItem(CACHE_KEY_DATA);
+            const cachedWelcome = localStorage.getItem(CACHE_KEY_WELCOME);
+            
+            let hasRenderedFromCache = false;
+
+            if (cachedData) {
+                try {
+                    // Từ lần truy cập thứ hai: Dựng ngay giao diện từ bộ nhớ đệm tạm thời (chỉ mất dưới 0.1 giây)
+                    const parsedCache = JSON.parse(cachedData);
+                    initTeachersDataPackage(parsedCache);
+                    hasRenderedFromCache = true;
+                    console.log("⚡ [Cache] Đã hiển thị mục lục bài giảng từ bộ nhớ tạm LocalStorage.");
+                } catch (e) {
+                    console.error("Lỗi đọc bộ nhớ đệm hỏng, thực hiện xóa bỏ khóa lưu trữ:", e);
+                    localStorage.removeItem(CACHE_KEY_DATA);
+                }
+            }
+
+            if (cachedWelcome) {
+                displayWelcomeMessageText(cachedWelcome);
+            } else {
+                loadLiveWelcomeTextOnly(); 
+            }
+
+            // Nếu là lần đầu tiên người dùng vào web (chưa có cache), hiển thị dòng thông báo chờ
+            if (!hasRenderedFromCache) {
+                document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Đang tải danh sách bài giảng mới nhất...</div>`;
+            }
+
+            // 3. Tiến hành gọi kết nối cập nhật từ Google Sheet ngầm (hoặc bắt buộc nếu chưa có bộ nhớ đệm)
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}&cachebust=${new Date().getTime()}`;
             
-            document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
-            document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Đang tải danh sách bài giảng mới nhất...</div>`;
-
             fetch(SHEET_URL)
-            .then(res => { if(!res.ok) throw new Error(); return res.text(); })
+            .then(res => { if(!res.ok) throw new Error("Không kết nối được Google Sheet"); return res.text(); })
             .then(rep => {
                 const parsedResult = parseGoogleSheetToPackage(rep);
-                initTeachersDataPackage(parsedResult.data);
+                const newDataString = JSON.stringify(parsedResult.data);
+                
+                // So sánh kiểm tra xem dữ liệu cập nhật từ Google Sheet có thay đổi gì so với bản cũ đang lưu không
+                if (newDataString !== cachedData) {
+                    // Vẽ lại toàn bộ giao diện bài giảng mới nhất cho học sinh
+                    initTeachersDataPackage(parsedResult.data);
+                    // Lưu đè bản cập nhật mới này vào bộ nhớ đệm cục bộ cho lần truy cập tiếp theo
+                    localStorage.setItem(CACHE_KEY_DATA, newDataString);
+                    console.log("🔄 [Update] Phát hiện thay đổi dữ liệu trên Sheet! Đã làm mới giao diện và bộ nhớ đệm.");
+                } else {
+                    console.log("✅ [Match] Dữ liệu trùng khớp với bộ nhớ đệm. Giữ nguyên giao diện hiện hành.");
+                }
+
+                // Cập nhật ngầm phần thông điệp Lời Ngỏ (Welcome Message) từ ô G2
+                const rawJson = JSON.parse(rep.substr(47).slice(0, -2));
+                const rows = rawJson.table.rows;
+                if (rows[1] && rows[1].c && rows[1].c[6] && rows[1].c[6].v) {
+                    const newWelcomeText = rows[1].c[6].v.toString().trim();
+                    if (newWelcomeText !== cachedWelcome) {
+                        displayWelcomeMessageText(newWelcomeText);
+                        localStorage.setItem(CACHE_KEY_WELCOME, newWelcomeText);
+                    }
+                }
             })
             .catch(err => {
-                console.error("Lỗi kết nối Google Sheet, tự động chuyển sang dữ liệu dự phòng:", err);
-                if (typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
+                console.error("Lỗi đồng bộ Google Sheet ngầm:", err);
+                // Trường hợp hy hữu: Mất mạng đột ngột + Trình duyệt chưa có sẵn cache -> Gọi kho tĩnh dự phòng tích hợp sẵn
+                if (!hasRenderedFromCache && typeof STATIC_DATA_STORE !== 'undefined' && STATIC_DATA_STORE) {
                     initTeachersDataPackage(STATIC_DATA_STORE);
+                    displayWelcomeMessageText("Chào mừng bạn đến với hệ thống bài giảng ONTHI24!");
                 }
             });
 
-            loadLiveWelcomeTextOnly();
-
+            // --- Xử lý trạng thái Active trên Menu điều hướng ---
             const currentUrl = window.location.href.toLowerCase();
             document.querySelectorAll('.nav-menu .nav-item').forEach(el => el.classList.remove('active'));
             
