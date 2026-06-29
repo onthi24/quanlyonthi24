@@ -16,7 +16,7 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'kho-toan', 
-            SHEET_RANGE: 'A1:I200', // ĐÃ CẬP NHẬT: Quét từ Cột A để lấy tên môn học
+            SHEET_RANGE: 'B1:I200', // ĐÃ CẬP NHẬT: Quét từ Cột B như cũ
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
@@ -448,7 +448,7 @@
         }
 
         /* ========================================================
-            CẤU HÌNH BỘ LỌC THÔNG MINH TỰ ĐỘNG BÓC TÁCH
+            CẤU HÌNH BỘ LỌC THÔNG MINH
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -742,7 +742,6 @@
 
         <div class="subject-header-container">
             <div class="subject-title">
-                <!-- ĐÃ CẬP NHẬT ID ĐỂ THAY ĐỔI ĐỘNG CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC -->
                 <span id="base-subject-text">Kho bài giảng</span>
             </div>
             <div class="search-box">
@@ -806,7 +805,7 @@
     </div>
 
     <script>
-        let GROUPED_DATA_PACKAGE = {}; // Đổi tên để quản lý theo cấu trúc Môn học -> Giáo viên mới
+        let GROUPED_DATA_PACKAGE = {}; 
         let CURRENT_SUBJECT_NAME = "";
         let CURRENT_TEACHER_NAME = "";
 
@@ -861,9 +860,6 @@
             buildDropdownFilters();
         }
 
-        // ========================================================
-        // ĐÃ CẢI TIẾN: ĐỔ DỮ LIỆU TRỰC TIẾP TỪ CỘT A VÀ CỘT B
-        // ========================================================
         function buildDropdownFilters() {
             const classSelect = document.getElementById('filter-class-select');
             if(!classSelect) return;
@@ -871,7 +867,7 @@
             const subjectsList = Object.keys(GROUPED_DATA_PACKAGE);
             if (subjectsList.length === 0) return;
 
-            // Sắp xếp Alphabet ngược (Ví dụ ưu tiên hiển thị Toán 12 -> Toán 11)
+            // Sắp xếp Alphabet ngược (Toán 12 -> Toán 11)
             subjectsList.sort((a, b) => b.localeCompare(a, 'vi', { numeric: true }));
 
             classSelect.innerHTML = '';
@@ -891,7 +887,7 @@
             
             CURRENT_SUBJECT_NAME = selectedSubject;
             
-            // ĐỔI ĐỘNG CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC (CỘT A)
+            // THAY THẾ CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC CHỌN (CỘT B TRÊN SHEET)
             document.getElementById('base-subject-text').innerText = selectedSubject;
 
             teacherSelect.innerHTML = '';
@@ -922,7 +918,6 @@
         }
 
         function renderLessonsMenu(lessonsList) {
-            // Hiển thị tên giáo viên ở mục lục đầu danh sách bên phải
             document.getElementById('sidebar-title').innerHTML = `<span>${CURRENT_TEACHER_NAME}</span>`;
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
@@ -1043,7 +1038,7 @@
         }
 
         // ========================================================
-        // ĐÃ CẢI TIẾN: ĐỌC TRỰC TIẾP CỘT A VÀ B, TỊNH TIẾN CHỈ SỐ CÁC CỘT SAU
+        // ĐÃ SỬA CHÍNH XÁC: ĐỌC DỮ LIỆU TỪ CỘT B (CHỈ SỐ 0) VÀ CỘT C (CHỈ SỐ 1)
         // ========================================================
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
@@ -1062,19 +1057,18 @@
 
                 if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
-                // ĐỌC TRỰC TIẾP KHÔNG CẦN CẮT CHUỖI
-                let subjectName = getVal(cols, 0); // Cột A: Tên môn học / Lớp
-                let teacherName = getVal(cols, 1); // Cột B: Tên giáo viên
-                const lessonTitle = getVal(cols, 2); // Cột C: Tiêu đề bài học lớn / Chương
-                const partTitle   = getVal(cols, 3); // Cột D: Tiêu đề phần nhỏ / Video
-                const linkUrl     = getVal(cols, 4); // Cột E: Link bài giảng / tài liệu
-                let colorCode     = getVal(cols, 5); // Cột F: Mã màu chữ
+                // QUÉT DỮ LIỆU BẮT ĐẦU TỪ MẢNG CỘT B (RANGE B1:I200)
+                let subjectName = getVal(cols, 0);   // Cột B trên Sheet: Tên môn học / Lớp
+                let teacherName = getVal(cols, 1);   // Cột C trên Sheet: Tên giáo viên
+                const lessonTitle = getVal(cols, 2); // Cột D trên Sheet: Bài học lớn / Chương
+                const partTitle   = getVal(cols, 3); // Cột E trên Sheet: Phần nhỏ / Video
+                const linkUrl     = getVal(cols, 4); // Cột F trên Sheet: Link bài giảng / tài liệu
+                let colorCode     = getVal(cols, 5); // Cột G trên Sheet: Mã màu sắc chữ
 
                 if (!subjectName) subjectName = CONFIG.SUBJECT_NAME;
                 if (!teacherName) teacherName = "Mục lục bài giảng";
                 if (!lessonTitle) continue;
 
-                // Khởi tạo cấu trúc phân cấp: Môn học -> Giáo viên
                 if (!structuredData[subjectName]) {
                     structuredData[subjectName] = {};
                 }
