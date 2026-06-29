@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -318,7 +317,6 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            /* Thay đổi cộng 32px thành cộng 16px để khít khung hình, giảm đúng 50% vệt đen lộ ra */
             height: calc((1100px - 256px) * 9 / 16 + 16px); 
             transition: all 0.3s ease;
         }
@@ -450,7 +448,7 @@
         }
 
         /* ========================================================
-            CẤU HÌNH THIẾT KẾ ĐA KHÓA HỌC THEO DẠNG CỘT DỌC ĐỘC LẬP
+            CẤU HÌNH BỘ LỌC THÔNG MINH (DROPDOWN FILTERS) - GIẢI PHÁP 2
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -458,75 +456,94 @@
             clear: both;
         }
          
-        /* Tiêu đề có gạch đứng, cỡ chữ bằng đúng cỡ chữ nút Đăng kí tư vấn (20px) */
         .courses-catalog-title {
             font-size: 20px; 
             font-weight: bold;
-            color: #1e4620; /* Màu chữ xanh tương tự ảnh mẫu */
-            border-left: 5px solid #1e4620; /* Vạch đứng màu xanh lá */
+            color: #1e4620; 
+            border-left: 5px solid #1e4620; 
             padding-left: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-         
-        /* Chuyển sang bố cục cột đứng dọc (flex-direction: column) xếp chồng như ảnh mẫu */
-        .courses-list {
-            list-style: none;
+
+        /* Khối chứa 2 ô chọn xếp hàng ngang siêu gọn */
+        .filter-selectors-container {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 0;
-            max-width: 320px; /* Đới giới hạn chiều rộng cột nút bấm mượt mà */
-        }
-         
-        /* Thiết kế nút bấm trạng thái bình thường (Không nền trắng, chữ xanh) */
-        .course-link-item {
-            background-color: transparent; /* Xóa bỏ màu nền trắng thừa */
-            color: #1e4620; /* Chữ màu xanh lá đồng bộ hệ thống */
-            font-size: 16px;
-            font-weight: 600;
-            padding: 12px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-            border: none;
-        }
-         
-        .course-link-item:hover {
-            background-color: #f1f5f9;
-            color: var(--primary-orange);
-        }
-         
-        /* Khi click bấm chọn: Đổ nền màu đỏ nâu Toán THPT (#782525), chữ chuyển sang màu trắng */
-        .course-link-item.selected-active {
-            background-color: var(--main-red-brown) !important; /* Đổ màu nền đỏ nâu #782525 */
-            color: #ffffff !important; /* Chữ màu trắng nổi bật */
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(120,37,37,0.3);
+            flex-direction: row;
+            gap: 15px;
+            max-width: 600px; /* Định giới hạn chiều rộng vừa vặn tầm nhìn */
+            width: 100%;
         }
 
-        /* --- CẤU HÌNH KHỐI ĐIỀU HƯỚNG TƯ VẤN (CĂN TRÁI TRÊN PC, CĂN GIỮA TRÊN MOBILE) --- */
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .filter-group label {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Thiết kế Custom Ô Select cao cấp theo tông màu đỏ nâu chủ đạo */
+        .custom-filter-select {
+            width: 100%;
+            padding: 11px 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background-color: var(--main-red-brown); /* Đổ màu đỏ nâu #782525 quý phái */
+            border: 1px solid #5e1c1c;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(120,37,37,0.2);
+            appearance: none; /* Ẩn mũi tên mặc định của trình duyệt */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 14px) center;
+            padding-right: 35px;
+        }
+
+        .custom-filter-select:hover {
+            opacity: 0.95;
+            box-shadow: 0 4px 8px rgba(120,37,37,0.3);
+        }
+
+        .custom-filter-select option {
+            background-color: #ffffff;
+            color: #333333;
+            font-weight: 500;
+        }
+
+        /* --- CẤU HÌNH KHỐI ĐIỀU HƯỚNG TƯ VẤN --- */
         .footer-action {
             margin: 40px 0 25px 0;
             display: flex;
             flex-direction: row; 
             align-items: center;
-            justify-content: flex-start; /* Mặc định căn trái trên PC theo ảnh mẫu */
+            justify-content: flex-start; 
             gap: 30px;
             width: 100%;
         }
 
-        /* Nút đăng kí tư vấn chân trang - Thu nhỏ kích thước và padding xuống 80% */
         .btn-register {
-            background: linear-gradient(to bottom, #bfa043, #9e7f22); /* Màu nền vàng đồng chuẩn ảnh mẫu */
+            background: linear-gradient(to bottom, #bfa043, #9e7f22); 
             color: #fff;
-            padding: 11px 28px; /* Giảm padding xuống 80% */
-            border-radius: 20px; /* Bo góc mềm mại như ảnh */
+            padding: 11px 28px; 
+            border-radius: 20px; 
             border: 1px solid #8c6e19;
             font-weight: bold;
-            font-size: 16px; /* Giảm kích thước chữ xuống còn 80% (từ 20px xuống 16px) */
+            font-size: 16px; 
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.15);
             text-transform: uppercase;
@@ -543,11 +560,10 @@
         } 
         .link-detail:hover { text-decoration: underline; }
 
-        /* KHỐI NỘI DUNG CHÂN TRANG MỚI - ĐƯỜNG KẺ VÀ CHỮ CĂN ĐỀU 2 BÊN LỀ */
         .custom-footer-line {
             width: 100%;
             height: 3px;
-            background-color: #1e4620; /* Đường kẻ mỏng màu xanh lá ngăn cách */
+            background-color: #1e4620; 
             margin-bottom: 15px;
         }
 
@@ -560,7 +576,7 @@
             color: #888; 
             font-size: 13.5px; 
             line-height: 1.6;
-            text-align: justify; /* Cấu hình căn đều nội dung chữ 2 bên lề trái/phải */
+            text-align: justify; 
         }
 
         /* ========================================================
@@ -649,11 +665,9 @@
             .main-container { grid-template-columns: 1fr; }
             .video-column { padding-bottom: 10px; background-color: #000; }
             
-            /* Mobile: Sidebar chiều cao tự động co dãn */
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
             
-            /* Trên thiết bị di động: Tự động chuyển sang căn giữa */
             .footer-action { 
                 flex-direction: column; 
                 align-items: center; 
@@ -663,11 +677,11 @@
             }
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
-            .courses-list { width: 100%; max-width: 100%; }
-            .course-link-item { width: 100%; }
+            
+            /* Mobile: Chuyển bộ lọc thành cột đứng dọc để vừa khít màn hình điện thoại */
+            .filter-selectors-container { flex-direction: column; max-width: 100%; gap: 12px; }
         }
 
-        /* --- ĐOẠN CODE BỔ SUNG ĐỂ TÍNH NĂNG PHÓNG TO HOẠT ĐỘNG --- */
         .main-container.maximized-mode {
             grid-template-columns: 1fr !important;
         }
@@ -761,9 +775,22 @@
         <div class="current-lesson-bottom-display" id="subject-lesson-append">ONTHI24 EDUCATION</div>
 
         <div class="courses-catalog-box">
-            <div class="courses-catalog-title">Danh mục các khóa học</div>
-            <ul class="courses-list" id="custom-teacher-links-list">
-                </ul>
+            <div class="courses-catalog-title">Tìm kiếm khóa học nhanh</div>
+            <div class="filter-selectors-container">
+                
+                <div class="filter-group">
+                    <label for="filter-class-select">1. Chọn Lớp Học</label>
+                    <select id="filter-class-select" class="custom-filter-select" onchange="handleClassFilterChange()">
+                        </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-teacher-select">2. Chọn Khóa Học / Giáo Viên</label>
+                    <select id="filter-teacher-select" class="custom-filter-select" onchange="handleTeacherFilterChange()">
+                        </select>
+                </div>
+
+            </div>
         </div>
 
         <div class="footer-action">
@@ -844,35 +871,98 @@
                 };
                 document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
             }
-            renderCustomTeacherLinks();
+            buildDropdownFilters();
         }
 
-        function renderCustomTeacherLinks() {
-            const container = document.getElementById('custom-teacher-links-list');
-            container.innerHTML = '';
+        // ========================================================
+        // LOGIC KHỞI TẠO VÀ XỬ LÝ BỘ LỌC CHUYÊN SÂU - GIẢI PHÁP 2
+        // ========================================================
+        function buildDropdownFilters() {
+            const classSelect = document.getElementById('filter-class-select');
+            if(!classSelect) return;
 
             const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
             if (teacherNames.length === 0) return;
 
-            if (!CURRENT_TEACHER_NAME || !GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]) {
-                CURRENT_TEACHER_NAME = teacherNames[0];
-            }
-
-            teacherNames.forEach((name, index) => {
-                const liItem = document.createElement('li');
-                liItem.className = `course-link-item ${name === CURRENT_TEACHER_NAME ? 'selected-active' : ''}`;
-                liItem.innerText = `${index + 1}. ${name}`;
-                
-                liItem.addEventListener('click', () => {
-                    CURRENT_TEACHER_NAME = name;
-                    renderCustomTeacherLinks(); 
-                    renderLessonsMenu(GROUPED_TEACHERS_DATA[name]);
-                });
-
-                container.appendChild(liItem);
+            // Bóc tách danh sách các lớp duy nhất (Ví dụ: "Toán 12", "Toán 11", "Toán 10")
+            let classesList = [];
+            teacherNames.forEach(name => {
+                let className = "Khóa học khác";
+                if(name.toLowerCase().includes("toán 12")) className = "Toán 12";
+                else if(name.toLowerCase().includes("toán 11")) className = "Toán 11";
+                else if(name.toLowerCase().includes("toán 10")) className = "Toán 10";
+                else {
+                    // Trích xuất tự động theo chuỗi số hoặc giữ nguyên cụm từ đầu
+                    const match = name.match(/(Toán\s+\d+)/i);
+                    if(match) className = match[1];
+                }
+                if(!classesList.includes(className)) {
+                    classesList.push(className);
+                }
             });
 
-            renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+            // Sắp xếp giảm dần lớp 12 -> 11 -> 10
+            classesList.sort((a,b) => b.localeCompare(a));
+
+            // Đổ dữ liệu vào Ô Chọn Lớp
+            classSelect.innerHTML = '';
+            classesList.forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls;
+                opt.innerText = cls;
+                classSelect.appendChild(opt);
+            });
+
+            // Kích hoạt nạp dữ liệu cho ô Giáo viên dựa theo lớp đầu tiên
+            handleClassFilterChange();
+        }
+
+        function handleClassFilterChange() {
+            const selectedClass = document.getElementById('filter-class-select').value;
+            const teacherSelect = document.getElementById('filter-teacher-select');
+            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
+
+            teacherSelect.innerHTML = '';
+
+            // Lọc ra các giáo viên thuộc lớp đang chọn
+            let filteredTeachers = teacherNames.filter(name => {
+                if(selectedClass === "Khóa học khác") {
+                    return !name.toLowerCase().includes("toán 12") && !name.toLowerCase().includes("toán 11") && !name.toLowerCase().includes("toán 10");
+                }
+                return name.toLowerCase().includes(selectedClass.toLowerCase());
+            });
+
+            // Đổ dữ liệu vào Ô Chọn Giáo viên
+            filteredTeachers.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                // Hiển thị tên rút gọn đẹp hơn (ví dụ bỏ chữ "Toán 12." chỉ giữ lại "Thầy Hải")
+                opt.innerText = name.replace(new RegExp(selectedClass + '\\.\\s*', 'i'), '').replace(new RegExp(selectedClass + '\\s*', 'i'), '');
+                teacherSelect.appendChild(opt);
+            });
+
+            // Nếu không có giáo viên nào khớp, lấy tạm tên giáo viên đầu tiên có trong tập dữ liệu
+            if(filteredTeachers.length === 0 && teacherNames.length > 0) {
+                const opt = document.createElement('option');
+                opt.value = teacherNames[0];
+                opt.innerText = teacherNames[0];
+                teacherSelect.appendChild(opt);
+                filteredTeachers.push(teacherNames[0]);
+            }
+
+            // Đồng bộ cập nhật bài giảng của giáo viên đầu tiên trong danh mục đã lọc
+            if(filteredTeachers.length > 0) {
+                CURRENT_TEACHER_NAME = filteredTeachers[0];
+                renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+            }
+        }
+
+        function handleTeacherFilterChange() {
+            const selectedTeacher = document.getElementById('filter-teacher-select').value;
+            if(selectedTeacher && GROUPED_TEACHERS_DATA[selectedTeacher]) {
+                CURRENT_TEACHER_NAME = selectedTeacher;
+                renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+            }
         }
 
         function renderLessonsMenu(teacherData) {
@@ -1068,9 +1158,6 @@
             return structuredData;
         }
 
-        // ==========================================================
-        // CƠ CHẾ STALE-WHILE-REVALIDATE (TỰ ĐỘNG CHẠY NGẦM GOOGLE SHEET)
-        // ==========================================================
         function fetchAndRefreshDataFromSheet() {
             const SHEET_URL = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CONFIG.SHEET_TITLE)}&range=${CONFIG.SHEET_RANGE}`;
             
