@@ -16,12 +16,12 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'kho-toan', 
-            SHEET_RANGE: 'B1:I200', 
+            SHEET_RANGE: 'A1:I200', // ĐÃ CẬP NHẬT: Quét từ Cột A để lấy tên môn học
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
             GH_REPO: 'quanlyonthi24',  
-            GH_FILE_PATH: 'video/kho-toan.html', // File đích muốn cập nhật trên GitHub
+            GH_FILE_PATH: 'video/kho-toan.html', 
 
             // 3. Thông tin hiển thị mặc định của môn học
             SUBJECT_NAME: 'Toán 12', 
@@ -448,7 +448,7 @@
         }
 
         /* ========================================================
-            CẤU HÌNH BỘ LỌC THÔNG MINH TỰ ĐỘNG BÓC TÁCH (GIẢI PHÁP 2)
+            CẤU HÌNH BỘ LỌC THÔNG MINH TỰ ĐỘNG BÓC TÁCH
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -496,7 +496,7 @@
             font-size: 15px;
             font-weight: 600;
             color: #fff;
-            background-color: var(--main-red-brown); /* Nền đỏ nâu thượng lưu */
+            background-color: var(--main-red-brown); 
             border: 1px solid #5e1c1c;
             border-radius: 6px;
             outline: none;
@@ -675,8 +675,6 @@
             }
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
-            
-            /* Mobile: Xếp dọc 2 bộ lọc */
             .filter-selectors-container { flex-direction: column; max-width: 100%; gap: 12px; }
         }
 
@@ -744,7 +742,8 @@
 
         <div class="subject-header-container">
             <div class="subject-title">
-                <span id="base-subject-text">ONTHI24</span>
+                <!-- ĐÃ CẬP NHẬT ID ĐỂ THAY ĐỔI ĐỘNG CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC -->
+                <span id="base-subject-text">Kho bài giảng</span>
             </div>
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Tìm kiếm...">
@@ -779,13 +778,13 @@
                 <div class="filter-group">
                     <label for="filter-class-select">1. Chọn Khóa Học (Lớp)</label>
                     <select id="filter-class-select" class="custom-filter-select" onchange="handleClassFilterChange()">
-                        </select>
+                    </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="filter-teacher-select">2. Chọn Chi Tiết / Giáo Viên</label>
                     <select id="filter-teacher-select" class="custom-filter-select" onchange="handleTeacherFilterChange()">
-                        </select>
+                    </select>
                 </div>
 
             </div>
@@ -807,7 +806,8 @@
     </div>
 
     <script>
-        let GROUPED_TEACHERS_DATA = {};
+        let GROUPED_DATA_PACKAGE = {}; // Đổi tên để quản lý theo cấu trúc Môn học -> Giáo viên mới
+        let CURRENT_SUBJECT_NAME = "";
         let CURRENT_TEACHER_NAME = "";
 
         function openMobileMenu(e) {
@@ -856,134 +856,85 @@
             if (player) player.src = targetSrc;
         }
 
-        function initTeachersDataPackage(data) {
-            GROUPED_TEACHERS_DATA = {};
-            if (data.byTeachers) {
-                GROUPED_TEACHERS_DATA = data.byTeachers;
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
-            } else {
-                const tName = data.sidebarTitle || "Mục lục bài bài giảng (Khoá nền tảng)";
-                GROUPED_TEACHERS_DATA[tName] = {
-                    sidebarTitle: tName,
-                    lessons: data.lessons || []
-                };
-                document.getElementById('base-subject-text').innerText = data.subjectTitle || CONFIG.SUBJECT_NAME;
-            }
+        function initDataPackage(data) {
+            GROUPED_DATA_PACKAGE = data || {};
             buildDropdownFilters();
         }
 
         // ========================================================
-        // LOGIC TỰ ĐỘNG TÁCH CHUỖI SỬ DỤNG DẤU CHẤM TRÊN GOOGLE SHEET
+        // ĐÃ CẢI TIẾN: ĐỔ DỮ LIỆU TRỰC TIẾP TỪ CỘT A VÀ CỘT B
         // ========================================================
         function buildDropdownFilters() {
             const classSelect = document.getElementById('filter-class-select');
             if(!classSelect) return;
 
-            const fullCourseNames = Object.keys(GROUPED_TEACHERS_DATA);
-            if (fullCourseNames.length === 0) return;
+            const subjectsList = Object.keys(GROUPED_DATA_PACKAGE);
+            if (subjectsList.length === 0) return;
 
-            let classesList = [];
+            // Sắp xếp Alphabet ngược (Ví dụ ưu tiên hiển thị Toán 12 -> Toán 11)
+            subjectsList.sort((a, b) => b.localeCompare(a, 'vi', { numeric: true }));
 
-            fullCourseNames.forEach(name => {
-                // Tách chuỗi theo dấu chấm đầu tiên để tìm tên Khóa/Môn học chính
-                const dotIndex = name.indexOf('.');
-                let prefixClassName = name.trim();
-
-                if (dotIndex !== -1) {
-                    prefixClassName = name.substring(0, dotIndex).trim();
-                }
-
-                if(prefixClassName !== "" && !classesList.includes(prefixClassName)) {
-                    classesList.push(prefixClassName);
-                }
-            });
-
-            // Sắp xếp Alphabet ngược (Ví dụ ưu tiên hiển thị Toán 12 -> Toán 11 -> Toán 10)
-            classesList.sort((a, b) => b.localeCompare(a, 'vi', { numeric: true }));
-
-            // Đổ dữ liệu sạch vào Ô Chọn Khóa Học 1
             classSelect.innerHTML = '';
-            classesList.forEach(cls => {
+            subjectsList.forEach(sub => {
                 const opt = document.createElement('option');
-                opt.value = cls;
-                opt.innerText = cls;
+                opt.value = sub;
+                opt.innerText = sub;
                 classSelect.appendChild(opt);
             });
 
-            // Gọi sự kiện cập nhật đồng bộ cho ô số 2
             handleClassFilterChange();
         }
 
         function handleClassFilterChange() {
-            const selectedClass = document.getElementById('filter-class-select').value;
+            const selectedSubject = document.getElementById('filter-class-select').value;
             const teacherSelect = document.getElementById('filter-teacher-select');
-            const fullCourseNames = Object.keys(GROUPED_TEACHERS_DATA);
+            
+            CURRENT_SUBJECT_NAME = selectedSubject;
+            
+            // ĐỔI ĐỘNG CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC (CỘT A)
+            document.getElementById('base-subject-text').innerText = selectedSubject;
 
             teacherSelect.innerHTML = '';
 
-            let filteredCourses = [];
+            if (!GROUPED_DATA_PACKAGE[selectedSubject]) return;
 
-            fullCourseNames.forEach(name => {
-                // Thử bóc tách tiền tố để so khớp tương thích với Ô số 1 đang chọn
-                const dotIndex = name.indexOf('.');
-                let prefixClassName = name.trim();
+            const teachersList = Object.keys(GROUPED_DATA_PACKAGE[selectedSubject]);
 
-                if (dotIndex !== -1) {
-                    prefixClassName = name.substring(0, dotIndex).trim();
-                }
-
-                if (prefixClassName === selectedClass) {
-                    // Trích xuất phần hậu tố sau dấu chấm làm Tên Giáo Viên (hoặc Chi tiết phụ)
-                    let suffixTeacherName = name.substring(dotIndex + 1).trim();
-                    
-                    // Nếu sau dấu chấm trống rỗng, dùng tạm toàn bộ tên khóa học gốc làm đại diện
-                    if (suffixTeacherName === "" || dotIndex === -1) {
-                        suffixTeacherName = name;
-                    }
-
-                    filteredCourses.push({
-                        fullName: name, // Key gốc để map ngược vào JSON bài giảng
-                        displayName: suffixTeacherName // Tên hiển thị rút gọn (Ví dụ: "Thầy Hải")
-                    });
-                }
-            });
-
-            // Đổ danh sách giáo viên/khóa học chi tiết vào Ô Chọn số 2
-            filteredCourses.forEach(item => {
+            teachersList.forEach(tName => {
                 const opt = document.createElement('option');
-                opt.value = item.fullName;
-                opt.innerText = item.displayName;
+                opt.value = tName;
+                opt.innerText = tName;
                 teacherSelect.appendChild(opt);
             });
 
-            // Tự động tải bài học của giáo viên đầu tiên trong danh mục vừa lọc
-            if(filteredCourses.length > 0) {
-                CURRENT_TEACHER_NAME = filteredCourses[0].fullName;
-                renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+            if(teachersList.length > 0) {
+                CURRENT_TEACHER_NAME = teachersList[0];
+                renderLessonsMenu(GROUPED_DATA_PACKAGE[CURRENT_SUBJECT_NAME][CURRENT_TEACHER_NAME]);
             }
         }
 
         function handleTeacherFilterChange() {
-            const selectedTeacherKey = document.getElementById('filter-teacher-select').value;
-            if(selectedTeacherKey && GROUPED_TEACHERS_DATA[selectedTeacherKey]) {
-                CURRENT_TEACHER_NAME = selectedTeacherKey;
-                renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
+            const selectedTeacher = document.getElementById('filter-teacher-select').value;
+            if(selectedTeacher && GROUPED_DATA_PACKAGE[CURRENT_SUBJECT_NAME][selectedTeacher]) {
+                CURRENT_TEACHER_NAME = selectedTeacher;
+                renderLessonsMenu(GROUPED_DATA_PACKAGE[CURRENT_SUBJECT_NAME][CURRENT_TEACHER_NAME]);
             }
         }
 
-        function renderLessonsMenu(teacherData) {
-            document.getElementById('sidebar-title').innerHTML = `<span>${teacherData.sidebarTitle}</span>`;
+        function renderLessonsMenu(lessonsList) {
+            // Hiển thị tên giáo viên ở mục lục đầu danh sách bên phải
+            document.getElementById('sidebar-title').innerHTML = `<span>${CURRENT_TEACHER_NAME}</span>`;
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
 
-            if (!teacherData.lessons || teacherData.lessons.length === 0) {
+            if (!lessonsList || lessonsList.length === 0) {
                 menuContainer.innerHTML = '<div class="loading-overlay">Chưa có bài học nào được thiết lập.</div>';
                 return;
             }
 
             let isFirstVideoLoaded = false;
 
-            teacherData.lessons.forEach((lesson) => {
+            lessonsList.forEach((lesson) => {
                 const rowBlock = document.createElement('div');
                 rowBlock.className = 'lesson-row-block';
 
@@ -1084,32 +1035,26 @@
                 menuContainer.appendChild(rowBlock);
             });
 
-            if (!isFirstVideoLoaded && teacherData.lessons.length > 0) {
-                document.getElementById('subject-lesson-append').innerText = teacherData.lessons[0].lessonTitle;
+            if (!isFirstVideoLoaded && lessonsList.length > 0) {
+                document.getElementById('subject-lesson-append').innerText = lessonsList[0].lessonTitle;
                 document.getElementById('current-lesson-title').innerText = "Chọn bài học ở mục lục";
                 updateVideoIframe('', false);
             }
         }
 
+        // ========================================================
+        // ĐÃ CẢI TIẾN: ĐỌC TRỰC TIẾP CỘT A VÀ B, TỊNH TIẾN CHỈ SỐ CÁC CỘT SAU
+        // ========================================================
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
             
-            let subjectVal = CONFIG.SUBJECT_NAME;
-            
+            let structuredData = {};
+
             function getVal(cols, index) {
                 if (!cols || index >= cols.length || !cols[index] || cols[index].v === null || cols[index].v === undefined) return '';
                 return cols[index].v.toString().trim();
             }
-
-            if (rows[1] && rows[1].c) {
-                subjectVal = getVal(rows[1].c, 0) || CONFIG.SUBJECT_NAME;    
-            }
-            
-            let structuredData = {
-                subjectTitle: subjectVal,
-                byTeachers: {}
-            };
 
             for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
@@ -1117,27 +1062,27 @@
 
                 if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
-                let teacherName = getVal(cols, 1); 
-                const lessonTitle = getVal(cols, 2); 
-                const partTitle   = getVal(cols, 3); 
-                const linkUrl     = getVal(cols, 4); 
-                let colorCode     = getVal(cols, 5); 
+                // ĐỌC TRỰC TIẾP KHÔNG CẦN CẮT CHUỖI
+                let subjectName = getVal(cols, 0); // Cột A: Tên môn học / Lớp
+                let teacherName = getVal(cols, 1); // Cột B: Tên giáo viên
+                const lessonTitle = getVal(cols, 2); // Cột C: Tiêu đề bài học lớn / Chương
+                const partTitle   = getVal(cols, 3); // Cột D: Tiêu đề phần nhỏ / Video
+                const linkUrl     = getVal(cols, 4); // Cột E: Link bài giảng / tài liệu
+                let colorCode     = getVal(cols, 5); // Cột F: Mã màu chữ
 
+                if (!subjectName) subjectName = CONFIG.SUBJECT_NAME;
+                if (!teacherName) teacherName = "Mục lục bài giảng";
                 if (!lessonTitle) continue;
 
-                if (!teacherName) {
-                    const keys = Object.keys(structuredData.byTeachers);
-                    teacherName = keys.length > 0 ? keys[keys.length - 1] : "Mục lục bài bài giảng (Khoá nền tảng)";
+                // Khởi tạo cấu trúc phân cấp: Môn học -> Giáo viên
+                if (!structuredData[subjectName]) {
+                    structuredData[subjectName] = {};
+                }
+                if (!structuredData[subjectName][teacherName]) {
+                    structuredData[subjectName][teacherName] = [];
                 }
 
-                if (!structuredData.byTeachers[teacherName]) {
-                    structuredData.byTeachers[teacherName] = {
-                        sidebarTitle: teacherName,
-                        lessons: []
-                    };
-                }
-
-                let teacherLessons = structuredData.byTeachers[teacherName].lessons;
+                let teacherLessons = structuredData[subjectName][teacherName];
                 let currentLessonObj = teacherLessons.find(l => l.lessonTitle === lessonTitle);
 
                 if (!currentLessonObj) {
@@ -1178,7 +1123,7 @@
                 if (oldDataString !== newDataString) {
                     console.log("Tìm thấy bài giảng mới! Tiến hành tự động cập nhật giao diện...");
                     localStorage.setItem(localKey, newDataString);
-                    initTeachersDataPackage(newDataParsed);
+                    initDataPackage(newDataParsed);
                 } else {
                     console.log("Dữ liệu bài giảng đã trùng khớp với bộ nhớ đệm.");
                 }
@@ -1195,15 +1140,13 @@
             if (cachedDataString) {
                 try {
                     const cachedData = JSON.parse(cachedDataString);
-                    initTeachersDataPackage(cachedData);
+                    initDataPackage(cachedData);
                     console.log("Đã tải nhanh mục lục bài giảng từ bộ nhớ đệm trình duyệt.");
                 } catch (e) {
                     localStorage.removeItem(localKey);
-                    document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                     document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
                 }
             } else {
-                document.getElementById('base-subject-text').innerText = CONFIG.SUBJECT_NAME;
                 document.getElementById('menu-container').innerHTML = `<div class="loading-overlay">Chờ dữ liệu...</div>`;
             }
 
