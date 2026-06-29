@@ -524,7 +524,7 @@
         }
 
         /* ========================================================
-           CẤU HÌNH KHỐI "GIỚI THIỆU KHÓA HỌC" CHUẨN XÁC
+           CẤU HÌNH KHỐI "GIỚI THIỆU KHÓA HỌC" CỐ ĐỊNH CHUẨN XÁC
            ======================================================== */
         .welcome-message-card {
             background-color: #ffffff;
@@ -585,7 +585,7 @@
             text-decoration: underline;
         }
 
-        /* CHÂN TRANG CĂN THANH LỊCH */
+        /* CHÂN TRANG */
         .custom-footer-line {
             width: 100%;
             height: 3px;
@@ -832,6 +832,9 @@
         let GROUPED_DATA_PACKAGE = {}; 
         let CURRENT_SUBJECT_NAME = "";
         let CURRENT_TEACHER_NAME = "";
+        
+        // BIẾN TOÀN CỤC LƯU TRỮ CỐ ĐỊNH NỘI DUNG Ô H2
+        let FIXED_WELCOME_TEXT = "";
 
         function openMobileMenu(e) {
             e.stopPropagation();
@@ -977,8 +980,8 @@
         function renderLessonsMenu(teacherObj) {
             document.getElementById('sidebar-title').innerHTML = `<span>${CURRENT_TEACHER_NAME}</span>`;
             
-            // CẬP NHẬT TEXT GIỚI THIỆU KHÓA HỌC TỪ H2
-            displayWelcomeMessageText(teacherObj.welcomeText || "");
+            // LUÔN HIỂN THỊ TEXT CỐ ĐỊNH TỪ Ô H2, KHÔNG ĐỔI KHI CHUYỂN KHÓA HỌC
+            displayWelcomeMessageText(FIXED_WELCOME_TEXT);
 
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
@@ -1111,6 +1114,14 @@
                 return cols[index].v.toString().trim();
             }
 
+            // LẤY CỐ ĐỊNH NỘI DUNG Ô H2 NGAY TỪ ĐẦU (Dòng 2 ô H tương ứng chỉ số hàng 1, cột 6)
+            if (rows[1] && rows[1].c) {
+                const possibleText = getVal(rows[1].c, 6);
+                if (possibleText) {
+                    FIXED_WELCOME_TEXT = possibleText;
+                }
+            }
+
             for (let i = 1; i < rows.length; i++) {
                 const cols = rows[i].c;
                 if (!cols) continue;
@@ -1124,7 +1135,6 @@
                 const partTitle   = getVal(cols, 3); // Cột E: Phần nhỏ / Video
                 const linkUrl     = getVal(cols, 4); // Cột F: Link bài giảng / tài liệu
                 let colorCode     = getVal(cols, 5); // Cột G: Mã màu sắc chữ
-                let welcomeText   = getVal(cols, 6); // Cột H: Dữ liệu Lời Ngỏ / Giới thiệu khóa học ở hàng 2 (H2)
 
                 if (!subjectName) subjectName = CONFIG.SUBJECT_NAME;
                 if (!teacherName) teacherName = "Mục lục bài giảng";
@@ -1135,14 +1145,8 @@
                 }
                 if (!structuredData[subjectName][teacherName]) {
                     structuredData[subjectName][teacherName] = {
-                        welcomeText: "",
                         lessons: []
                     };
-                }
-
-                // Gán welcomeText từ ô H2 (Dòng số 2 trên Sheet, tương ứng i=1 trong mảng lặp)
-                if (i === 1 && welcomeText) {
-                    structuredData[subjectName][teacherName].welcomeText = welcomeText;
                 }
 
                 let teacherLessons = structuredData[subjectName][teacherName].lessons;
@@ -1183,12 +1187,17 @@
                 const oldDataString = localStorage.getItem(localKey);
                 const newDataString = JSON.stringify(newDataParsed);
 
+                // Đồng bộ cả biến welcome cố định vào localStorage để lưu cache không bị trễ
+                localStorage.setItem(`cache_welcome_${CONFIG.GH_FILE_PATH}`, FIXED_WELCOME_TEXT);
+
                 if (oldDataString !== newDataString) {
                     console.log("Tìm thấy bài giảng mới! Tiến hành tự động cập nhật giao diện...");
                     localStorage.setItem(localKey, newDataString);
                     initDataPackage(newDataParsed);
                 } else {
                     console.log("Dữ liệu bài giảng đã trùng khớp với bộ nhớ đệm.");
+                    // Vẫn gọi hiển thị để tránh trễ hiển thị từ cache
+                    displayWelcomeMessageText(FIXED_WELCOME_TEXT);
                 }
             })
             .catch(err => {
@@ -1199,6 +1208,11 @@
         window.addEventListener('DOMContentLoaded', () => {
             const localKey = `cache_data_${CONFIG.GH_FILE_PATH}`;
             const cachedDataString = localStorage.getItem(localKey);
+            const cachedWelcome = localStorage.getItem(`cache_welcome_${CONFIG.GH_FILE_PATH}`);
+
+            if (cachedWelcome) {
+                FIXED_WELCOME_TEXT = cachedWelcome;
+            }
 
             if (cachedDataString) {
                 try {
