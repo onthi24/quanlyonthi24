@@ -16,7 +16,7 @@
             // 1. Cấu hình Google Sheet dữ liệu bài giảng
             SHEET_ID: '1XFORm6mMLuBim5ZhFPSppmMGaTlhFGgdnALMCLjDIZU', 
             SHEET_TITLE: 'kho-toan', 
-            SHEET_RANGE: 'B1:I200', // ĐÃ CẬP NHẬT: Quét từ Cột B như cũ
+            SHEET_RANGE: 'B1:I200', // Quét từ Cột B độc lập
 
             // 2. Cấu hình Tài khoản và Kho chứa trên GitHub
             GH_OWNER: 'onthi24',  
@@ -523,45 +523,74 @@
             font-weight: 500;
         }
 
-        /* --- CẤU HÌNH KHỐI ĐIỀU HƯỚNG TƯ VẤN --- */
-        .footer-action {
-            margin: 40px 0 25px 0;
-            display: flex;
-            flex-direction: row; 
-            align-items: center;
-            justify-content: flex-start; 
-            gap: 30px;
+        /* ========================================================
+           CẤU HÌNH KHỐI "GIỚI THIỆU KHÓA HỌC" CHUẨN XÁC
+           ======================================================== */
+        .welcome-message-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             width: 100%;
+            margin-top: 15px;
         }
 
-        .btn-register {
-            background: linear-gradient(to bottom, #bfa043, #9e7f22); 
-            color: #fff;
-            padding: 11px 28px; 
-            border-radius: 20px; 
-            border: 1px solid #8c6e19;
+        .welcome-message-text {
+            font-size: 17px; 
+            color: #000000; 
+            font-weight: 500;
+            line-height: 1.7;
+            text-align: justify; 
+            max-height: 157px; 
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .welcome-message-text.expanded {
+            max-height: 5000px; 
+        }
+
+        .welcome-message-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .welcome-message-text.expanded::after {
+            opacity: 0;
+        }
+
+        .welcome-message-toggle-btn {
+            display: block;
+            margin: 15px auto 0 auto;
+            background-color: transparent;
+            border: none;
+            color: var(--primary-orange);
+            font-size: 14.5px;
             font-weight: bold;
-            font-size: 16px; 
             cursor: pointer;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
-            text-transform: uppercase;
+            outline: none;
         }
 
-        .btn-register:hover { opacity: 0.95; }
-        
-        .link-detail { 
-            color: #1e4620; 
-            font-weight: bold; 
-            text-decoration: none; 
-            font-size: 15px; 
-            text-transform: uppercase; 
-        } 
-        .link-detail:hover { text-decoration: underline; }
+        .welcome-message-toggle-btn:hover {
+            color: #d35400;
+            text-decoration: underline;
+        }
 
+        /* CHÂN TRANG CĂN THANH LỊCH */
         .custom-footer-line {
             width: 100%;
             height: 3px;
             background-color: #1e4620; 
+            margin-top: 40px;
             margin-bottom: 15px;
         }
 
@@ -666,14 +695,6 @@
             .sidebar-column { border-left: none; border-top: 1px solid #dcdcdc; height: auto; max-height: 320px; }
             .current-lesson-bottom-display { margin-right: 0px; text-align: center; }
             
-            .footer-action { 
-                flex-direction: column; 
-                align-items: center; 
-                justify-content: center; 
-                gap: 15px; 
-                text-align: center; 
-            }
-             
             .courses-catalog-title { font-size: 20px; text-align: left; }
             .filter-selectors-container { flex-direction: column; max-width: 100%; gap: 12px; }
         }
@@ -789,11 +810,14 @@
             </div>
         </div>
 
-        <div class="footer-action">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdX0G3eI0fttdhqXR_YAexVfp2LlgFBJTWZUpS4gGjICfkZ_Q/viewform?usp=sharing" target="_blank" style="text-decoration: none;">
-                <button class="btn-register">ĐĂNG KÍ TƯ VẤN</button>
-            </a>
-            <a href="https://sites.google.com/view/namins2" target="_blank" class="link-detail">GIỚI THIỆU VỀ ONTHI24.COM</a>
+        <div class="courses-catalog-box">
+            <div class="courses-catalog-title">GIỚI THIỆU KHÓA HỌC</div>
+            <div class="welcome-message-card">
+                <div class="welcome-message-text" id="welcome-message-content">
+                    Đang tải thông tin giới thiệu khóa học...
+                </div>
+                <button class="welcome-message-toggle-btn" id="welcome-message-expand-btn" onclick="toggleWelcomeMessageText()" style="display: none;">Xem thêm ▾</button>
+            </div>
         </div>
 
         <div class="custom-footer-line"></div>
@@ -855,6 +879,42 @@
             if (player) player.src = targetSrc;
         }
 
+        function toggleWelcomeMessageText() {
+            const container = document.getElementById('welcome-message-content');
+            const btn = document.getElementById('welcome-message-expand-btn');
+            const isExpanded = container.classList.contains('expanded');
+
+            if (isExpanded) {
+                container.classList.remove('expanded');
+                btn.innerText = "Xem thêm ▾";
+                container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                container.classList.add('expanded');
+                btn.innerText = "Thu gọn ▴";
+            }
+        }
+
+        function displayWelcomeMessageText(text) {
+            const container = document.getElementById('welcome-message-content');
+            const btn = document.getElementById('welcome-message-expand-btn');
+            
+            if (!text || text.trim() === "") {
+                container.innerText = "Chưa có nội dung giới thiệu cho khóa học này.";
+                btn.style.display = "none";
+                return;
+            }
+
+            container.innerText = text;
+
+            setTimeout(() => {
+                if (container.scrollHeight > 157) {
+                    btn.style.display = "block";
+                } else {
+                    btn.style.display = "none";
+                }
+            }, 100);
+        }
+
         function initDataPackage(data) {
             GROUPED_DATA_PACKAGE = data || {};
             buildDropdownFilters();
@@ -867,7 +927,6 @@
             const subjectsList = Object.keys(GROUPED_DATA_PACKAGE);
             if (subjectsList.length === 0) return;
 
-            // Sắp xếp Alphabet ngược (Toán 12 -> Toán 11)
             subjectsList.sort((a, b) => b.localeCompare(a, 'vi', { numeric: true }));
 
             classSelect.innerHTML = '';
@@ -886,8 +945,6 @@
             const teacherSelect = document.getElementById('filter-teacher-select');
             
             CURRENT_SUBJECT_NAME = selectedSubject;
-            
-            // THAY THẾ CHỮ KHO BÀI GIẢNG THÀNH TÊN MÔN HỌC CHỌN (CỘT B TRÊN SHEET)
             document.getElementById('base-subject-text').innerText = selectedSubject;
 
             teacherSelect.innerHTML = '';
@@ -917,12 +974,18 @@
             }
         }
 
-        function renderLessonsMenu(lessonsList) {
+        function renderLessonsMenu(teacherObj) {
             document.getElementById('sidebar-title').innerHTML = `<span>${CURRENT_TEACHER_NAME}</span>`;
+            
+            // CẬP NHẬT TEXT GIỚI THIỆU KHÓA HỌC TỪ H2
+            displayWelcomeMessageText(teacherObj.welcomeText || "");
+
             const menuContainer = document.getElementById('menu-container');
             menuContainer.innerHTML = '';
 
-            if (!lessonsList || lessonsList.length === 0) {
+            const lessonsList = teacherObj.lessons || [];
+
+            if (lessonsList.length === 0) {
                 menuContainer.innerHTML = '<div class="loading-overlay">Chưa có bài học nào được thiết lập.</div>';
                 return;
             }
@@ -1037,9 +1100,6 @@
             }
         }
 
-        // ========================================================
-        // ĐÃ SỬA CHÍNH XÁC: ĐỌC DỮ LIỆU TỪ CỘT B (CHỈ SỐ 0) VÀ CỘT C (CHỈ SỐ 1)
-        // ========================================================
         function parseGoogleSheetToPackage(rawText) {
             const data = JSON.parse(rawText.substr(47).slice(0, -2));
             const rows = data.table.rows;
@@ -1057,13 +1117,14 @@
 
                 if (cols.every(cell => !cell || cell.v === null || cell.v === undefined)) continue;
 
-                // QUÉT DỮ LIỆU BẮT ĐẦU TỪ MẢNG CỘT B (RANGE B1:I200)
-                let subjectName = getVal(cols, 0);   // Cột B trên Sheet: Tên môn học / Lớp
-                let teacherName = getVal(cols, 1);   // Cột C trên Sheet: Tên giáo viên
-                const lessonTitle = getVal(cols, 2); // Cột D trên Sheet: Bài học lớn / Chương
-                const partTitle   = getVal(cols, 3); // Cột E trên Sheet: Phần nhỏ / Video
-                const linkUrl     = getVal(cols, 4); // Cột F trên Sheet: Link bài giảng / tài liệu
-                let colorCode     = getVal(cols, 5); // Cột G trên Sheet: Mã màu sắc chữ
+                // RANGE QUÉT B1:I200
+                let subjectName = getVal(cols, 0);   // Cột B: Tên môn học / Lớp
+                let teacherName = getVal(cols, 1);   // Cột C: Tên giáo viên
+                const lessonTitle = getVal(cols, 2); // Cột D: Bài học lớn / Chương
+                const partTitle   = getVal(cols, 3); // Cột E: Phần nhỏ / Video
+                const linkUrl     = getVal(cols, 4); // Cột F: Link bài giảng / tài liệu
+                let colorCode     = getVal(cols, 5); // Cột G: Mã màu sắc chữ
+                let welcomeText   = getVal(cols, 6); // Cột H: Dữ liệu Lời Ngỏ / Giới thiệu khóa học ở hàng 2 (H2)
 
                 if (!subjectName) subjectName = CONFIG.SUBJECT_NAME;
                 if (!teacherName) teacherName = "Mục lục bài giảng";
@@ -1073,10 +1134,18 @@
                     structuredData[subjectName] = {};
                 }
                 if (!structuredData[subjectName][teacherName]) {
-                    structuredData[subjectName][teacherName] = [];
+                    structuredData[subjectName][teacherName] = {
+                        welcomeText: "",
+                        lessons: []
+                    };
                 }
 
-                let teacherLessons = structuredData[subjectName][teacherName];
+                // Gán welcomeText từ ô H2 (Dòng số 2 trên Sheet, tương ứng i=1 trong mảng lặp)
+                if (i === 1 && welcomeText) {
+                    structuredData[subjectName][teacherName].welcomeText = welcomeText;
+                }
+
+                let teacherLessons = structuredData[subjectName][teacherName].lessons;
                 let currentLessonObj = teacherLessons.find(l => l.lessonTitle === lessonTitle);
 
                 if (!currentLessonObj) {
