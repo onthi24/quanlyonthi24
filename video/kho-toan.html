@@ -310,7 +310,7 @@
             display: block;
         }
 
-        /* ĐIỀU CHỈNH CHIỀU CAO SIDEBAR ĐỂ GIẢM 50% ĐỘ DÀY ĐƯỜNG ĐEN */
+        /* ĐIỀU CHỈNH CHIỀU CAO SIDEBAR */
         .sidebar-column {
             background-color: #ffffff;
             border-left: 1px solid #dcdcdc;
@@ -448,7 +448,7 @@
         }
 
         /* ========================================================
-            CẤU HÌNH BỘ LỌC THÔNG MINH (DROPDOWN FILTERS) - GIẢI PHÁP 2
+            CẤU HÌNH BỘ LỌC THÔNG MINH TỰ ĐỘNG BÓC TÁCH (GIẢI PHÁP 2)
            ======================================================== */
         .courses-catalog-box {
             margin-top: 30px;
@@ -467,12 +467,11 @@
             letter-spacing: 0.5px;
         }
 
-        /* Khối chứa 2 ô chọn xếp hàng ngang siêu gọn */
         .filter-selectors-container {
             display: flex;
             flex-direction: row;
             gap: 15px;
-            max-width: 600px; /* Định giới hạn chiều rộng vừa vặn tầm nhìn */
+            max-width: 630px; 
             width: 100%;
         }
 
@@ -491,21 +490,20 @@
             letter-spacing: 0.3px;
         }
 
-        /* Thiết kế Custom Ô Select cao cấp theo tông màu đỏ nâu chủ đạo */
         .custom-filter-select {
             width: 100%;
             padding: 11px 16px;
             font-size: 15px;
             font-weight: 600;
             color: #fff;
-            background-color: var(--main-red-brown); /* Đổ màu đỏ nâu #782525 quý phái */
+            background-color: var(--main-red-brown); /* Nền đỏ nâu thượng lưu */
             border: 1px solid #5e1c1c;
             border-radius: 6px;
             outline: none;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(120,37,37,0.2);
-            appearance: none; /* Ẩn mũi tên mặc định của trình duyệt */
+            appearance: none; 
             -webkit-appearance: none;
             -moz-appearance: none;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
@@ -580,7 +578,7 @@
         }
 
         /* ========================================================
-            📱 ĐIỀU CHỈNH GIAO DIỆN RESPONSIVE TRÊN MOBILE
+            📱 RESPONSIVE TRÊN MOBILE
            ======================================================== */
         @media (max-width: 768px) {
             .top-navbar {
@@ -678,7 +676,7 @@
              
             .courses-catalog-title { font-size: 20px; text-align: left; }
             
-            /* Mobile: Chuyển bộ lọc thành cột đứng dọc để vừa khít màn hình điện thoại */
+            /* Mobile: Xếp dọc 2 bộ lọc */
             .filter-selectors-container { flex-direction: column; max-width: 100%; gap: 12px; }
         }
 
@@ -779,13 +777,13 @@
             <div class="filter-selectors-container">
                 
                 <div class="filter-group">
-                    <label for="filter-class-select">1. Chọn Lớp Học</label>
+                    <label for="filter-class-select">1. Chọn Khóa Học (Lớp)</label>
                     <select id="filter-class-select" class="custom-filter-select" onchange="handleClassFilterChange()">
                         </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="filter-teacher-select">2. Chọn Khóa Học / Giáo Viên</label>
+                    <label for="filter-teacher-select">2. Chọn Chi Tiết / Giáo Viên</label>
                     <select id="filter-teacher-select" class="custom-filter-select" onchange="handleTeacherFilterChange()">
                         </select>
                 </div>
@@ -875,36 +873,35 @@
         }
 
         // ========================================================
-        // LOGIC KHỞI TẠO VÀ XỬ LÝ BỘ LỌC CHUYÊN SÂU - GIẢI PHÁP 2
+        // LOGIC TỰ ĐỘNG TÁCH CHUỖI SỬ DỤNG DẤU CHẤM TRÊN GOOGLE SHEET
         // ========================================================
         function buildDropdownFilters() {
             const classSelect = document.getElementById('filter-class-select');
             if(!classSelect) return;
 
-            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
-            if (teacherNames.length === 0) return;
+            const fullCourseNames = Object.keys(GROUPED_TEACHERS_DATA);
+            if (fullCourseNames.length === 0) return;
 
-            // Bóc tách danh sách các lớp duy nhất (Ví dụ: "Toán 12", "Toán 11", "Toán 10")
             let classesList = [];
-            teacherNames.forEach(name => {
-                let className = "Khóa học khác";
-                if(name.toLowerCase().includes("toán 12")) className = "Toán 12";
-                else if(name.toLowerCase().includes("toán 11")) className = "Toán 11";
-                else if(name.toLowerCase().includes("toán 10")) className = "Toán 10";
-                else {
-                    // Trích xuất tự động theo chuỗi số hoặc giữ nguyên cụm từ đầu
-                    const match = name.match(/(Toán\s+\d+)/i);
-                    if(match) className = match[1];
+
+            fullCourseNames.forEach(name => {
+                // Tách chuỗi theo dấu chấm đầu tiên để tìm tên Khóa/Môn học chính
+                const dotIndex = name.indexOf('.');
+                let prefixClassName = name.trim();
+
+                if (dotIndex !== -1) {
+                    prefixClassName = name.substring(0, dotIndex).trim();
                 }
-                if(!classesList.includes(className)) {
-                    classesList.push(className);
+
+                if(prefixClassName !== "" && !classesList.includes(prefixClassName)) {
+                    classesList.push(prefixClassName);
                 }
             });
 
-            // Sắp xếp giảm dần lớp 12 -> 11 -> 10
-            classesList.sort((a,b) => b.localeCompare(a));
+            // Sắp xếp Alphabet ngược (Ví dụ ưu tiên hiển thị Toán 12 -> Toán 11 -> Toán 10)
+            classesList.sort((a, b) => b.localeCompare(a, 'vi', { numeric: true }));
 
-            // Đổ dữ liệu vào Ô Chọn Lớp
+            // Đổ dữ liệu sạch vào Ô Chọn Khóa Học 1
             classSelect.innerHTML = '';
             classesList.forEach(cls => {
                 const opt = document.createElement('option');
@@ -913,54 +910,63 @@
                 classSelect.appendChild(opt);
             });
 
-            // Kích hoạt nạp dữ liệu cho ô Giáo viên dựa theo lớp đầu tiên
+            // Gọi sự kiện cập nhật đồng bộ cho ô số 2
             handleClassFilterChange();
         }
 
         function handleClassFilterChange() {
             const selectedClass = document.getElementById('filter-class-select').value;
             const teacherSelect = document.getElementById('filter-teacher-select');
-            const teacherNames = Object.keys(GROUPED_TEACHERS_DATA);
+            const fullCourseNames = Object.keys(GROUPED_TEACHERS_DATA);
 
             teacherSelect.innerHTML = '';
 
-            // Lọc ra các giáo viên thuộc lớp đang chọn
-            let filteredTeachers = teacherNames.filter(name => {
-                if(selectedClass === "Khóa học khác") {
-                    return !name.toLowerCase().includes("toán 12") && !name.toLowerCase().includes("toán 11") && !name.toLowerCase().includes("toán 10");
+            let filteredCourses = [];
+
+            fullCourseNames.forEach(name => {
+                // Thử bóc tách tiền tố để so khớp tương thích với Ô số 1 đang chọn
+                const dotIndex = name.indexOf('.');
+                let prefixClassName = name.trim();
+
+                if (dotIndex !== -1) {
+                    prefixClassName = name.substring(0, dotIndex).trim();
                 }
-                return name.toLowerCase().includes(selectedClass.toLowerCase());
+
+                if (prefixClassName === selectedClass) {
+                    // Trích xuất phần hậu tố sau dấu chấm làm Tên Giáo Viên (hoặc Chi tiết phụ)
+                    let suffixTeacherName = name.substring(dotIndex + 1).trim();
+                    
+                    // Nếu sau dấu chấm trống rỗng, dùng tạm toàn bộ tên khóa học gốc làm đại diện
+                    if (suffixTeacherName === "" || dotIndex === -1) {
+                        suffixTeacherName = name;
+                    }
+
+                    filteredCourses.push({
+                        fullName: name, // Key gốc để map ngược vào JSON bài giảng
+                        displayName: suffixTeacherName // Tên hiển thị rút gọn (Ví dụ: "Thầy Hải")
+                    });
+                }
             });
 
-            // Đổ dữ liệu vào Ô Chọn Giáo viên
-            filteredTeachers.forEach(name => {
+            // Đổ danh sách giáo viên/khóa học chi tiết vào Ô Chọn số 2
+            filteredCourses.forEach(item => {
                 const opt = document.createElement('option');
-                opt.value = name;
-                // Hiển thị tên rút gọn đẹp hơn (ví dụ bỏ chữ "Toán 12." chỉ giữ lại "Thầy Hải")
-                opt.innerText = name.replace(new RegExp(selectedClass + '\\.\\s*', 'i'), '').replace(new RegExp(selectedClass + '\\s*', 'i'), '');
+                opt.value = item.fullName;
+                opt.innerText = item.displayName;
                 teacherSelect.appendChild(opt);
             });
 
-            // Nếu không có giáo viên nào khớp, lấy tạm tên giáo viên đầu tiên có trong tập dữ liệu
-            if(filteredTeachers.length === 0 && teacherNames.length > 0) {
-                const opt = document.createElement('option');
-                opt.value = teacherNames[0];
-                opt.innerText = teacherNames[0];
-                teacherSelect.appendChild(opt);
-                filteredTeachers.push(teacherNames[0]);
-            }
-
-            // Đồng bộ cập nhật bài giảng của giáo viên đầu tiên trong danh mục đã lọc
-            if(filteredTeachers.length > 0) {
-                CURRENT_TEACHER_NAME = filteredTeachers[0];
+            // Tự động tải bài học của giáo viên đầu tiên trong danh mục vừa lọc
+            if(filteredCourses.length > 0) {
+                CURRENT_TEACHER_NAME = filteredCourses[0].fullName;
                 renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
             }
         }
 
         function handleTeacherFilterChange() {
-            const selectedTeacher = document.getElementById('filter-teacher-select').value;
-            if(selectedTeacher && GROUPED_TEACHERS_DATA[selectedTeacher]) {
-                CURRENT_TEACHER_NAME = selectedTeacher;
+            const selectedTeacherKey = document.getElementById('filter-teacher-select').value;
+            if(selectedTeacherKey && GROUPED_TEACHERS_DATA[selectedTeacherKey]) {
+                CURRENT_TEACHER_NAME = selectedTeacherKey;
                 renderLessonsMenu(GROUPED_TEACHERS_DATA[CURRENT_TEACHER_NAME]);
             }
         }
