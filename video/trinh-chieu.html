@@ -3,52 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trình Chiếu Bài Học: 你好!</title>
+    <title>Học Tiếng Trung: 1第一课_你好!</title>
     <style>
-        /* Tối ưu hóa giao diện nền và font chữ */
-        body {
+        /* Tối ưu hóa toàn màn hình, xóa bỏ các khoảng trắng thừa */
+        html, body {
             margin: 0;
             padding: 0;
-            background-color: #f4f6f9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Chống cuộn trang, giữ màn hình cố định chuyên nghiệp */
+            background-color: #1a1a1a; /* Nền tối phong cách rạp phim giúp tập trung vào slide */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* Khung container bao bọc toàn bộ màn hình */
+        .page-wrapper {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Khung chứa tiêu đề */
-        .header {
             width: 100%;
-            max-width: 960px;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
+            height: 100vh;
         }
 
-        .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin: 0 0 10px 0;
+        /* Thanh tiêu đề nhỏ gọn, tinh tế phía trên */
+        .top-bar {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
-        /* Khung container tỉ lệ 16:9 để chống tràn và tự co giãn (Responsive) */
-        .slide-container {
+        .top-bar h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: #e0e0e0;
+        }
+
+        .badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Khu vực trình chiếu Slide Full Màn Hình */
+        .slide-viewer {
+            flex: 1;
             position: relative;
-            width: 90%;
-            max-width: 960px;
-            padding-bottom: 56.25%; /* Tỉ lệ chuẩn 16:9 */
-            height: 0;
-            overflow: hidden;
-            background: #fff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            border: 1px solid #e1e4e8;
-            margin-bottom: 40px;
+            width: 100%;
+            height: 100%;
+            background-color: #111111;
         }
 
-        /* Định dạng khung iframe hiển thị slide mượt mà */
-        .slide-container iframe {
+        /* Cấu hình iframe chiếm trọn 100% không gian */
+        .slide-viewer iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -60,17 +76,20 @@
 </head>
 <body>
 
-    <div class="header">
-        <h1>Trình Chiếu: 1第一课_你好!</h1>
-    </div>
+    <div class="page-wrapper">
+        <div class="top-bar">
+            <h1>Bài Học: 1第一课_你好!</h1>
+            <span class="badge">Đang trình chiếu</span>
+        </div>
 
-    <div class="slide-container">
-        <iframe 
-            src="https://docs.google.com/presentation/d/18u9ZLnfbyrSvi9BN_6ukfZ0bcOCVGqTI/preview" 
-            allowfullscreen="true" 
-            mozallowfullscreen="true" 
-            webkitallowfullscreen="true">
-        </iframe>
+        <div class="slide-viewer">
+            <iframe 
+                src="https://docs.google.com/presentation/d/18u9ZLnfbyrSvi9BN_6ukfZ0bcOCVGqTI/embed?start=false&loop=false&delayms=3000" 
+                allowfullscreen="true" 
+                mozallowfullscreen="true" 
+                webkitallowfullscreen="true">
+            </iframe>
+        </div>
     </div>
 
 </body>
