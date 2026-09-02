@@ -5,134 +5,326 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Điểm Danh & Điểm Cộng</title>
   
-  <!-- Thư viện docx.js để tạo file Word và FileSaver để hỗ trợ tải file -->
+  <!-- FontAwesome & Thư viện xuất file docx -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-    body { background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-    
-    .page-title { text-align: center; color: #1e5631; font-size: 22px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    
-    .main-layout { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; }
-    
-    /* Cột trái: Form */
-    .left-col { flex: 0 0 380px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
-    .card-header { background-color: #1e5631; color: #fff; padding: 12px 16px; font-weight: 700; font-size: 14px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-    .form-iframe { width: 100%; height: 680px; border: none; }
+    :root {
+      --primary-color: #1e5631;
+      --primary-hover: #144d29;
+      --secondary-color: #f4f6f8;
+      --text-color: #333;
+      --border-color: #e0e0e0;
+    }
 
-    /* Cột phải: Bảng dữ liệu */
-    .right-col { flex: 1; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f8fafc;
+      color: var(--text-color);
+      padding: 20px;
+      font-size: 15px;
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    .header-title {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      font-size: 22px;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* Bố cục Grid 2 cột chuyên nghiệp */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 15px;
+    }
+
+    .form-iframe {
+      width: 100%;
+      height: 620px;
+      border: none;
+      display: block;
+    }
+
+    .data-card-content {
+      padding: 15px 20px 20px 20px;
+    }
+
+    /* Thanh lọc dữ liệu */
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+      background: var(--secondary-color);
+      padding: 12px;
+      border-radius: 8px;
+      align-items: center;
+    }
+
+    .search-box { flex: 1.5; min-width: 160px; position: relative; }
+    .search-box input {
+      width: 100%; padding: 8px 12px 8px 35px; border-radius: 6px;
+      border: 1px solid #cbd5e0; outline: none; font-size: 13px;
+    }
+    .search-box i {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;
+    }
+
+    .filter-select {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e0;
+      outline: none;
+      font-size: 13px;
+      background: white;
+    }
+
+    .date-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .date-filter-group input[type="date"] {
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e0;
+      outline: none;
+      font-size: 13px;
+      color: #333;
+      background: white;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-action {
+      border: none; padding: 8px 14px;
+      border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+      display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+      text-decoration: none;
+    }
+
+    .btn-refresh { background-color: #2563eb; color: white; }
+    .btn-refresh:hover { background-color: #1d4ed8; }
+
+    .btn-docx { background-color: var(--primary-color); color: white; }
+    .btn-docx:hover { background-color: var(--primary-hover); }
+
+    /* Bảng hiển thị responsive */
+    .table-responsive { 
+      overflow-x: auto; 
+      border-radius: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+    }
     
-    .status-tag { font-size: 12px; font-weight: normal; text-transform: none; }
-    .status-tag.success { color: #81c784; }
-    .status-tag.warning { color: #ffb74d; }
-
-    .filter-bar { background-color: #f4f6f8; padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #e0e0e0; }
-    .search-input { position: relative; flex: 1; min-width: 160px; }
-    .search-input input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; }
-    .search-input::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #888; }
+    table { width: 100%; border-collapse: collapse; background-color: white; }
+    thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
+    th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+    th { font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; text-align: center; }
     
-    .filter-bar select, .filter-bar input[type="date"] { padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; background: #fff; }
-    .filter-label { font-size: 13px; color: #555; }
+    td { font-size: 14px; line-height: 1.5; }
+    td.text-center { text-align: center; }
+    td.font-weight-bold { font-weight: 600; }
 
-    .btn-btn { padding: 7px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .btn-refresh { background: #2f65f6; color: #fff; }
-    .btn-refresh:hover { background: #1e50d8; }
-    .btn-docx { background: #1e5631; color: #fff; }
-    .btn-docx:hover { background: #144d29; }
+    tbody tr:nth-child(even) { background-color: #fbfbfb; }
+    tbody tr:hover { background-color: #f1f5f9; }
 
-    /* Bảng dữ liệu */
-    .table-responsive { overflow-x: auto; flex: 1; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-    th, td { padding: 10px 14px; border-bottom: 1px solid #eee; }
-    thead th { background-color: #1e5631; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 12px; }
-    tbody tr:hover { background-color: #f9fbf9; }
-    
-    .text-center { text-align: center; }
-    .text-bold { font-weight: bold; }
+    .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
 
-    .card-footer { padding: 12px 16px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #444; }
+    .summary-bar {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      padding: 8px 5px;
+    }
+
+    .sync-status {
+      font-size: 12px;
+      font-weight: 400;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     /* Nút ẩn Sheet truy cập F2 */
-    .secret-sheet-bar { max-width: 1400px; margin: 15px auto 0; text-align: right; display: none; padding-bottom: 20px; }
-    .btn-secret { background: #1e5631; color: #fff; padding: 10px 18px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-    .btn-secret:hover { background: #144d29; }
+    .secret-sheet-bar {
+      max-width: 1400px;
+      margin: 15px auto 0;
+      text-align: right;
+      display: none;
+      padding-bottom: 20px;
+    }
+
+    #access-link-btn {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.2s;
+    }
+
+    #access-link-btn:hover { background-color: var(--primary-hover); }
+
+    /* CSS RESPONSIVE CHO ĐIỆN THOẠI & MÁY TÍNH BẢNG */
+    @media (max-width: 992px) {
+      body { padding: 12px; }
+      .main-layout { grid-template-columns: 1fr; }
+      .form-iframe { height: 550px; }
+      .filter-section { flex-direction: column; align-items: stretch; gap: 10px; }
+      .search-box { width: 100%; }
+      .filter-select { width: 100%; }
+      .date-filter-group { justify-content: space-between; width: 100%; }
+      .date-filter-group input[type="date"] { flex: 1; margin-left: 5px; }
+      .btn-group { width: 100%; }
+      .btn-action { flex: 1; justify-content: center; padding: 10px; }
+      .summary-bar { flex-direction: column; gap: 6px; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="page-title">
-    🎓 QUẢN LÝ ĐIỂM DANH & ĐIỂM CỘNG
-  </div>
+  <div class="container">
+    <h2 class="header-title">
+      <i class="fa-solid fa-graduation-cap"></i> QUẢN LÝ ĐIỂM DANH & ĐIỂM CỘNG
+    </h2>
 
-  <div class="main-layout">
-    <!-- Cột trái: Google Form -->
-    <div class="left-col">
-      <div class="card-header">
-        📝 NHẬP DỮ LIỆU MỚI
-      </div>
-      <iframe class="form-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLSfTQCf0rWn3KXZDzFGTTwAX_jx5JQumMw7u7JqVblrzU9qNCw/viewform?embedded=true">Đang tải...</iframe>
-    </div>
-
-    <!-- Cột phải: Bảng Thống Kê -->
-    <div class="right-col">
-      <div class="card-header">
-        <span>📋 TỔNG HỢP ĐIỂM SINH VIÊN</span>
-        <span id="statusTag" class="status-tag warning">▲ Đang kết nối...</span>
-      </div>
-
-      <div class="filter-bar">
-        <div class="search-input">
-          <input type="text" id="searchTen" placeholder="Tìm theo tên..." oninput="filterAndRender()">
+    <div class="main-layout">
+      <!-- Cột trái: Form nhập liệu -->
+      <div class="card">
+        <div class="card-header">
+          <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
         </div>
-
-        <select id="selectLop" onchange="filterAndRender()">
-          <option value="">-- Tất cả lớp --</option>
-        </select>
-
-        <span class="filter-label">Từ:</span>
-        <input type="date" id="dateFrom" onchange="filterAndRender()">
-
-        <span class="filter-label">Đến:</span>
-        <input type="date" id="dateTo" onchange="filterAndRender()">
-
-        <button class="btn-btn btn-refresh" onclick="fetchLatestData()">🔄 Cập nhật</button>
-        <button class="btn-btn btn-docx" onclick="exportToDocx()">📄 Tải Báo Cáo (.docx)</button>
+        <iframe class="form-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLSfTQCf0rWn3KXZDzFGTTwAX_jx5JQumMw7u7JqVblrzU9qNCw/viewform?embedded=true">Đang tải form...</iframe>
       </div>
 
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th class="text-center" style="width: 50px;">STT</th>
-              <th>HỌ VÀ TÊN</th>
-              <th class="text-center" style="width: 100px;">LỚP</th>
-              <th class="text-center" style="width: 120px;">TỔNG ĐIỂM (+/-)</th>
-              <th class="text-center" style="width: 140px;">SỐ LẦN ĐIỂM DANH</th>
-              <th class="text-center" style="width: 160px;">LẦN CẬP NHẬT CUỐI</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr>
-              <td colspan="6" class="text-center" style="padding: 30px; color: #777;">Đang kiểm tra dữ liệu...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- Cột phải: Bảng thống kê -->
+      <div class="card">
+        <div class="card-header">
+          <span><i class="fa-solid fa-table-list"></i> TỔNG HỢP ĐIỂM SINH VIÊN</span>
+          <span id="sync-indicator" class="sync-status"></span>
+        </div>
+        
+        <div class="data-card-content">
+          <div class="filter-section">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="searchTen" placeholder="Tìm theo tên..." oninput="filterAndRender()">
+            </div>
 
-      <div class="card-footer">
-        <span id="totalStudents">Tổng số: 0 sinh viên</span>
-        <span id="totalScores">Tổng điểm cộng lớp: 0</span>
+            <select id="selectLop" class="filter-select" onchange="filterAndRender()">
+              <option value="">-- Tất cả lớp --</option>
+            </select>
+
+            <div class="date-filter-group">
+              <span>Từ:</span>
+              <input type="date" id="dateFrom" onchange="filterAndRender()">
+            </div>
+            
+            <div class="date-filter-group">
+              <span>Đến:</span>
+              <input type="date" id="dateTo" onchange="filterAndRender()">
+            </div>
+
+            <div class="btn-group">
+              <button class="btn-action btn-refresh" onclick="fetchLatestData()">
+                <i class="fa-solid fa-rotate" id="refresh-icon"></i> Cập nhật
+              </button>
+              <button class="btn-action btn-docx" onclick="exportToDocx()">
+                <i class="fa-solid fa-file-word"></i> Tải Báo Cáo
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">STT</th>
+                  <th style="text-align: left;">HỌ VÀ TÊN</th>
+                  <th style="width: 100px;">LỚP</th>
+                  <th style="width: 120px;">TỔNG ĐIỂM (+/-)</th>
+                  <th style="width: 130px;">SỐ LẦN ĐIỂM DANH</th>
+                  <th style="width: 150px;">CẬP NHẬT CUỐI</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr>
+                  <td colspan="6" class="empty-message">Đang kiểm tra dữ liệu...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="summary-bar">
+            <span id="totalStudents">Tổng số: 0 sinh viên</span>
+            <span id="totalScores" style="color: var(--primary-color);">Tổng điểm cộng lớp: 0</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Nút truy cập Sheet (Hiện khi ấn F2) -->
-  <div id="secretSheetBar" class="secret-sheet-bar">
-    <a href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank" class="btn-secret">
-      🔗 Truy cập </a>
+    <!-- Nút truy cập Sheet (Hiện khi nhấn F2) -->
+    <div id="secretSheetBar" class="secret-sheet-bar">
+      <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank">
+        <i class="fa-solid fa-file-excel"></i> Truy cập Google Sheet Gốc
+      </a>
+    </div>
   </div>
 
 <script>
@@ -141,26 +333,28 @@
   const STORAGE_KEY = 'DIEM_DANH_CACHE';
 
   let rawStudentData = [];
-  let currentFilteredData = []; // Lưu dữ liệu đã lọc để xuất báo cáo Word
+  let currentFilteredData = [];
 
   window.onload = function() {
-    // 1. Đọc dữ liệu từ bộ nhớ đệm
+    // 1. Đọc cache hiện tức thời
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
       try {
         rawStudentData = JSON.parse(cached);
         populateClassOptions();
         filterAndRender();
-        updateStatus('▲ Lỗi cập nhật (đang dùng đệm)', false);
+        showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
       } catch (e) {
         console.error("Cache lỗi", e);
       }
+    } else {
+      showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
     }
 
-    // 2. Tải dữ liệu mới
+    // 2. Tải dữ liệu từ Sheet
     fetchLatestData();
 
-    // 3. Phím tắt F2
+    // 3. Sự kiện F2 cuộn xuống cuối trang
     document.addEventListener('keydown', function(e) {
       if (e.key === 'F2') {
         e.preventDefault();
@@ -169,17 +363,22 @@
           bar.style.display = 'none';
         } else {
           bar.style.display = 'block';
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-          });
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
       }
     });
   };
 
+  function showSyncStatus(htmlContent) {
+    const statusEl = document.getElementById('sync-indicator');
+    if (statusEl) statusEl.innerHTML = htmlContent;
+  }
+
   async function fetchLatestData() {
-    updateStatus('⏳ Đang đồng bộ...', false);
+    const icon = document.getElementById('refresh-icon');
+    if (icon) icon.classList.add('fa-spin');
+    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...');
+
     try {
       const res = await fetch(`${API_URL}&t=${Date.now()}`);
       const text = await res.text();
@@ -192,13 +391,16 @@
 
       populateClassOptions();
       filterAndRender();
-      updateStatus('✔ Đã cập nhật mới nhất', true);
+      showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
+      setTimeout(() => showSyncStatus(''), 3000);
     } catch (err) {
       console.error('Lỗi gọi API Google Sheet:', err);
       if (rawStudentData.length === 0) {
-        document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="text-center" style="color:red;">Lỗi kết nối dữ liệu. Vui lòng thử lại!</td></tr>`;
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-message" style="color:red;">Lỗi kết nối dữ liệu. Vui lòng thử lại!</td></tr>`;
       }
-      updateStatus('▲ Lỗi cập nhật (đang dùng đệm)', false);
+      showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
+    } finally {
+      if (icon) icon.classList.remove('fa-spin');
     }
   }
 
@@ -284,7 +486,7 @@
     tbody.innerHTML = '';
 
     if (data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 20px; color: #888;">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
       document.getElementById('totalStudents').innerText = `Tổng số: 0 sinh viên`;
       document.getElementById('totalScores').innerText = `Tổng điểm cộng lớp: 0`;
       return;
@@ -297,12 +499,12 @@
       const tr = document.createElement('tr');
 
       tr.innerHTML = `
-        <td class="text-center text-bold">${item.stt || '-'}</td>
-        <td class="text-bold">${item.hoTen}</td>
+        <td class="text-center font-weight-bold">${item.stt || '-'}</td>
+        <td class="font-weight-bold">${item.hoTen}</td>
         <td class="text-center">${item.lop}</td>
-        <td class="text-center text-bold" style="color: ${item.tongDiem > 0 ? '#1e5631' : '#333'}">${item.tongDiem}</td>
-        <td class="text-center text-bold" style="color: #2f65f6;">${item.soLanDiemDanh}</td>
-        <td class="text-center" style="color: #666; font-size: 12px;">${item.capNhatCuoi || '-'}</td>
+        <td class="text-center font-weight-bold" style="color: ${item.tongDiem > 0 ? 'var(--primary-color)' : '#333'}">${item.tongDiem}</td>
+        <td class="text-center font-weight-bold" style="color: #2563eb;">${item.soLanDiemDanh}</td>
+        <td class="text-center" style="color: #64748b; font-size: 13px;">${item.capNhatCuoi || '-'}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -311,13 +513,7 @@
     document.getElementById('totalScores').innerText = `Tổng điểm cộng lớp: ${grandTotalScore}`;
   }
 
-  function updateStatus(msg, isSuccess) {
-    const tag = document.getElementById('statusTag');
-    tag.innerText = msg;
-    tag.className = `status-tag ${isSuccess ? 'success' : 'warning'}`;
-  }
-
-  // --- HÀM TẠO FILE BÁO CÁO WORD (.DOCX) ---
+  // --- XUẤT BÁO CÁO WORD (.DOCX) ---
   function exportToDocx() {
     if (!currentFilteredData || currentFilteredData.length === 0) {
       alert("Không có dữ liệu để xuất báo cáo!");
@@ -328,7 +524,6 @@
     const nowStr = new Date().toLocaleString('vi-VN');
     let totalScore = 0;
 
-    // 1. Tạo Header cho bảng Word
     const tableHeaderRows = new docx.TableRow({
       tableHeader: true,
       children: [
@@ -337,11 +532,10 @@
         createTableCell("LỚP", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
         createTableCell("TỔNG ĐIỂM (+/-)", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
         createTableCell("SỐ LẦN ĐIỂM DANH", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
-        createTableCell("LẦN CẬP NHẬT CUỐI", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+        createTableCell("CẬP NHẬT CUỐI", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
       ],
     });
 
-    // 2. Tạo các hàng dữ liệu sinh viên
     const tableDataRows = currentFilteredData.map((item) => {
       totalScore += item.tongDiem;
       return new docx.TableRow({
@@ -356,7 +550,6 @@
       });
     });
 
-    // 3. Tạo Hàng Tổng Cộng
     const tableFooterRow = new docx.TableRow({
       children: [
         new docx.TableCell({
@@ -371,7 +564,6 @@
       ]
     });
 
-    // 4. Khởi tạo tài liệu Word
     const doc = new docx.Document({
       sections: [{
         properties: {},
@@ -383,14 +575,14 @@
           }),
           new docx.Paragraph({
             children: [
-              new docx.TextRun({ text: `Đơn vị/Lớp: `, bold: true }),
+              new docx.TextRun({ text: `Lớp/Đơn vị: `, bold: true }),
               new docx.TextRun({ text: selectedLop }),
             ],
             space: { after: 100 }
           }),
           new docx.Paragraph({
             children: [
-              new docx.TextRun({ text: `Thời điểm xuất báo cáo: `, bold: true }),
+              new docx.TextRun({ text: `Thời điểm xuất: `, bold: true }),
               new docx.TextRun({ text: nowStr }),
             ],
             space: { after: 300 }
@@ -403,13 +595,11 @@
       }]
     });
 
-    // 5. Xuất file về máy
     docx.Packer.toBlob(doc).then((blob) => {
       saveAs(blob, `Bao_Cao_Diem_Danh_${selectedLop.replace(/[^a-zA-Z0-9]/g, "_")}.docx`);
     });
   }
 
-  // Hàm phụ trợ tạo Cell cho Bảng Word
   function createTableCell(text, isBold, widthPct, align, bgColor = "FFFFFF", textColor = "000000") {
     return new docx.TableCell({
       width: { size: parseFloat(widthPct), type: docx.WidthType.PERCENTAGE },
