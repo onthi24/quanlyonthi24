@@ -224,7 +224,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span><i class="fa-solid fa-table-list"></i> DANH SÁCH SINH VIÊN ĐIỂM DANH</span>
+                    <span><i class="fa-solid fa-table-list"></i> TỔNG HỢP ĐIỂM SINH VIÊN</span>
                     <span id="sync-indicator" class="sync-status"></span>
                 </div>
                 <div class="data-card-content">
@@ -262,8 +262,8 @@
                                     <th style="width: 60px;">STT</th>
                                     <th style="text-align: left;">Họ và tên</th>
                                     <th style="width: 130px; text-align: center;">Lớp</th>
-                                    <th style="width: 140px; text-align: center;">Điểm cộng (+/-)</th>
-                                    <th style="width: 180px; text-align: center;">Thời gian nhập</th>
+                                    <th style="width: 150px; text-align: center;">Tổng điểm (+/-)</th>
+                                    <th style="width: 180px; text-align: center;">Lần cập nhật cuối</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body">
@@ -274,22 +274,23 @@
 
                     <div class="summary-bar">
                         <span id="record-count">Tổng số: 0 sinh viên</span>
-                        <span id="total-score" style="color: #0b694a;">Tổng điểm cộng: 0</span>
+                        <span id="total-score" style="color: #0b694a;">Tổng điểm cộng lớp: 0</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1tX-B_dsmJfuftV9fEA5Q-_TLWGauStsvE_3ZkGzv6Iw/edit?resourcekey=&gid=723427781#gid=723427781" target="_blank">
+    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM/edit?resourcekey=&gid=1209010226#gid=1209010226" target="_blank">
         <i class="fa-solid fa-file-excel"></i> TRUY CẬP
     </a>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
-        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzwSKEgZQA7RuKmf8FV3IGn-4H0lqvuuoAX3tmLdpxeZY58vNXF_YKFhSGk3Y_zpk/exec";
+        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE_AGGREGATED";
         
-        let allData = [];
+        let rawLogs = []; 
+        let aggregatedData = []; 
 
         window.onload = function() {
             setupF2KeyShortcut();
@@ -334,12 +335,12 @@
             return null;
         }
 
-        function populateClassDropdown(data) {
+        function populateClassDropdown(logs) {
             const selectEl = document.getElementById('class-select');
             const currentValue = selectEl.value;
             
             let classes = new Set();
-            data.forEach(item => {
+            logs.forEach(item => {
                 if (item.className) classes.add(item.className);
             });
 
@@ -359,8 +360,8 @@
             
             if (cachedData) {
                 try {
-                    allData = JSON.parse(cachedData);
-                    populateClassDropdown(allData);
+                    rawLogs = JSON.parse(cachedData);
+                    populateClassDropdown(rawLogs);
                     applyFilter();
                     showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
                 } catch (e) {
@@ -384,7 +385,7 @@
             fetch(requestUrl)
                 .then(response => response.json())
                 .then(data => {
-                    let rawData = [];
+                    let parsedLogs = [];
 
                     for (let i = 1; i < data.length; i++) {
                         let row = data[i];
@@ -396,8 +397,7 @@
                         let score = row[3] ? row[3] : "0";    
 
                         if (fullName || className) {
-                            rawData.push({
-                                originalIndex: i,
+                            parsedLogs.push({
                                 timestamp: formatDateTime(timestamp),
                                 fullName: String(fullName).trim(),
                                 className: String(className).trim(),
@@ -406,11 +406,9 @@
                         }
                     }
 
-                    rawData.reverse();
-
-                    allData = rawData;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
-                    populateClassDropdown(allData);
+                    rawLogs = parsedLogs;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(parsedLogs));
+                    populateClassDropdown(rawLogs);
                     applyFilter();
                     
                     showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
@@ -434,43 +432,65 @@
             }, 1000);
         }
 
-        function renderTable(dataArray) {
+        function processAndAggregateData(logs) {
+            let studentMap = {};
+
+            logs.forEach(log => {
+                let key = `${log.fullName.toLowerCase()}_${log.className.toLowerCase()}`;
+                let scoreNum = parseFloat(log.score.replace(/[^0-9.-]+/g, ""));
+                if (isNaN(scoreNum)) scoreNum = 0;
+
+                if (!studentMap[key]) {
+                    studentMap[key] = {
+                        fullName: log.fullName,
+                        className: log.className,
+                        totalScore: 0,
+                        latestTimestamp: log.timestamp
+                    };
+                }
+
+                studentMap[key].totalScore += scoreNum;
+                studentMap[key].latestTimestamp = log.timestamp; 
+            });
+
+            let list = Object.values(studentMap);
+            list.sort((a, b) => a.fullName.localeCompare(b.fullName, 'vi'));
+
+            return list;
+        }
+
+        function renderTable(aggregatedList) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
 
-            let sumScore = 0;
+            let grandTotalScore = 0;
 
-            if (dataArray.length === 0) {
+            if (aggregatedList.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
                 document.getElementById('record-count').innerText = `Tổng số: 0 sinh viên`;
-                document.getElementById('total-score').innerText = `Tổng điểm cộng: 0`;
+                document.getElementById('total-score').innerText = `Tổng điểm cộng lớp: 0`;
                 return;
             }
 
-            dataArray.forEach((item) => {
-                let scoreNum = parseFloat(item.score.replace(/[^0-9.-]+/g, ""));
-                if (!isNaN(scoreNum)) {
-                    sumScore += scoreNum;
-                } else {
-                    scoreNum = 0;
-                }
+            aggregatedList.forEach((item, index) => {
+                grandTotalScore += item.totalScore;
 
-                let scoreColor = scoreNum > 0 ? '#0b694a' : (scoreNum < 0 ? '#dc2626' : '#333');
-                let scoreDisplay = scoreNum > 0 ? `+${scoreNum}` : `${scoreNum}`;
+                let scoreColor = item.totalScore > 0 ? '#0b694a' : (item.totalScore < 0 ? '#dc2626' : '#333');
+                let scoreDisplay = item.totalScore > 0 ? `+${item.totalScore}` : `${item.totalScore}`;
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-center" style="font-weight: bold; color: #64748b;">${item.originalIndex}</td>
+                    <td class="text-center" style="font-weight: bold; color: #64748b;">${index + 1}</td>
                     <td class="font-weight-bold">${item.fullName}</td>
                     <td class="text-center">${item.className}</td>
-                    <td class="text-center font-weight-bold" style="color: ${scoreColor};">${scoreDisplay}</td>
-                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.timestamp}</td>
+                    <td class="text-center font-weight-bold" style="color: ${scoreColor}; font-size: 15px;">${scoreDisplay}</td>
+                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.latestTimestamp}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('record-count').innerText = `Tổng số: ${dataArray.length} sinh viên`;
-            document.getElementById('total-score').innerText = `Tổng điểm cộng: ${sumScore > 0 ? '+' + sumScore : sumScore}`;
+            document.getElementById('record-count').innerText = `Tổng số: ${aggregatedList.length} sinh viên`;
+            document.getElementById('total-score').innerText = `Tổng điểm cộng lớp: ${grandTotalScore > 0 ? '+' + grandTotalScore : grandTotalScore}`;
         }
 
         function applyFilter() {
@@ -485,21 +505,22 @@
             if (fromDate) fromDate.setHours(0, 0, 0, 0);
             if (toDate) toDate.setHours(23, 59, 59, 999);
 
-            let filtered = allData.filter(item => {
-                let matchName = item.fullName.toLowerCase().includes(keyword);
-                let matchClass = selectedClass === "" || item.className === selectedClass;
-                let itemDate = parseDate(item.timestamp);
+            let filteredLogs = rawLogs.filter(log => {
+                let matchName = log.fullName.toLowerCase().includes(keyword);
+                let matchClass = selectedClass === "" || log.className === selectedClass;
+                let logDate = parseDate(log.timestamp);
                 let matchDate = true;
 
-                if (itemDate) {
-                    if (fromDate && itemDate < fromDate) matchDate = false;
-                    if (toDate && itemDate > toDate) matchDate = false;
+                if (logDate) {
+                    if (fromDate && logDate < fromDate) matchDate = false;
+                    if (toDate && logDate > toDate) matchDate = false;
                 }
 
                 return matchName && matchClass && matchDate;
             });
 
-            renderTable(filtered);
+            let aggregated = processAndAggregateData(filteredLogs);
+            renderTable(aggregated);
         }
 
         function resetFilter() {
