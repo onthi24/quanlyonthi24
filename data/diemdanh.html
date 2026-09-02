@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Điểm Danh & Điểm Cộng</title>
+  
+  <!-- Thư viện docx.js để tạo file Word và FileSaver để hỗ trợ tải file -->
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
@@ -25,7 +30,7 @@
     .status-tag.warning { color: #ffb74d; }
 
     .filter-bar { background-color: #f4f6f8; padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #e0e0e0; }
-    .search-input { position: relative; flex: 1; min-width: 180px; }
+    .search-input { position: relative; flex: 1; min-width: 160px; }
     .search-input input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; }
     .search-input::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #888; }
     
@@ -33,9 +38,10 @@
     .filter-label { font-size: 13px; color: #555; }
 
     .btn-btn { padding: 7px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .btn-icon { background: #e0e0e0; color: #333; }
     .btn-refresh { background: #2f65f6; color: #fff; }
     .btn-refresh:hover { background: #1e50d8; }
+    .btn-docx { background: #1e5631; color: #fff; }
+    .btn-docx:hover { background: #144d29; }
 
     /* Bảng dữ liệu */
     .table-responsive { overflow-x: auto; flex: 1; }
@@ -45,7 +51,6 @@
     tbody tr:hover { background-color: #f9fbf9; }
     
     .text-center { text-align: center; }
-    .text-right { text-align: right; }
     .text-bold { font-weight: bold; }
 
     .card-footer { padding: 12px 16px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #444; }
@@ -93,8 +98,8 @@
         <span class="filter-label">Đến:</span>
         <input type="date" id="dateTo" onchange="filterAndRender()">
 
-        <button class="btn-btn btn-icon">🌪</button>
         <button class="btn-btn btn-refresh" onclick="fetchLatestData()">🔄 Cập nhật</button>
+        <button class="btn-btn btn-docx" onclick="exportToDocx()">📄 Tải Báo Cáo (.docx)</button>
       </div>
 
       <div class="table-responsive">
@@ -127,8 +132,7 @@
   <!-- Nút truy cập Sheet (Hiện khi ấn F2) -->
   <div id="secretSheetBar" class="secret-sheet-bar">
     <a href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank" class="btn-secret">
-      🔗 Truy cập Google Sheet Gốc
-    </a>
+      🔗 Truy cập </a>
   </div>
 
 <script>
@@ -137,9 +141,10 @@
   const STORAGE_KEY = 'DIEM_DANH_CACHE';
 
   let rawStudentData = [];
+  let currentFilteredData = []; // Lưu dữ liệu đã lọc để xuất báo cáo Word
 
   window.onload = function() {
-    // 1. Đọc dữ liệu từ bộ nhớ đệm hiển thị tức thì
+    // 1. Đọc dữ liệu từ bộ nhớ đệm
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
       try {
@@ -152,10 +157,10 @@
       }
     }
 
-    // 2. Chạy ngầm gọi API để lấy dữ liệu Form mới nhất
+    // 2. Tải dữ liệu mới
     fetchLatestData();
 
-    // 3. Phím tắt F2: Bật/tắt nút và cuộn xuống cuối trang
+    // 3. Phím tắt F2
     document.addEventListener('keydown', function(e) {
       if (e.key === 'F2') {
         e.preventDefault();
@@ -164,7 +169,6 @@
           bar.style.display = 'none';
         } else {
           bar.style.display = 'block';
-          // Cuộn mượt xuống cuối trang
           window.scrollTo({
             top: document.body.scrollHeight,
             behavior: 'smooth'
@@ -177,17 +181,13 @@
   async function fetchLatestData() {
     updateStatus('⏳ Đang đồng bộ...', false);
     try {
-      // Thêm timestamp để vượt qua cache trình duyệt khi nhấn F5
       const res = await fetch(`${API_URL}&t=${Date.now()}`);
       const text = await res.text();
-
-      // Bóc tách JSON từ chuỗi trả về của Google Visualization
       const jsonStr = text.substring(47, text.length - 2);
       const json = JSON.parse(jsonStr);
 
       processSheetRows(json.table.rows);
 
-      // Lưu bản ghi mới vào bộ nhớ đệm
       localStorage.setItem(STORAGE_KEY, JSON.stringify(rawStudentData));
 
       populateClassOptions();
@@ -204,24 +204,20 @@
 
   function processSheetRows(rows) {
     if (!rows) return;
-
     let studentMap = {};
 
     rows.forEach(r => {
       if (!r.c) return;
 
-      // Cột A: Thời gian (c[0]), Cột B: Họ tên (c[1]), Cột C: Lớp (c[2]), Cột D: STT (c[3]), Cột E: Điểm cộng (c[4])
       const timeStr = r.c[0] && r.c[0].f ? r.c[0].f : (r.c[0] && r.c[0].v ? String(r.c[0].v) : '');
       const hoTen = r.c[1] && r.c[1].v ? String(r.c[1].v).trim() : '';
       const lop = r.c[2] && r.c[2].v ? String(r.c[2].v).trim() : '';
       
-      // Lấy STT từ Cột D (c[3])
       let stt = 0;
       if (r.c[3] && r.c[3].v !== null && r.c[3].v !== undefined) {
         stt = parseInt(r.c[3].v) || 0;
       }
 
-      // Xử lý ô trống cho Cột E
       let diem = 0;
       if (r.c[4] && r.c[4].v !== null && r.c[4].v !== undefined) {
         diem = parseFloat(r.c[4].v) || 0;
@@ -240,10 +236,8 @@
           };
         }
         
-        // Cộng dồn điểm
         studentMap[key].tongDiem += diem;
 
-        // Chỉ đếm số lần điểm danh khi KHÔNG có điểm cộng/trừ (diem === 0)
         if (diem === 0) {
           studentMap[key].soLanDiemDanh += 1;
         }
@@ -274,16 +268,15 @@
     const searchTen = document.getElementById('searchTen').value.toLowerCase().trim();
     const selectedLop = document.getElementById('selectLop').value;
 
-    const filtered = rawStudentData.filter(s => {
+    currentFilteredData = rawStudentData.filter(s => {
       const matchTen = !searchTen || s.hoTen.toLowerCase().includes(searchTen);
       const matchLop = !selectedLop || s.lop === selectedLop;
       return matchTen && matchLop;
     });
 
-    // Sắp xếp dữ liệu tăng dần theo STT (Cột D)
-    filtered.sort((a, b) => a.stt - b.stt);
+    currentFilteredData.sort((a, b) => a.stt - b.stt);
 
-    renderTable(filtered);
+    renderTable(currentFilteredData);
   }
 
   function renderTable(data) {
@@ -322,6 +315,113 @@
     const tag = document.getElementById('statusTag');
     tag.innerText = msg;
     tag.className = `status-tag ${isSuccess ? 'success' : 'warning'}`;
+  }
+
+  // --- HÀM TẠO FILE BÁO CÁO WORD (.DOCX) ---
+  function exportToDocx() {
+    if (!currentFilteredData || currentFilteredData.length === 0) {
+      alert("Không có dữ liệu để xuất báo cáo!");
+      return;
+    }
+
+    const selectedLop = document.getElementById('selectLop').value || "Tất cả các lớp";
+    const nowStr = new Date().toLocaleString('vi-VN');
+    let totalScore = 0;
+
+    // 1. Tạo Header cho bảng Word
+    const tableHeaderRows = new docx.TableRow({
+      tableHeader: true,
+      children: [
+        createTableCell("STT", true, "10%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+        createTableCell("HỌ VÀ TÊN", true, "30%", docx.AlignmentType.LEFT, "1e5631", "FFFFFF"),
+        createTableCell("LỚP", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+        createTableCell("TỔNG ĐIỂM (+/-)", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+        createTableCell("SỐ LẦN ĐIỂM DANH", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+        createTableCell("LẦN CẬP NHẬT CUỐI", true, "15%", docx.AlignmentType.CENTER, "1e5631", "FFFFFF"),
+      ],
+    });
+
+    // 2. Tạo các hàng dữ liệu sinh viên
+    const tableDataRows = currentFilteredData.map((item) => {
+      totalScore += item.tongDiem;
+      return new docx.TableRow({
+        children: [
+          createTableCell(String(item.stt || '-'), false, "10%", docx.AlignmentType.CENTER),
+          createTableCell(item.hoTen, true, "30%", docx.AlignmentType.LEFT),
+          createTableCell(item.lop, false, "15%", docx.AlignmentType.CENTER),
+          createTableCell(String(item.tongDiem), true, "15%", docx.AlignmentType.CENTER),
+          createTableCell(String(item.soLanDiemDanh), false, "15%", docx.AlignmentType.CENTER),
+          createTableCell(item.capNhatCuoi || '-', false, "15%", docx.AlignmentType.CENTER),
+        ],
+      });
+    });
+
+    // 3. Tạo Hàng Tổng Cộng
+    const tableFooterRow = new docx.TableRow({
+      children: [
+        new docx.TableCell({
+          columnSpan: 3,
+          children: [new docx.Paragraph({ children: [new docx.TextRun({ text: `TỔNG CỘNG (${currentFilteredData.length} sinh viên)`, bold: true })], alignment: docx.AlignmentType.RIGHT })],
+          shading: { fill: "F4F6F8" },
+          padding: { top: 100, bottom: 100, left: 100, right: 100 }
+        }),
+        createTableCell(String(totalScore), true, "15%", docx.AlignmentType.CENTER, "F4F6F8"),
+        createTableCell("-", false, "15%", docx.AlignmentType.CENTER, "F4F6F8"),
+        createTableCell("-", false, "15%", docx.AlignmentType.CENTER, "F4F6F8"),
+      ]
+    });
+
+    // 4. Khởi tạo tài liệu Word
+    const doc = new docx.Document({
+      sections: [{
+        properties: {},
+        children: [
+          new docx.Paragraph({
+            children: [new docx.TextRun({ text: "BÁO CÁO THỐNG KÊ ĐIỂM DANH & ĐIỂM CỘNG", bold: true, size: 28, color: "1e5631" })],
+            alignment: docx.AlignmentType.CENTER,
+            space: { after: 300 }
+          }),
+          new docx.Paragraph({
+            children: [
+              new docx.TextRun({ text: `Đơn vị/Lớp: `, bold: true }),
+              new docx.TextRun({ text: selectedLop }),
+            ],
+            space: { after: 100 }
+          }),
+          new docx.Paragraph({
+            children: [
+              new docx.TextRun({ text: `Thời điểm xuất báo cáo: `, bold: true }),
+              new docx.TextRun({ text: nowStr }),
+            ],
+            space: { after: 300 }
+          }),
+          new docx.Table({
+            width: { size: 100, type: docx.WidthType.PERCENTAGE },
+            rows: [tableHeaderRows, ...tableDataRows, tableFooterRow]
+          })
+        ]
+      }]
+    });
+
+    // 5. Xuất file về máy
+    docx.Packer.toBlob(doc).then((blob) => {
+      saveAs(blob, `Bao_Cao_Diem_Danh_${selectedLop.replace(/[^a-zA-Z0-9]/g, "_")}.docx`);
+    });
+  }
+
+  // Hàm phụ trợ tạo Cell cho Bảng Word
+  function createTableCell(text, isBold, widthPct, align, bgColor = "FFFFFF", textColor = "000000") {
+    return new docx.TableCell({
+      width: { size: parseFloat(widthPct), type: docx.WidthType.PERCENTAGE },
+      shading: { fill: bgColor },
+      padding: { top: 100, bottom: 100, left: 100, right: 100 },
+      children: [
+        new docx.Paragraph({
+          children: [new docx.TextRun({ text: text, bold: isBold, color: textColor, size: 20 })],
+          alignment: align
+        })
+      ]
+    });
   }
 </script>
 
