@@ -286,8 +286,8 @@
     </a>
 
     <script>
-        const SHEET_ID = "1zs6MS_f_4GA-to9T6MhNQPVzQjKHpXCpyFyjGIf0rtg";
-        const SHEET_NAME = "Câu trả lời biểu mẫu 1";
+        // Đường link Google Apps Script Web App real-time
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
         const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE";
         
         let allData = [];
@@ -307,35 +307,25 @@
             });
         }
 
-        function parseCSVLine(text) {
-            let result = [];
-            let entry = '';
-            let inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                let c = text[i];
-                if (inQuotes) {
-                    if (c === '"') {
-                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
-                        else { inQuotes = false; }
-                    } else { entry += c; }
-                } else {
-                    if (c === '"') { inQuotes = true; }
-                    else if (c === ',') { result.push(entry); entry = ''; }
-                    else { entry += c; }
-                }
-            }
-            result.push(entry);
-            return result;
-        }
-
         function formatDateOnly(dateStr) {
             if (!dateStr) return "";
-            return dateStr.trim().split(' ')[0];
+            let str = String(dateStr).trim();
+            // Nếu trả về dạng ISO String từ Apps Script (VD: 2026-03-31T17:00:00.000Z)
+            if (str.includes('T')) {
+                let d = new Date(str);
+                if (!isNaN(d.getTime())) {
+                    let day = String(d.getDate()).padStart(2, '0');
+                    let month = String(d.getMonth() + 1).padStart(2, '0');
+                    let year = d.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+            }
+            return str.split(' ')[0];
         }
 
         function parseDate(dateStr) {
             if (!dateStr) return null;
-            const parts = dateStr.trim().split(' ')[0].split('/');
+            const parts = String(dateStr).trim().split(' ')[0].split('/');
             if (parts.length === 3) {
                 const day = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
@@ -345,11 +335,11 @@
             return null;
         }
 
-        // Kỹ thuật Stale-While-Revalidate: Hiển thị bộ nhớ đệm lập tức, cập nhật ngầm phía sau
+        // Chiến lược Stale-While-Revalidate: Hiện dữ liệu cũ ngay lập tức (0s), đồng bộ ngầm phía sau
         function loadDataWithStaleWhileRevalidate() {
             const cachedData = localStorage.getItem(CACHE_KEY);
             
-            // Step 1: Render ngay lập tức dữ liệu từ Cache nếu có
+            // Bước 1: Render ngay lập tức dữ liệu từ bộ nhớ đệm LocalStorage nếu có
             if (cachedData) {
                 try {
                     allData = JSON.parse(cachedData);
@@ -362,7 +352,7 @@
                 showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...');
             }
 
-            // Step 2: Gọi API lấy dữ liệu mới ở background
+            // Bước 2: Gọi API Web App lấy dữ liệu thời gian thực
             fetchDataFromSheet();
         }
 
@@ -372,29 +362,30 @@
         }
 
         function fetchDataFromSheet() {
-            // Thêm timestamp ngẫu nhiên ép qua mặt cache trình duyệt
-            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&_t=${new Date().getTime()}`;
+            // Đính kèm timestamp ngẫu nhiên để ép qua mặt bộ nhớ đệm trình duyệt
+            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
-            fetch(CSV_URL)
-                .then(response => response.text())
-                .then(text => {
-                    let lines = text.split(/\r?\n/);
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
                     let rawData = [];
 
-                    for (let i = 1; i < lines.length; i++) {
-                        if (!lines[i].trim()) continue;
-                        let cols = parseCSVLine(lines[i]);
+                    // Data trả về là mảng 2 chiều chứa các dòng của Google Sheet
+                    // Bỏ qua dòng tiêu đề (i = 1)
+                    for (let i = 1; i < data.length; i++) {
+                        let row = data[i];
+                        if (!row || row.length === 0) continue;
 
-                        let timestamp = cols[0] ? cols[0].trim() : ""; 
-                        let fullName = cols[1] ? cols[1].trim() : "";  
-                        let amount = cols[2] ? cols[2].trim() : "";    
-                        let date = cols[3] ? cols[3].trim() : "";      
+                        let timestamp = row[0] ? row[0] : ""; 
+                        let fullName = row[1] ? row[1] : "";  
+                        let amount = row[2] ? row[2] : "";    
+                        let date = row[3] ? row[3] : "";      
 
                         if (fullName || amount) {
                             rawData.push({
                                 inputDate: formatDateOnly(timestamp),
-                                fullName: fullName,
-                                amount: amount,
+                                fullName: String(fullName).trim(),
+                                amount: String(amount).trim(),
                                 date: formatDateOnly(date)
                             });
                         }
@@ -403,7 +394,7 @@
                     const cachedData = localStorage.getItem(CACHE_KEY);
                     const newDataString = JSON.stringify(rawData);
 
-                    // Chỉ làm mới giao diện nếu dữ liệu thực sự có sự thay đổi
+                    // Chỉ cập nhật lại màn hình nếu dữ liệu thực sự có thay đổi
                     if (newDataString !== cachedData) {
                         localStorage.setItem(CACHE_KEY, newDataString);
                         allData = rawData;
