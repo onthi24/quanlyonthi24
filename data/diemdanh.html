@@ -8,7 +8,6 @@
     <style>
         :root {
             --primary-color: #1a4d2e;
-            --primary-hover: #143d24;
             --secondary-color: #f4f6f9;
             --text-color: #333;
             --border-color: #e2e8f0;
@@ -64,9 +63,7 @@
             display: block;
         }
 
-        .data-card-content {
-            padding: 15px 20px 20px 20px;
-        }
+        .data-card-content { padding: 15px 20px 20px 20px; }
 
         .filter-section {
             display: flex;
@@ -145,7 +142,6 @@
         
         td { font-size: 14px; line-height: 1.5; }
         td.text-center { text-align: center; }
-        td.text-right { text-align: right; }
         td.font-weight-bold { font-weight: 600; }
 
         tbody tr:nth-child(even) { background-color: #fbfbfb; }
@@ -188,20 +184,13 @@
             align-items: center;
             gap: 10px;
             z-index: 9999;
-            transition: transform 0.2s, background-color 0.2s;
             font-size: 14px;
-        }
-
-        #access-link-btn:hover {
-            background-color: #15803d;
-            transform: translateY(-2px);
         }
 
         @media (max-width: 992px) {
             .main-layout { grid-template-columns: 1fr; }
             .form-iframe { height: 550px; }
             .filter-section { flex-direction: column; align-items: stretch; }
-            .date-filter-group { justify-content: space-between; }
         }
     </style>
 </head>
@@ -282,15 +271,15 @@
     </div>
 
     <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM/edit?resourcekey=&gid=1209010226#gid=1209010226" target="_blank">
-        <i class="fa-solid fa-file-excel"></i> TRUY CẬP
+        <i class="fa-solid fa-file-excel"></i> TRUY CẬP SHEET
     </a>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzwSKEgZQA7RuKmf8FV3IGn-4H0lqvuuoAX3tmLdpxeZY58vNXF_YKFhSGk3Y_zpk/exec";
-        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE_AGGREGATED";
+        // Cập nhật đường link Web App mới nhất của bạn
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx5kPDCozONvp6xhMc-KbSIqSebKzY9sjf6gZiK05w7AicgK4_C9exDZ3k0p8AFNI4/exec";
+        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE_V3";
         
         let rawLogs = []; 
-        let aggregatedData = []; 
 
         window.onload = function() {
             setupF2KeyShortcut();
@@ -327,10 +316,7 @@
             if (!dateStr) return null;
             const parts = String(dateStr).trim().split(' ')[0].split('/');
             if (parts.length === 3) {
-                const day = parseInt(parts[0], 10);
-                const month = parseInt(parts[1], 10) - 1;
-                const year = parseInt(parts[2], 10);
-                return new Date(year, month, day);
+                return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
             }
             return null;
         }
@@ -357,20 +343,13 @@
 
         function initDataWithCacheAndAutoUpdate() {
             const cachedData = localStorage.getItem(CACHE_KEY);
-            
             if (cachedData) {
                 try {
                     rawLogs = JSON.parse(cachedData);
                     populateClassDropdown(rawLogs);
                     applyFilter();
-                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
-                } catch (e) {
-                    console.error("Lỗi bộ nhớ đệm:", e);
-                }
-            } else {
-                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
+                } catch (e) { console.error(e); }
             }
-
             fetchDataFromSheet();
         }
 
@@ -380,6 +359,7 @@
         }
 
         function fetchDataFromSheet() {
+            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
             const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
             fetch(requestUrl)
@@ -394,7 +374,8 @@
                         let timestamp = row[0] ? row[0] : ""; 
                         let fullName = row[1] ? row[1] : "";  
                         let className = row[2] ? row[2] : ""; 
-                        let score = row[3] ? row[3] : "0";    
+                        // Chỉ số [4] tương ứng với Cột E (Điểm cộng/trừ) trong Sheet
+                        let score = row[4] !== undefined && row[4] !== "" ? row[4] : "0";    
 
                         if (fullName || className) {
                             parsedLogs.push({
@@ -415,21 +396,16 @@
                     setTimeout(() => showSyncStatus(''), 3000);
                 })
                 .catch(err => {
-                    console.error("Lỗi đồng bộ dữ liệu:", err);
-                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
+                    console.error("Lỗi:", err);
+                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi kết nối Web App');
                 });
         }
 
         function forceReloadData() {
             const icon = document.getElementById('refresh-icon');
             if (icon) icon.classList.add('fa-spin');
-            
-            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
             fetchDataFromSheet();
-            
-            setTimeout(() => {
-                if (icon) icon.classList.remove('fa-spin');
-            }, 1000);
+            setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
         }
 
         function processAndAggregateData(logs) {
@@ -455,14 +431,12 @@
 
             let list = Object.values(studentMap);
             list.sort((a, b) => a.fullName.localeCompare(b.fullName, 'vi'));
-
             return list;
         }
 
         function renderTable(aggregatedList) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
-
             let grandTotalScore = 0;
 
             if (aggregatedList.length === 0) {
@@ -474,7 +448,6 @@
 
             aggregatedList.forEach((item, index) => {
                 grandTotalScore += item.totalScore;
-
                 let scoreColor = item.totalScore > 0 ? '#0b694a' : (item.totalScore < 0 ? '#dc2626' : '#333');
                 let scoreDisplay = item.totalScore > 0 ? `+${item.totalScore}` : `${item.totalScore}`;
 
