@@ -210,7 +210,6 @@
         <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- CỘT 1: FORM NHẬP DỮ LIỆU -->
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
@@ -222,7 +221,6 @@
                 </iframe>
             </div>
 
-            <!-- CỘT 2: BẢNG HIỂN THỊ DỮ LIỆU THU CHI -->
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa-solid fa-table-list"></i> DANH SÁCH DỮ LIỆU THU CHI</span>
@@ -230,13 +228,11 @@
                 </div>
                 <div class="data-card-content">
                     <div class="filter-section">
-                        <!-- Tìm kiếm tên -->
                         <div class="search-box">
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <input type="text" id="search-input" placeholder="Tìm kiếm theo tên..." oninput="applyFilter()">
                         </div>
 
-                        <!-- Lọc theo khoảng thời gian -->
                         <div class="date-filter-group">
                             <span>Từ:</span>
                             <input type="date" id="from-date" onchange="applyFilter()">
@@ -280,12 +276,10 @@
         </div>
     </div>
 
-    <!-- Nút "Truy cập" kích hoạt bằng F2 -->
     <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1zs6MS_f_4GA-to9T6MhNQPVzQjKHpXCpyFyjGIf0rtg/edit?resourcekey=&gid=1614402554#gid=1614402554" target="_blank">
         <i class="fa-solid fa-file-excel"></i> TRUY CẬP </a>
 
     <script>
-        // Đường link Google Apps Script Web App real-time
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
         const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE";
         
@@ -309,7 +303,6 @@
         function formatDateOnly(dateStr) {
             if (!dateStr) return "";
             let str = String(dateStr).trim();
-            // Nếu trả về dạng ISO String từ Apps Script (VD: 2026-03-31T17:00:00.000Z)
             if (str.includes('T')) {
                 let d = new Date(str);
                 if (!isNaN(d.getTime())) {
@@ -334,11 +327,9 @@
             return null;
         }
 
-        // Chiến lược Stale-While-Revalidate: Hiện dữ liệu cũ ngay lập tức (0s), đồng bộ ngầm phía sau
         function loadDataWithStaleWhileRevalidate() {
             const cachedData = localStorage.getItem(CACHE_KEY);
             
-            // Bước 1: Render ngay lập tức dữ liệu từ bộ nhớ đệm LocalStorage nếu có
             if (cachedData) {
                 try {
                     allData = JSON.parse(cachedData);
@@ -351,7 +342,6 @@
                 showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...');
             }
 
-            // Bước 2: Gọi API Web App lấy dữ liệu thời gian thực
             fetchDataFromSheet();
         }
 
@@ -361,7 +351,6 @@
         }
 
         function fetchDataFromSheet() {
-            // Đính kèm timestamp ngẫu nhiên để ép qua mặt bộ nhớ đệm trình duyệt
             const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
             fetch(requestUrl)
@@ -369,8 +358,6 @@
                 .then(data => {
                     let rawData = [];
 
-                    // Data trả về là mảng 2 chiều chứa các dòng của Google Sheet
-                    // Bỏ qua dòng tiêu đề (i = 1)
                     for (let i = 1; i < data.length; i++) {
                         let row = data[i];
                         if (!row || row.length === 0) continue;
@@ -390,10 +377,12 @@
                         }
                     }
 
+                    // Đảo ngược thứ tự mảng để dòng cuối trong Google Sheet hiển thị lên đầu
+                    rawData.reverse();
+
                     const cachedData = localStorage.getItem(CACHE_KEY);
                     const newDataString = JSON.stringify(rawData);
 
-                    // Chỉ cập nhật lại màn hình nếu dữ liệu thực sự có thay đổi
                     if (newDataString !== cachedData) {
                         localStorage.setItem(CACHE_KEY, newDataString);
                         allData = rawData;
