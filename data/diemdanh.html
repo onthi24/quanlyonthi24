@@ -1,508 +1,231 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Điểm Danh & Điểm Cộng</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1a4d2e;
-            --secondary-color: #f4f6f9;
-            --text-color: #333;
-            --border-color: #e2e8f0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Điểm Danh & Điểm Cộng</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+    .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    
+    h1 { text-align: center; color: #1a237e; font-size: 24px; margin-bottom: 20px; text-transform: uppercase; }
+    
+    .filter-box { background-color: #e8eaf6; padding: 15px 20px; border-radius: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border: 1px solid #c5cae9; }
+    .filter-group { display: flex; align-items: center; gap: 10px; }
+    .filter-group label { font-weight: bold; color: #1a237e; font-size: 14px; }
+    .filter-group select, .filter-group input { padding: 8px 12px; border: 1px solid #c5cae9; border-radius: 5px; outline: none; font-size: 14px; background: #fff; }
+    
+    .btn-sheet { display: none; margin-left: auto; background-color: #2e7d32; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+    .btn-sheet:hover { background-color: #1b5e20; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    .table-responsive { overflow-x: auto; border: 1px solid #c5cae9; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; background: #fff; }
+    th, td { border: 1px solid #e0e0e0; padding: 10px; }
+    thead th { background-color: #1a237e; color: #ffffff; font-weight: 600; }
+    tbody tr:nth-child(even) { background-color: #f8f9fa; }
+    tbody tr:hover { background-color: #e8eaf6; }
+    
+    .badge-score { font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+    .score-pos { color: #2e7d32; background-color: #e8f5e9; }
+    .score-zero { color: #757575; background-color: #eee; }
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f8fafc;
-            color: var(--text-color);
-            padding: 20px;
-            font-size: 15px;
-        }
-
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        .header-title {
-            text-align: center; color: var(--primary-color); margin-bottom: 20px;
-            font-size: 22px; text-transform: uppercase; font-weight: 700;
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 20px;
-            align-items: start;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .card-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 14px 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 15px;
-        }
-
-        .form-iframe {
-            width: 100%;
-            height: 590px;
-            border: none;
-            display: block;
-        }
-
-        .data-card-content { padding: 15px 20px 20px 20px; }
-
-        .filter-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-            background: var(--secondary-color);
-            padding: 12px;
-            border-radius: 8px;
-            align-items: center;
-        }
-
-        .search-box { flex: 1.5; min-width: 160px; position: relative; }
-        .search-box input {
-            width: 100%; padding: 8px 12px 8px 35px; border-radius: 6px;
-            border: 1px solid #cbd5e0; outline: none; font-size: 14px;
-        }
-        .search-box i {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;
-        }
-
-        .select-box {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e0;
-            outline: none;
-            font-size: 13px;
-            background: white;
-            color: #333;
-            min-width: 120px;
-        }
-
-        .date-filter-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .date-filter-group input[type="date"] {
-            padding: 7px 10px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e0;
-            outline: none;
-            font-size: 13px;
-            color: #333;
-            background: white;
-        }
-
-        .btn-action {
-            border: none; padding: 8px 14px;
-            border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 6px; font-size: 13px;
-        }
-
-        .btn-refresh { background-color: #2563eb; color: white; }
-        .btn-refresh:hover { background-color: #1d4ed8; }
-
-        .btn-reset { background-color: #e2e8f0; color: #475569; }
-        .btn-reset:hover { background-color: #cbd5e0; }
-
-        .table-responsive { 
-            overflow-x: auto; 
-            border-radius: 8px;
-            max-height: 520px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-        }
-        
-        table { width: 100%; border-collapse: collapse; background-color: white; }
-        thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
-        th { font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
-        
-        td { font-size: 14px; line-height: 1.5; }
-        td.text-center { text-align: center; }
-        td.font-weight-bold { font-weight: 600; }
-
-        tbody tr:nth-child(even) { background-color: #fbfbfb; }
-        tbody tr:hover { background-color: #f1f5f9; }
-
-        .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
-
-        .summary-bar {
-            margin-top: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #334155;
-            padding: 8px 5px;
-        }
-
-        .sync-status {
-            font-size: 12px;
-            font-weight: 400;
-            color: #cbd5e0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #access-link-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #16a34a;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            display: none;
-            align-items: center;
-            gap: 10px;
-            z-index: 9999;
-            font-size: 14px;
-        }
-
-        @media (max-width: 992px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .form-iframe { height: 550px; }
-            .filter-section { flex-direction: column; align-items: stretch; }
-        }
-    </style>
+    .status-bar { margin-top: 10px; font-size: 12px; color: #666; text-align: right; italic: true; }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2 class="header-title"><i class="fa-solid fa-graduation-cap"></i> QUẢN LÝ ĐIỂM DANH & ĐIỂM CỘNG</h2>
+<div class="container">
+  <h1>BẢNG THỐNG KÊ ĐIỂM DANH & ĐIỂM CỘNG</h1>
 
-        <div class="main-layout">
-            <div class="card">
-                <div class="card-header">
-                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
-                </div>
-                <iframe 
-                    class="form-iframe"
-                    src="https://docs.google.com/forms/d/1_cEfcMkHSZvniiQTukFSBilQmsmed-gxPF4se9TbB-I/viewform?embedded=true">
-                    Đang tải form...
-                </iframe>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <span><i class="fa-solid fa-table-list"></i> TỔNG HỢP ĐIỂM SINH VIÊN</span>
-                    <span id="sync-indicator" class="sync-status"></span>
-                </div>
-                <div class="data-card-content">
-                    <div class="filter-section">
-                        <div class="search-box">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="search-input" placeholder="Tìm theo tên..." oninput="applyFilter()">
-                        </div>
-
-                        <select id="class-select" class="select-box" onchange="applyFilter()">
-                            <option value="">-- Tất cả lớp --</option>
-                        </select>
-
-                        <div class="date-filter-group">
-                            <span>Từ:</span>
-                            <input type="date" id="from-date" onchange="applyFilter()">
-                        </div>
-                        <div class="date-filter-group">
-                            <span>Đến:</span>
-                            <input type="date" id="to-date" onchange="applyFilter()">
-                        </div>
-
-                        <button class="btn-action btn-reset" onclick="resetFilter()" title="Xóa bộ lọc">
-                            <i class="fa-solid fa-filter-circle-xmark"></i>
-                        </button>
-                        <button class="btn-action btn-refresh" onclick="forceReloadData()">
-                            <i class="fa-solid fa-rotate" id="refresh-icon"></i> Cập nhật
-                        </button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table id="data-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 60px;">STT</th>
-                                    <th style="text-align: left;">Họ và tên</th>
-                                    <th style="width: 130px; text-align: center;">Lớp</th>
-                                    <th style="width: 150px; text-align: center;">Tổng điểm (+/-)</th>
-                                    <th style="width: 180px; text-align: center;">Lần cập nhật cuối</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                                <tr><td colspan="5" class="empty-message">Đang kiểm tra dữ liệu...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="summary-bar">
-                        <span id="record-count">Tổng số: 0 sinh viên</span>
-                        <span id="total-score" style="color: #0b694a;">Tổng điểm cộng lớp: 0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="filter-box">
+    <div class="filter-group">
+      <label for="selectLop">LỚP:</label>
+      <select id="selectLop" onchange="filterAndRender()">
+        <option value="">-- Tất cả các lớp --</option>
+      </select>
     </div>
 
-    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM/edit?resourcekey=&gid=1209010226#gid=1209010226" target="_blank">
-        <i class="fa-solid fa-file-excel"></i> TRUY CẬP SHEET
-    </a>
+    <div class="filter-group">
+      <label for="searchTen">HỌ TÊN:</label>
+      <input type="text" id="searchTen" placeholder="Nhập tên tìm kiếm..." oninput="filterAndRender()">
+    </div>
 
-    <script>
-        // Cập nhật đường link Web App mới nhất của bạn
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx5kPDCozONvp6xhMc-KbSIqSebKzY9sjf6gZiK05w7AicgK4_C9exDZ3k0p8AFNI4/exec";
-        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE_V3";
-        
-        let rawLogs = []; 
+    <!-- Nút mở Sheet ẩn, nhấn F2 để hiện/ẩn -->
+    <a id="btnSheet" class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank">🔗 Mở Google Sheet</a>
+  </div>
 
-        window.onload = function() {
-            setupF2KeyShortcut();
-            initDataWithCacheAndAutoUpdate();
-        };
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 60px;">STT</th>
+          <th style="width: 120px;">Lớp</th>
+          <th style="text-align: left; padding-left: 15px;">Họ và tên</th>
+          <th style="width: 140px;">Tổng điểm cộng</th>
+          <th style="width: 140px;">Số lần điểm danh</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="5">Đang tải dữ liệu...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="status-bar" id="statusBar">Đang cập nhật...</div>
+</div>
 
-        function setupF2KeyShortcut() {
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'F2') {
-                    event.preventDefault();
-                    const btn = document.getElementById('access-link-btn');
-                    btn.style.display = (btn.style.display === 'none' || btn.style.display === '') ? 'inline-flex' : 'none';
-                }
-            });
+<script>
+  const SPREADSHEET_ID = '1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM';
+  const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+  const STORAGE_KEY = 'SHEET_DATA_CACHE';
+
+  let rawData = [];
+
+  window.onload = function() {
+    // 1. Đọc bộ nhớ đệm trước để hiển thị tức thì
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      try {
+        rawData = JSON.parse(cached);
+        populateClassFilter();
+        filterAndRender();
+        document.getElementById('statusBar').innerText = 'Đã hiển thị từ bộ nhớ đệm. Đang đồng bộ mới...';
+      } catch (e) {
+        console.log('Cache cũ không hợp lệ');
+      }
+    }
+
+    // 2. Chạy ngầm gọi API cập nhật dữ liệu mới nhất
+    fetchLatestData();
+
+    // 3. Đăng ký sự kiện nhấn phím F2 để ẩn/mở nút Google Sheet
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        const btn = document.getElementById('btnSheet');
+        btn.style.display = (btn.style.display === 'inline-block') ? 'none' : 'inline-block';
+      }
+    });
+  };
+
+  async function fetchLatestData() {
+    try {
+      // Gắn timestamp &t= để vượt qua cache trình duyệt khi nhấn F5
+      const response = await fetch(`${API_URL}&t=${Date.now()}`);
+      const text = await response.text();
+      
+      // Bóc tách JSON từ chuỗi phản hồi Google Visualization API
+      const jsonString = text.substring(47, text.length - 2);
+      const json = JSON.parse(jsonString);
+      
+      parseSheetRows(json.table.rows);
+
+      // Lưu bản ghi mới vào localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rawData));
+
+      // Cập nhật lại giao diện
+      populateClassFilter();
+      filterAndRender();
+
+      const now = new Date().toLocaleTimeString('vi-VN');
+      document.getElementById('statusBar').innerText = `Cập nhật dữ liệu mới nhất lúc: ${now}`;
+    } catch (err) {
+      console.error('Lỗi tải dữ liệu Google Sheet:', err);
+      if (rawData.length === 0) {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" style="color:red;">Không thể tải dữ liệu. Vui lòng kiểm tra lại đường truyền hoặc quyền chia sẻ của Sheet!</td></tr>';
+      }
+    }
+  }
+
+  function parseSheetRows(rows) {
+    if (!rows) return;
+    
+    // Mảng lưu dữ liệu đã gộp theo Sinh viên
+    let studentMap = {};
+
+    rows.forEach(r => {
+      if (!r.c) return;
+
+      // Cột B (c[1]): Họ tên, Cột C (c[2]): Lớp, Cột D (c[3]): STT, Cột E (c[4]): Điểm cộng
+      const hoTen = r.c[1] && r.c[1].v ? String(r.c[1].v).trim() : '';
+      const lop = r.c[2] && r.c[2].v ? String(r.c[2].v).trim() : '';
+      
+      // Xử lý ô trống cho Cột E (Điểm cộng/trừ)
+      let diem = 0;
+      if (r.c[4] && r.c[4].v !== null && r.c[4].v !== undefined) {
+        diem = parseFloat(r.c[4].v) || 0;
+      }
+
+      if (hoTen && lop) {
+        const key = `${hoTen}_${lop}`;
+        if (!studentMap[key]) {
+          studentMap[key] = {
+            hoTen: hoTen,
+            lop: lop,
+            tongDiem: 0,
+            soLanDiemDanh: 0
+          };
         }
+        studentMap[key].tongDiem += diem;
+        studentMap[key].soLanDiemDanh += 1;
+      }
+    });
 
-        function formatDateTime(dateStr) {
-            if (!dateStr) return "";
-            let str = String(dateStr).trim();
-            let d = new Date(str);
-            if (!isNaN(d.getTime())) {
-                let day = String(d.getDate()).padStart(2, '0');
-                let month = String(d.getMonth() + 1).padStart(2, '0');
-                let year = d.getFullYear();
-                let hours = String(d.getHours()).padStart(2, '0');
-                let minutes = String(d.getMinutes()).padStart(2, '0');
-                let seconds = String(d.getSeconds()).padStart(2, '0');
-                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-            }
-            return str;
-        }
+    rawData = Object.values(studentMap);
+  }
 
-        function parseDate(dateStr) {
-            if (!dateStr) return null;
-            const parts = String(dateStr).trim().split(' ')[0].split('/');
-            if (parts.length === 3) {
-                return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-            }
-            return null;
-        }
+  function populateClassFilter() {
+    const selectLop = document.getElementById('selectLop');
+    const selectedVal = selectLop.value;
+    
+    const dsnLop = [...new Set(rawData.map(item => item.lop))].sort();
 
-        function populateClassDropdown(logs) {
-            const selectEl = document.getElementById('class-select');
-            const currentValue = selectEl.value;
-            
-            let classes = new Set();
-            logs.forEach(item => {
-                if (item.className) classes.add(item.className);
-            });
+    selectLop.innerHTML = '<option value="">-- Tất cả các lớp --</option>';
+    dsnLop.forEach(l => {
+      selectLop.innerHTML += `<option value="${l}">${l}</option>`;
+    });
 
-            selectEl.innerHTML = '<option value="">-- Tất cả lớp --</option>';
-            Array.from(classes).sort().forEach(c => {
-                let opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c;
-                selectEl.appendChild(opt);
-            });
+    selectLop.value = selectedVal;
+  }
 
-            selectEl.value = currentValue;
-        }
+  function filterAndRender() {
+    const selectedLop = document.getElementById('selectLop').value;
+    const searchTen = document.getElementById('searchTen').value.toLowerCase().trim();
 
-        function initDataWithCacheAndAutoUpdate() {
-            const cachedData = localStorage.getItem(CACHE_KEY);
-            if (cachedData) {
-                try {
-                    rawLogs = JSON.parse(cachedData);
-                    populateClassDropdown(rawLogs);
-                    applyFilter();
-                } catch (e) { console.error(e); }
-            }
-            fetchDataFromSheet();
-        }
+    const filtered = rawData.filter(item => {
+      const matchLop = !selectedLop || item.lop === selectedLop;
+      const matchTen = !searchTen || item.hoTen.toLowerCase().includes(searchTen);
+      return matchLop && matchTen;
+    });
 
-        function showSyncStatus(htmlContent) {
-            const statusEl = document.getElementById('sync-indicator');
-            if (statusEl) statusEl.innerHTML = htmlContent;
-        }
+    renderTable(filtered);
+  }
 
-        function fetchDataFromSheet() {
-            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
-            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
+  function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
 
-            fetch(requestUrl)
-                .then(response => response.json())
-                .then(data => {
-                    let parsedLogs = [];
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+      return;
+    }
 
-                    for (let i = 1; i < data.length; i++) {
-                        let row = data[i];
-                        if (!row || row.length === 0) continue;
+    data.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      const scoreClass = item.tongDiem > 0 ? 'score-pos' : 'score-zero';
 
-                        let timestamp = row[0] ? row[0] : ""; 
-                        let fullName = row[1] ? row[1] : "";  
-                        let className = row[2] ? row[2] : ""; 
-                        // Chỉ số [4] tương ứng với Cột E (Điểm cộng/trừ) trong Sheet
-                        let score = row[4] !== undefined && row[4] !== "" ? row[4] : "0";    
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${item.lop}</td>
+        <td style="text-align: left; padding-left: 15px; font-weight: 600;">${item.hoTen}</td>
+        <td><span class="badge-score ${scoreClass}">${item.tongDiem > 0 ? '+' + item.tongDiem : item.tongDiem}</span></td>
+        <td>${item.soLanDiemDanh}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+</script>
 
-                        if (fullName || className) {
-                            parsedLogs.push({
-                                timestamp: formatDateTime(timestamp),
-                                fullName: String(fullName).trim(),
-                                className: String(className).trim(),
-                                score: String(score).trim()
-                            });
-                        }
-                    }
-
-                    rawLogs = parsedLogs;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(parsedLogs));
-                    populateClassDropdown(rawLogs);
-                    applyFilter();
-                    
-                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
-                    setTimeout(() => showSyncStatus(''), 3000);
-                })
-                .catch(err => {
-                    console.error("Lỗi:", err);
-                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi kết nối Web App');
-                });
-        }
-
-        function forceReloadData() {
-            const icon = document.getElementById('refresh-icon');
-            if (icon) icon.classList.add('fa-spin');
-            fetchDataFromSheet();
-            setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
-        }
-
-        function processAndAggregateData(logs) {
-            let studentMap = {};
-
-            logs.forEach(log => {
-                let key = `${log.fullName.toLowerCase()}_${log.className.toLowerCase()}`;
-                let scoreNum = parseFloat(log.score.replace(/[^0-9.-]+/g, ""));
-                if (isNaN(scoreNum)) scoreNum = 0;
-
-                if (!studentMap[key]) {
-                    studentMap[key] = {
-                        fullName: log.fullName,
-                        className: log.className,
-                        totalScore: 0,
-                        latestTimestamp: log.timestamp
-                    };
-                }
-
-                studentMap[key].totalScore += scoreNum;
-                studentMap[key].latestTimestamp = log.timestamp; 
-            });
-
-            let list = Object.values(studentMap);
-            list.sort((a, b) => a.fullName.localeCompare(b.fullName, 'vi'));
-            return list;
-        }
-
-        function renderTable(aggregatedList) {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
-            let grandTotalScore = 0;
-
-            if (aggregatedList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
-                document.getElementById('record-count').innerText = `Tổng số: 0 sinh viên`;
-                document.getElementById('total-score').innerText = `Tổng điểm cộng lớp: 0`;
-                return;
-            }
-
-            aggregatedList.forEach((item, index) => {
-                grandTotalScore += item.totalScore;
-                let scoreColor = item.totalScore > 0 ? '#0b694a' : (item.totalScore < 0 ? '#dc2626' : '#333');
-                let scoreDisplay = item.totalScore > 0 ? `+${item.totalScore}` : `${item.totalScore}`;
-
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="text-center" style="font-weight: bold; color: #64748b;">${index + 1}</td>
-                    <td class="font-weight-bold">${item.fullName}</td>
-                    <td class="text-center">${item.className}</td>
-                    <td class="text-center font-weight-bold" style="color: ${scoreColor}; font-size: 15px;">${scoreDisplay}</td>
-                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.latestTimestamp}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('record-count').innerText = `Tổng số: ${aggregatedList.length} sinh viên`;
-            document.getElementById('total-score').innerText = `Tổng điểm cộng lớp: ${grandTotalScore > 0 ? '+' + grandTotalScore : grandTotalScore}`;
-        }
-
-        function applyFilter() {
-            let keyword = document.getElementById('search-input').value.toLowerCase().trim();
-            let selectedClass = document.getElementById('class-select').value;
-            let fromDateVal = document.getElementById('from-date').value;
-            let toDateVal = document.getElementById('to-date').value;
-
-            let fromDate = fromDateVal ? new Date(fromDateVal) : null;
-            let toDate = toDateVal ? new Date(toDateVal) : null;
-
-            if (fromDate) fromDate.setHours(0, 0, 0, 0);
-            if (toDate) toDate.setHours(23, 59, 59, 999);
-
-            let filteredLogs = rawLogs.filter(log => {
-                let matchName = log.fullName.toLowerCase().includes(keyword);
-                let matchClass = selectedClass === "" || log.className === selectedClass;
-                let logDate = parseDate(log.timestamp);
-                let matchDate = true;
-
-                if (logDate) {
-                    if (fromDate && logDate < fromDate) matchDate = false;
-                    if (toDate && logDate > toDate) matchDate = false;
-                }
-
-                return matchName && matchClass && matchDate;
-            });
-
-            let aggregated = processAndAggregateData(filteredLogs);
-            renderTable(aggregated);
-        }
-
-        function resetFilter() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('class-select').value = '';
-            document.getElementById('from-date').value = '';
-            document.getElementById('to-date').value = '';
-            applyFilter();
-        }
-    </script>
 </body>
 </html>
