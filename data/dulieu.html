@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Thu Chi & Nhập Dữ Liệu</title>
+    <title>Hệ Thống Nhập & Quản Lý Dữ Liệu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #1a4d2e;
+            --primary-hover: #133a22;
             --secondary-color: #f4f6f9;
             --text-color: #333;
             --border-color: #e2e8f0;
+            --accent-color: #2563eb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,52 +25,127 @@
             font-size: 15px;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1300px; margin: 0 auto; }
 
         .header-title {
             text-align: center; color: var(--primary-color); margin-bottom: 25px;
             font-size: 22px; text-transform: uppercase; font-weight: 700;
         }
 
-        /* Bố cục chia 2 cột linh hoạt */
+        /* Bố cục chia 2 cột */
         .main-layout {
             display: grid;
-            grid-template-columns: 450px 1fr;
+            grid-template-columns: 380px 1fr;
             gap: 20px;
             align-items: start;
         }
 
-        /* Khung Form Nhập Dữ Liệu */
-        .form-card {
+        /* --- FORM NHẬP DỮ LIỆU CHUYÊN NGHIỆP --- */
+        .custom-form-card {
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
         .card-header {
             background-color: var(--primary-color);
             color: white;
-            padding: 14px 20px;
-            font-weight: 600;
+            padding: 16px 20px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 10px;
         }
 
-        .form-iframe {
+        .form-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+        }
+
+        .form-group label span {
+            color: #e53e3e;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .input-wrapper input {
             width: 100%;
-            height: 680px;
-            border: none;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
 
-        /* Khung Bảng Dữ Liệu */
+        .input-wrapper input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.15);
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-submit:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        /* --- BẢNG HIỂN THỊ DỮ LIỆU --- */
         .data-card {
             background: #ffffff;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border-color);
         }
 
@@ -87,7 +164,7 @@
         }
 
         .btn-refresh {
-            background-color: #2563eb; color: white; border: none; padding: 10px 16px;
+            background-color: var(--accent-color); color: white; border: none; padding: 10px 16px;
             border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; gap: 8px; font-size: 14px;
         }
@@ -96,7 +173,7 @@
         .table-responsive { 
             overflow-x: auto; 
             border-radius: 8px;
-            max-height: 600px;
+            max-height: 520px;
             overflow-y: auto;
         }
         
@@ -115,14 +192,9 @@
 
         .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
 
-        /* Responsive cho thiết bị di động / màn hình nhỏ */
+        /* Màn hình nhỏ */
         @media (max-width: 992px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            .form-iframe {
-                height: 550px;
-            }
+            .main-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -132,20 +204,44 @@
         <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- CỘT 1: FORM NHẬP DỮ LIỆU -->
-            <div class="form-card">
+            <!-- CỘT 1: FORM NHẬP DỮ LIỆU ĐỒNG BỘ NATIVE -->
+            <div class="custom-form-card">
                 <div class="card-header">
-                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
+                    <i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI
                 </div>
-                <!-- Nhúng Google Form trực tiếp -->
-                <iframe 
-                    class="form-iframe"
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/viewform?embedded=true">
-                    Đang tải form...
-                </iframe>
+                
+                <form id="native-form" class="form-body" onsubmit="submitToGoogleForm(event)">
+                    <div class="form-group">
+                        <label>Họ và tên <span>*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="input-fullname" placeholder="Nhập họ và tên..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số tiền <span>*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <input type="number" id="input-amount" placeholder="Nhập số tiền..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày tháng <span>*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <input type="date" id="input-date" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit-form" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane"></i> Gửi dữ liệu
+                    </button>
+                </form>
             </div>
 
-            <!-- CỘT 2: BẢNG HIỂN THỊ DỮ LIỆU THU CHI -->
+            <!-- CỘT 2: BẢNG HIỂN THỊ DỮ LIỆU -->
             <div class="data-card">
                 <div class="filter-section">
                     <div class="search-box">
@@ -177,21 +273,82 @@
         </div>
     </div>
 
+    <!-- Frame ẩn dùng để nhận phản hồi từ Google Form gửi ngầm -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
     <script>
         const SHEET_ID = "1zs6MS_f_4GA-to9T6MhNQPVzQjKHpXCpyFyjGIf0rtg";
         const SHEET_NAME = "Câu trả lời biểu mẫu 1";
         const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE";
         
+        // URL Form Response và ID Entry tương ứng
+        const FORM_ACTION_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/formResponse";
+        const ENTRY_FULLNAME = "entry.1221568864";
+        const ENTRY_AMOUNT   = "entry.1706240093";
+        const ENTRY_DATE     = "entry.1235948332";
+
         let allData = [];
 
         window.onload = function() {
+            // Đặt ngày mặc định cho ô Ngày tháng là ngày hôm nay
+            document.getElementById('input-date').valueAsDate = new Date();
             loadData();
         };
 
+        // Gửi ngầm Dữ liệu sang Google Form
+        function submitToGoogleForm(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('input-fullname').value.trim();
+            const amount   = document.getElementById('input-amount').value.trim();
+            const rawDate  = document.getElementById('input-date').value; // yyyy-mm-dd
+
+            if (!fullName || !amount || !rawDate) return;
+
+            const btnSubmit = document.getElementById('btn-submit-form');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...`;
+
+            // Tạo form ảo để post sang iframe ẩn (tránh bị CORS/chuyển trang)
+            const iframeForm = document.createElement('form');
+            iframeForm.action = FORM_ACTION_URL;
+            iframeForm.method = 'POST';
+            iframeForm.target = 'hidden_iframe';
+
+            const fields = [
+                { name: ENTRY_FULLNAME, value: fullName },
+                { name: ENTRY_AMOUNT,   value: amount },
+                { name: ENTRY_DATE,     value: rawDate }
+            ];
+
+            fields.forEach(f => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = f.name;
+                input.value = f.value;
+                iframeForm.appendChild(input);
+            });
+
+            document.body.appendChild(iframeForm);
+            iframeForm.submit();
+            document.body.removeChild(iframeForm);
+
+            // Tự động khôi phục nút bấm & làm mới dữ liệu sau 1.5 giây
+            setTimeout(() => {
+                alert("Gửi dữ liệu thành công!");
+                document.getElementById('native-form').reset();
+                document.getElementById('input-date').valueAsDate = new Date();
+                
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Gửi dữ liệu`;
+                
+                forceReloadData();
+            }, 1500);
+        }
+
+        // Tải Dữ Liệu
         function parseCSVLine(text) {
-            let result = [];
-            let entry = '';
-            let inQuotes = false;
+            let result = [], entry = '', inQuotes = false;
             for (let i = 0; i < text.length; i++) {
                 let c = text[i];
                 if (inQuotes) {
@@ -215,20 +372,16 @@
                 try {
                     allData = JSON.parse(cachedData);
                     renderTable(allData);
-                } catch (e) {
-                    console.error("Lỗi đọc cache:", e);
-                }
+                } catch (e) { console.error("Lỗi cache:", e); }
             }
-
             fetchDataFromSheet();
         }
 
         function fetchDataFromSheet() {
-            // Thêm timestamp ngẫu nhiên để ép trình duyệt fetch dữ liệu mới nhất từ Google Sheets
             const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&_t=${new Date().getTime()}`;
 
             fetch(CSV_URL)
-                .then(response => response.text())
+                .then(res => res.text())
                 .then(text => {
                     let lines = text.split(/\r?\n/);
                     let rawData = [];
@@ -238,9 +391,9 @@
                         let cols = parseCSVLine(lines[i]);
 
                         let timestamp = cols[0] ? cols[0].trim() : ""; 
-                        let fullName = cols[1] ? cols[1].trim() : "";  
-                        let amount = cols[2] ? cols[2].trim() : "";    
-                        let date = cols[3] ? cols[3].trim() : "";      
+                        let fullName  = cols[1] ? cols[1].trim() : "";  
+                        let amount    = cols[2] ? cols[2].trim() : "";    
+                        let date      = cols[3] ? cols[3].trim() : "";      
 
                         if (fullName || amount) {
                             rawData.push({
@@ -253,18 +406,18 @@
                     }
 
                     const newDataString = JSON.stringify(rawData);
-                    if (newDataString !== cachedData) {
+                    if (newDataString !== localStorage.getItem(CACHE_KEY)) {
                         localStorage.setItem(CACHE_KEY, newDataString);
                         allData = rawData;
                         applyFilter();
                     }
                 })
-                .catch(err => console.error("Lỗi đồng bộ dữ liệu:", err));
+                .catch(err => console.error("Lỗi tải Sheet:", err));
         }
 
         function forceReloadData() {
             const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-message"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu mới nhất...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-message"><i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật dữ liệu...</td></tr>';
             fetchDataFromSheet();
         }
 
