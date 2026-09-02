@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Dữ Liệu Thu Chi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a4d2e;
+            --secondary-color: #f4f6f9;
+            --text-color: #333;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #ffffff;
+            color: var(--text-color);
+            padding: 20px;
+            font-size: 15px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        .header-title {
+            text-align: center; color: var(--primary-color); margin-bottom: 25px;
+            font-size: 22px; text-transform: uppercase; font-weight: 700;
+        }
+
+        /* BỘ LỌC TÌM KIẾM */
+        .filter-section {
+            display: flex; gap: 15px; margin-bottom: 20px; background: var(--secondary-color);
+            padding: 15px; border-radius: 8px; align-items: center;
+        }
+        .search-box {
+            flex: 1; position: relative;
+        }
+        .search-box input {
+            width: 100%; padding: 10px 12px 10px 35px; border-radius: 6px;
+            border: 1px solid #cbd5e0; outline: none; font-size: 14px;
+        }
+        .search-box i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;
+        }
+
+        /* BẢNG DỮ LIỆU */
+        .table-responsive { 
+            overflow-x: auto; 
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        thead { background-color: var(--primary-color); color: white; }
+        th, td { padding: 14px 15px; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
+        
+        td { font-size: 14px; line-height: 1.5; }
+        td.text-center { text-align: center; }
+        td.text-right { text-align: right; }
+        td.font-weight-bold { font-weight: 600; }
+
+        tbody tr:nth-child(even) { background-color: #fbfbfb; }
+        tbody tr:hover { background-color: #f1f5f9; }
+
+        .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="header-title"><i class="fa-solid fa-receipt"></i> QUẢN LÝ DỮ LIỆU CÂU TRẢ LỜI</h2>
+
+        <!-- BỘ LỌC TÌM KIẾM HỌ TÊN -->
+        <div class="filter-section">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="Tìm kiếm theo Họ và tên..." oninput="applyFilter()">
+            </div>
+        </div>
+
+        <!-- BẢNG HIỂN THỊ DỮ LIỆU -->
+        <div class="table-responsive">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">STT</th>
+                        <th style="text-align: left;">Họ và tên</th>
+                        <th style="width: 180px; text-align: right;">Số tiền</th>
+                        <th style="width: 160px;">Ngày tháng</th>
+                        <th style="width: 180px;">Ngày nhập</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="5" class="empty-message">Đang tải dữ liệu...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SHEET_ID = "1zs6MS_f_4GA-to9T6MhNQPVzQjKHpXCpyFyjGIf0rtg";
+        const SHEET_NAME = "Câu trả lời biểu mẫu 1";
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE";
+        
+        let allData = [];
+
+        window.onload = function() {
+            loadData();
+        };
+
+        // Hàm phân tích dòng CSV an toàn
+        function parseCSVLine(text) {
+            let result = [];
+            let entry = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else { entry += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { result.push(entry); entry = ''; }
+                    else { entry += c; }
+                }
+            }
+            result.push(entry);
+            return result;
+        }
+
+        // Tải dữ liệu từ Google Sheets (Cache-First)
+        function loadData() {
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                try {
+                    allData = JSON.parse(cachedData);
+                    renderTable(allData);
+                } catch (e) {
+                    console.error("Lỗi đọc cache:", e);
+                }
+            }
+
+            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+            fetch(CSV_URL)
+                .then(response => response.text())
+                .then(text => {
+                    let lines = text.split(/\r?\n/);
+                    let rawData = [];
+
+                    // Bỏ qua dòng tiêu đề (i = 0), duyệt từ dòng dữ liệu (i = 1)
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        let cols = parseCSVLine(lines[i]);
+
+                        let timestamp = cols[0] ? cols[0].trim() : ""; // Cột A: Dấu thời gian
+                        let fullName = cols[1] ? cols[1].trim() : "";  // Cột B: Họ và tên
+                        let amount = cols[2] ? cols[2].trim() : "";    // Cột C: Số tiền
+                        let date = cols[3] ? cols[3].trim() : "";      // Cột D: Ngày tháng
+
+                        if (fullName || amount) {
+                            rawData.push({
+                                inputDate: timestamp,
+                                fullName: fullName,
+                                amount: amount,
+                                date: date
+                            });
+                        }
+                    }
+
+                    const newDataString = JSON.stringify(rawData);
+                    if (newDataString !== cachedData) {
+                        localStorage.setItem(CACHE_KEY, newDataString);
+                        allData = rawData;
+                        applyFilter();
+                    }
+                })
+                .catch(err => {
+                    console.error("Lỗi đồng bộ Google Sheets:", err);
+                });
+        }
+
+        // Hiển thị bảng dữ liệu
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+                return;
+            }
+
+            dataArray.forEach((item, index) => {
+                // Định dạng số tiền (Ví dụ: 1530 -> 1.530)
+                let formattedAmount = item.amount;
+                let num = parseFloat(item.amount.replace(/[^0-9.-]+/g, ""));
+                if (!isNaN(num)) {
+                    formattedAmount = num.toLocaleString('vi-VN');
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center" style="font-weight: bold;">${index + 1}</td>
+                    <td class="font-weight-bold">${item.fullName}</td>
+                    <td class="text-right font-weight-bold" style="color: #0b694a;">${formattedAmount}</td>
+                    <td class="text-center">${item.date}</td>
+                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.inputDate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Đội bộ lọc tìm kiếm theo Họ và tên
+        function applyFilter() {
+            let keyword = document.getElementById('search-input').value.toLowerCase().trim();
+            let filtered = allData.filter(item => item.fullName.toLowerCase().includes(keyword));
+            renderTable(filtered);
+        }
+    </script>
+</body>
+</html>
