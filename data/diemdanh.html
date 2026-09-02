@@ -5,153 +5,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Điểm Danh & Điểm Cộng</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-    .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
     
-    h1 { text-align: center; color: #1a237e; font-size: 24px; margin-bottom: 20px; text-transform: uppercase; }
+    .page-title { text-align: center; color: #1e5631; font-size: 22px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
     
-    .filter-box { background-color: #e8eaf6; padding: 15px 20px; border-radius: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border: 1px solid #c5cae9; }
-    .filter-group { display: flex; align-items: center; gap: 10px; }
-    .filter-group label { font-weight: bold; color: #1a237e; font-size: 14px; }
-    .filter-group select, .filter-group input { padding: 8px 12px; border: 1px solid #c5cae9; border-radius: 5px; outline: none; font-size: 14px; background: #fff; }
+    .main-layout { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; }
     
-    .btn-sheet { display: none; margin-left: auto; background-color: #2e7d32; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px; transition: background 0.2s; }
-    .btn-sheet:hover { background-color: #1b5e20; }
+    /* Cột trái: Form */
+    .left-col { flex: 0 0 380px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .card-header { background-color: #1e5631; color: #fff; padding: 12px 16px; font-weight: 700; font-size: 14px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+    .form-iframe { width: 100%; height: 680px; border: none; }
 
-    .table-responsive { overflow-x: auto; border: 1px solid #c5cae9; border-radius: 6px; }
-    table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; background: #fff; }
-    th, td { border: 1px solid #e0e0e0; padding: 10px; }
-    thead th { background-color: #1a237e; color: #ffffff; font-weight: 600; }
-    tbody tr:nth-child(even) { background-color: #f8f9fa; }
-    tbody tr:hover { background-color: #e8eaf6; }
+    /* Cột phải: Bảng dữ liệu */
+    .right-col { flex: 1; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
     
-    .badge-score { font-weight: bold; padding: 4px 8px; border-radius: 4px; }
-    .score-pos { color: #2e7d32; background-color: #e8f5e9; }
-    .score-zero { color: #757575; background-color: #eee; }
+    .status-tag { font-size: 12px; font-weight: normal; text-transform: none; }
+    .status-tag.success { color: #81c784; }
+    .status-tag.warning { color: #ffb74d; }
 
-    .status-bar { margin-top: 10px; font-size: 12px; color: #666; text-align: right; italic: true; }
+    .filter-bar { background-color: #f4f6f8; padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #e0e0e0; }
+    .search-input { position: relative; flex: 1; min-width: 200px; }
+    .search-input input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; }
+    .search-input::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #888; }
+    
+    .filter-bar select, .filter-bar input[type="date"] { padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; background: #fff; }
+    .filter-label { font-size: 13px; color: #555; }
+
+    .btn-btn { padding: 7px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-icon { background: #e0e0e0; color: #333; }
+    .btn-refresh { background: #2f65f6; color: #fff; }
+    .btn-refresh:hover { background: #1e50d8; }
+
+    /* Bảng dữ liệu */
+    .table-responsive { overflow-x: auto; flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid #eee; }
+    thead th { background-color: #1e5631; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 12px; }
+    tbody tr:hover { background-color: #f9fbf9; }
+    
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-bold { font-weight: bold; }
+
+    .card-footer { padding: 12px 16px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #444; }
+
+    /* Nút ẩn Sheet truy cập F2 */
+    .secret-sheet-bar { max-width: 1400px; margin: 15px auto 0; text-align: right; display: none; }
+    .btn-secret { background: #1e5631; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>BẢNG THỐNG KÊ ĐIỂM DANH & ĐIỂM CỘNG</h1>
-
-  <div class="filter-box">
-    <div class="filter-group">
-      <label for="selectLop">LỚP:</label>
-      <select id="selectLop" onchange="filterAndRender()">
-        <option value="">-- Tất cả các lớp --</option>
-      </select>
-    </div>
-
-    <div class="filter-group">
-      <label for="searchTen">HỌ TÊN:</label>
-      <input type="text" id="searchTen" placeholder="Nhập tên tìm kiếm..." oninput="filterAndRender()">
-    </div>
-
-    <!-- Nút mở Sheet ẩn, nhấn F2 để hiện/ẩn -->
-    <a id="btnSheet" class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank">🔗 Mở Google Sheet</a>
+  <div class="page-title">
+    🎓 QUẢN LÝ ĐIỂM DANH & ĐIỂM CỘNG
   </div>
 
-  <div class="table-responsive">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 60px;">STT</th>
-          <th style="width: 120px;">Lớp</th>
-          <th style="text-align: left; padding-left: 15px;">Họ và tên</th>
-          <th style="width: 140px;">Tổng điểm cộng</th>
-          <th style="width: 140px;">Số lần điểm danh</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <tr><td colspan="5">Đang tải dữ liệu...</td></tr>
-      </tbody>
-    </table>
+  <div class="main-layout">
+    <div class="left-col">
+      <div class="card-header">
+        📝 NHẬP DỮ LIỆU MỚI
+      </div>
+      <iframe class="form-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLScJgUe2A4A-8v_form_id_here/viewform?embedded=true">Đang tải...</iframe>
+    </div>
+
+    <div class="right-col">
+      <div class="card-header">
+        <span>📋 TỔNG HỢP ĐIỂM SINH VIÊN</span>
+        <span id="statusTag" class="status-tag warning">▲ Đang kết nối...</span>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input">
+          <input type="text" id="searchTen" placeholder="Tìm theo tên..." oninput="filterAndRender()">
+        </div>
+
+        <select id="selectLop" onchange="filterAndRender()">
+          <option value="">-- Tất cả lớp --</option>
+        </select>
+
+        <span class="filter-label">Từ:</span>
+        <input type="date" id="dateFrom" onchange="filterAndRender()">
+
+        <span class="filter-label">Đến:</span>
+        <input type="date" id="dateTo" onchange="filterAndRender()">
+
+        <button class="btn-btn btn-icon">🌪</button>
+        <button class="btn-btn btn-refresh" onclick="fetchLatestData()">🔄 Cập nhật</button>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 50px;">STT</th>
+              <th>HỌ VÀ TÊN</th>
+              <th class="text-center" style="width: 120px;">LỚP</th>
+              <th class="text-center" style="width: 150px;">TỔNG ĐIỂM (+/-)</th>
+              <th class="text-center" style="width: 160px;">LẦN CẬP NHẬT CUỐI</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="5" class="text-center" style="padding: 30px; color: #777;">Đang kiểm tra dữ liệu...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer">
+        <span id="totalStudents">Tổng số: 0 sinh viên</span>
+        <span id="totalScores">Tổng điểm cộng lớp: 0</span>
+      </div>
+    </div>
   </div>
-  
-  <div class="status-bar" id="statusBar">Đang cập nhật...</div>
-</div>
+
+  <div id="secretSheetBar" class="secret-sheet-bar">
+    <a href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank" class="btn-secret">
+      🔗 Truy cập </a>
+  </div>
 
 <script>
   const SPREADSHEET_ID = '1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM';
   const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
-  const STORAGE_KEY = 'SHEET_DATA_CACHE';
+  const STORAGE_KEY = 'DIEM_DANH_CACHE';
 
-  let rawData = [];
+  let rawStudentData = [];
 
   window.onload = function() {
-    // 1. Đọc bộ nhớ đệm trước để hiển thị tức thì
+    // 1. Lấy dữ liệu từ bộ nhớ đệm hiển thị ngay lập tức
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
       try {
-        rawData = JSON.parse(cached);
-        populateClassFilter();
+        rawStudentData = JSON.parse(cached);
+        populateClassOptions();
         filterAndRender();
-        document.getElementById('statusBar').innerText = 'Đã hiển thị từ bộ nhớ đệm. Đang đồng bộ mới...';
+        updateStatus('▲ Lỗi cập nhật (đang dùng đệm)', false);
       } catch (e) {
-        console.log('Cache cũ không hợp lệ');
+        console.error("Cache lỗi", e);
       }
     }
 
-    // 2. Chạy ngầm gọi API cập nhật dữ liệu mới nhất
+    // 2. Chạy ngầm gọi API để lấy dữ liệu Form mới nhất
     fetchLatestData();
 
-    // 3. Đăng ký sự kiện nhấn phím F2 để ẩn/mở nút Google Sheet
+    // 3. Phím tắt F2 để bật/tắt nút truy cập Google Sheet
     document.addEventListener('keydown', function(e) {
       if (e.key === 'F2') {
         e.preventDefault();
-        const btn = document.getElementById('btnSheet');
-        btn.style.display = (btn.style.display === 'inline-block') ? 'none' : 'inline-block';
+        const bar = document.getElementById('secretSheetBar');
+        bar.style.display = (bar.style.display === 'block') ? 'none' : 'block';
       }
     });
   };
 
   async function fetchLatestData() {
+    updateStatus('⏳ Đang đồng bộ...', false);
     try {
-      // Gắn timestamp &t= để vượt qua cache trình duyệt khi nhấn F5
-      const response = await fetch(`${API_URL}&t=${Date.now()}`);
-      const text = await response.text();
-      
-      // Bóc tách JSON từ chuỗi phản hồi Google Visualization API
-      const jsonString = text.substring(47, text.length - 2);
-      const json = JSON.parse(jsonString);
-      
-      parseSheetRows(json.table.rows);
+      // Thêm timestamp để ép trình duyệt tải mới khi nhấn F5
+      const res = await fetch(`${API_URL}&t=${Date.now()}`);
+      const text = await res.text();
 
-      // Lưu bản ghi mới vào localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rawData));
+      // Bóc tách JSON từ chuỗi trả về của Google Visualization
+      const jsonStr = text.substring(47, text.length - 2);
+      const json = JSON.parse(jsonStr);
 
-      // Cập nhật lại giao diện
-      populateClassFilter();
+      processSheetRows(json.table.rows);
+
+      // Đè bản ghi mới vào bộ nhớ đệm
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rawStudentData));
+
+      populateClassOptions();
       filterAndRender();
-
-      const now = new Date().toLocaleTimeString('vi-VN');
-      document.getElementById('statusBar').innerText = `Cập nhật dữ liệu mới nhất lúc: ${now}`;
+      updateStatus('✔ Đã cập nhật mới nhất', true);
     } catch (err) {
-      console.error('Lỗi tải dữ liệu Google Sheet:', err);
-      if (rawData.length === 0) {
-        document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" style="color:red;">Không thể tải dữ liệu. Vui lòng kiểm tra lại đường truyền hoặc quyền chia sẻ của Sheet!</td></tr>';
+      console.error('Lỗi gọi API Google Sheet:', err);
+      if (rawStudentData.length === 0) {
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-center" style="color:red;">Lỗi kết nối dữ liệu. Vui lòng thử lại!</td></tr>`;
       }
+      updateStatus('▲ Lỗi cập nhật (đang dùng đệm)', false);
     }
   }
 
-  function parseSheetRows(rows) {
+  function processSheetRows(rows) {
     if (!rows) return;
-    
-    // Mảng lưu dữ liệu đã gộp theo Sinh viên
+
     let studentMap = {};
 
     rows.forEach(r => {
       if (!r.c) return;
 
-      // Cột B (c[1]): Họ tên, Cột C (c[2]): Lớp, Cột D (c[3]): STT, Cột E (c[4]): Điểm cộng
+      // Cột A: Thời gian, Cột B: Họ tên, Cột C: Lớp, Cột D: STT, Cột E: Điểm cộng
+      const timeStr = r.c[0] && r.c[0].f ? r.c[0].f : (r.c[0] && r.c[0].v ? String(r.c[0].v) : '');
       const hoTen = r.c[1] && r.c[1].v ? String(r.c[1].v).trim() : '';
       const lop = r.c[2] && r.c[2].v ? String(r.c[2].v).trim() : '';
-      
-      // Xử lý ô trống cho Cột E (Điểm cộng/trừ)
+
+      // Xử lý ô trống cho Cột E
       let diem = 0;
       if (r.c[4] && r.c[4].v !== null && r.c[4].v !== undefined) {
         diem = parseFloat(r.c[4].v) || 0;
@@ -164,39 +213,39 @@
             hoTen: hoTen,
             lop: lop,
             tongDiem: 0,
-            soLanDiemDanh: 0
+            capNhatCuoi: timeStr
           };
         }
         studentMap[key].tongDiem += diem;
-        studentMap[key].soLanDiemDanh += 1;
+        if (timeStr) studentMap[key].capNhatCuoi = timeStr;
       }
     });
 
-    rawData = Object.values(studentMap);
+    rawStudentData = Object.values(studentMap);
   }
 
-  function populateClassFilter() {
+  function populateClassOptions() {
     const selectLop = document.getElementById('selectLop');
-    const selectedVal = selectLop.value;
-    
-    const dsnLop = [...new Set(rawData.map(item => item.lop))].sort();
+    const curVal = selectLop.value;
 
-    selectLop.innerHTML = '<option value="">-- Tất cả các lớp --</option>';
-    dsnLop.forEach(l => {
-      selectLop.innerHTML += `<option value="${l}">${l}</option>`;
+    const classList = [...new Set(rawStudentData.map(s => s.lop))].sort();
+
+    selectLop.innerHTML = '<option value="">-- Tất cả lớp --</option>';
+    classList.forEach(c => {
+      selectLop.innerHTML += `<option value="${c}">${c}</option>`;
     });
 
-    selectLop.value = selectedVal;
+    selectLop.value = curVal;
   }
 
   function filterAndRender() {
-    const selectedLop = document.getElementById('selectLop').value;
     const searchTen = document.getElementById('searchTen').value.toLowerCase().trim();
+    const selectedLop = document.getElementById('selectLop').value;
 
-    const filtered = rawData.filter(item => {
-      const matchLop = !selectedLop || item.lop === selectedLop;
-      const matchTen = !searchTen || item.hoTen.toLowerCase().includes(searchTen);
-      return matchLop && matchTen;
+    const filtered = rawStudentData.filter(s => {
+      const matchTen = !searchTen || s.hoTen.toLowerCase().includes(searchTen);
+      const matchLop = !selectedLop || s.lop === selectedLop;
+      return matchTen && matchLop;
     });
 
     renderTable(filtered);
@@ -207,23 +256,36 @@
     tbody.innerHTML = '';
 
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="padding: 20px; color: #888;">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+      document.getElementById('totalStudents').innerText = `Tổng số: 0 sinh viên`;
+      document.getElementById('totalScores').innerText = `Tổng điểm cộng lớp: 0`;
       return;
     }
 
+    let grandTotalScore = 0;
+
     data.forEach((item, index) => {
+      grandTotalScore += item.tongDiem;
       const tr = document.createElement('tr');
-      const scoreClass = item.tongDiem > 0 ? 'score-pos' : 'score-zero';
 
       tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${item.lop}</td>
-        <td style="text-align: left; padding-left: 15px; font-weight: 600;">${item.hoTen}</td>
-        <td><span class="badge-score ${scoreClass}">${item.tongDiem > 0 ? '+' + item.tongDiem : item.tongDiem}</span></td>
-        <td>${item.soLanDiemDanh}</td>
+        <td class="text-center text-bold">${index + 1}</td>
+        <td class="text-bold">${item.hoTen}</td>
+        <td class="text-center">${item.lop}</td>
+        <td class="text-center text-bold" style="color: ${item.tongDiem > 0 ? '#1e5631' : '#333'}">${item.tongDiem}</td>
+        <td class="text-center" style="color: #666; font-size: 12px;">${item.capNhatCuoi || '-'}</td>
       `;
       tbody.appendChild(tr);
     });
+
+    document.getElementById('totalStudents').innerText = `Tổng số: ${data.length} sinh viên`;
+    document.getElementById('totalScores').innerText = `Tổng điểm cộng lớp: ${grandTotalScore}`;
+  }
+
+  function updateStatus(msg, isSuccess) {
+    const tag = document.getElementById('statusTag');
+    tag.innerText = msg;
+    tag.className = `status-tag ${isSuccess ? 'success' : 'warning'}`;
   }
 </script>
 
