@@ -96,7 +96,7 @@
       align-items: center;
     }
 
-    .search-box { flex: 1.5; min-width: 160px; position: relative; }
+    .search-box { flex: 1.2; min-width: 150px; position: relative; }
     .search-box input {
       width: 100%; padding: 8px 12px 8px 35px; border-radius: 6px;
       border: 1px solid #cbd5e0; outline: none; font-size: 13px;
@@ -124,7 +124,7 @@
     }
 
     .date-filter-group input[type="date"] {
-      padding: 7px 10px;
+      padding: 7px 8px;
       border-radius: 6px;
       border: 1px solid #cbd5e0;
       outline: none;
@@ -140,7 +140,7 @@
     }
 
     .btn-action {
-      border: none; padding: 8px 14px;
+      border: none; padding: 8px 12px;
       border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
       display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
       text-decoration: none;
@@ -332,6 +332,7 @@
   const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
   const STORAGE_KEY = 'DIEM_DANH_CACHE';
 
+  let allRawRows = []; // Lưu trữ các dòng thô nguyên bản từ Cột A
   let rawStudentData = [];
   let currentFilteredData = [];
 
@@ -340,9 +341,8 @@
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
       try {
-        rawStudentData = JSON.parse(cached);
-        populateClassOptions();
-        filterAndRender();
+        allRawRows = JSON.parse(cached);
+        processAndRenderAll();
         showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
       } catch (e) {
         console.error("Cache lỗi", e);
@@ -385,17 +385,15 @@
       const jsonStr = text.substring(47, text.length - 2);
       const json = JSON.parse(jsonStr);
 
-      processSheetRows(json.table.rows);
+      allRawRows = json.table.rows || [];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allRawRows));
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rawStudentData));
-
-      populateClassOptions();
-      filterAndRender();
+      processAndRenderAll();
       showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
       setTimeout(() => showSyncStatus(''), 3000);
     } catch (err) {
       console.error('Lỗi gọi API Google Sheet:', err);
-      if (rawStudentData.length === 0) {
+      if (allRawRows.length === 0) {
         document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="empty-message" style="color:red;">Lỗi kết nối dữ liệu. Vui lòng thử lại!</td></tr>`;
       }
       showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
@@ -404,14 +402,86 @@
     }
   }
 
-  function processSheetRows(rows) {
-    if (!rows) return;
+  // Chuyển đổi chuỗi ngày ở cột A thành chuẩn YYYY-MM-DD
+  function parseDateToYYYYMMDD(dateStr) {
+    if (!dateStr) return null;
+    
+    // Nếu là dạng Date JSON từ Google Sheet: Date(2026,2,15,10,30,0)
+    if (dateStr.startsWith('Date(')) {
+      const parts = dateStr.replace('Date(', '').replace(')', '').split(',');
+      if (parts.length >= 3) {
+        const y = parts[0].trim();
+        const m = String(parseInt(parts[1].trim()) + 1).padStart(2, '0');
+        const d = String(parts[2].trim()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+    }
+
+    // Nếu là chuỗi DD/MM/YYYY HH:mm:ss hoặc DD/MM/YYYY
+    const dmyMatch = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (dmyMatch) {
+      const day = String(dmyMatch[1]).padStart(2, '0');
+      const month = String(dmyMatch[2]).padStart(2, '0');
+      const year = dmyMatch[3];
+      return `${year}-${month}-${day}`;
+    }
+
+    // Xử lý mặc định qua đối tượng Date
+    const parsed = new Date(dateStr);
+    if (!isNaN(parsed.getTime())) {
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, '0');
+      const d = String(parsed.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    return null;
+  }
+
+  function processAndRenderAll() {
+    populateClassOptions();
+    filterAndRender();
+  }
+
+  function populateClassOptions() {
+    const selectLop = document.getElementById('selectLop');
+    const curVal = selectLop.value;
+
+    let classSet = new Set();
+    allRawRows.forEach(r => {
+      if (r.c && r.c[2] && r.c[2].v) {
+        classSet.add(String(r.c[2].v).trim());
+      }
+    });
+
+    const classList = [...classSet].sort();
+    selectLop.innerHTML = '<option value="">-- Tất cả lớp --</option>';
+    classList.forEach(c => {
+      selectLop.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+
+    selectLop.value = curVal;
+  }
+
+  function filterAndRender() {
+    const searchTen = document.getElementById('searchTen').value.toLowerCase().trim();
+    const selectedLop = document.getElementById('selectLop').value;
+    const dateFrom = document.getElementById('dateFrom').value; // YYYY-MM-DD
+    const dateTo = document.getElementById('dateTo').value;     // YYYY-MM-DD
+
     let studentMap = {};
 
-    rows.forEach(r => {
+    allRawRows.forEach(r => {
       if (!r.c) return;
 
+      // Cột A: Dấu thời gian
       const timeStr = r.c[0] && r.c[0].f ? r.c[0].f : (r.c[0] && r.c[0].v ? String(r.c[0].v) : '');
+      const dateFormatted = parseDateToYYYYMMDD(r.c[0] && r.c[0].v ? String(r.c[0].v) : timeStr);
+
+      // Lọc theo khoảng ngày (Cột A)
+      if (dateFrom && dateFormatted && dateFormatted < dateFrom) return;
+      if (dateTo && dateFormatted && dateFormatted > dateTo) return;
+
       const hoTen = r.c[1] && r.c[1].v ? String(r.c[1].v).trim() : '';
       const lop = r.c[2] && r.c[2].v ? String(r.c[2].v).trim() : '';
       
@@ -425,7 +495,11 @@
         diem = parseFloat(r.c[4].v) || 0;
       }
 
-      if (hoTen && lop) {
+      // Lọc theo Tên và Lớp
+      const matchTen = !searchTen || hoTen.toLowerCase().includes(searchTen);
+      const matchLop = !selectedLop || lop === selectedLop;
+
+      if (hoTen && lop && matchTen && matchLop) {
         const key = `${hoTen}_${lop}`;
         if (!studentMap[key]) {
           studentMap[key] = {
@@ -449,33 +523,7 @@
       }
     });
 
-    rawStudentData = Object.values(studentMap);
-  }
-
-  function populateClassOptions() {
-    const selectLop = document.getElementById('selectLop');
-    const curVal = selectLop.value;
-
-    const classList = [...new Set(rawStudentData.map(s => s.lop))].sort();
-
-    selectLop.innerHTML = '<option value="">-- Tất cả lớp --</option>';
-    classList.forEach(c => {
-      selectLop.innerHTML += `<option value="${c}">${c}</option>`;
-    });
-
-    selectLop.value = curVal;
-  }
-
-  function filterAndRender() {
-    const searchTen = document.getElementById('searchTen').value.toLowerCase().trim();
-    const selectedLop = document.getElementById('selectLop').value;
-
-    currentFilteredData = rawStudentData.filter(s => {
-      const matchTen = !searchTen || s.hoTen.toLowerCase().includes(searchTen);
-      const matchLop = !selectedLop || s.lop === selectedLop;
-      return matchTen && matchLop;
-    });
-
+    currentFilteredData = Object.values(studentMap);
     currentFilteredData.sort((a, b) => a.stt - b.stt);
 
     renderTable(currentFilteredData);
@@ -486,7 +534,7 @@
     tbody.innerHTML = '';
 
     if (data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-message">Không tìm thấy dữ liệu phù hợp trong khoảng thời gian đã chọn.</td></tr>`;
       document.getElementById('totalStudents').innerText = `Tổng số: 0 sinh viên`;
       document.getElementById('totalScores').innerText = `Tổng điểm cộng lớp: 0`;
       return;
@@ -521,6 +569,14 @@
     }
 
     const selectedLop = document.getElementById('selectLop').value || "Tất cả các lớp";
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    
+    let timeRangeStr = "Toàn bộ thời gian";
+    if (dateFrom && dateTo) timeRangeStr = `Từ ngày ${dateFrom} đến ngày ${dateTo}`;
+    else if (dateFrom) timeRangeStr = `Từ ngày ${dateFrom}`;
+    else if (dateTo) timeRangeStr = `Đến ngày ${dateTo}`;
+
     const nowStr = new Date().toLocaleString('vi-VN');
     let totalScore = 0;
 
@@ -582,7 +638,14 @@
           }),
           new docx.Paragraph({
             children: [
-              new docx.TextRun({ text: `Thời điểm xuất: `, bold: true }),
+              new docx.TextRun({ text: `Thời gian lọc dữ liệu: `, bold: true }),
+              new docx.TextRun({ text: timeRangeStr }),
+            ],
+            space: { after: 100 }
+          }),
+          new docx.Paragraph({
+            children: [
+              new docx.TextRun({ text: `Thời điểm xuất báo cáo: `, bold: true }),
               new docx.TextRun({ text: nowStr }),
             ],
             space: { after: 300 }
