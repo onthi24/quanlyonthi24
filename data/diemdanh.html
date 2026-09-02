@@ -62,16 +62,18 @@
   </div>
 
   <div class="main-layout">
+    <!-- Cột trái: Google Form -->
     <div class="left-col">
       <div class="card-header">
-        📝 NHẬP DỮ LIỆU MỚI
+        📝 NHẬP DỮ LIỆU ĐIỂM DANH
       </div>
       <iframe class="form-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLSfTQCf0rWn3KXZDzFGTTwAX_jx5JQumMw7u7JqVblrzU9qNCw/viewform?embedded=true">Đang tải...</iframe>
     </div>
 
+    <!-- Cột phải: Bảng Thống Kê -->
     <div class="right-col">
       <div class="card-header">
-        <span>📋 TỔNG HỢP ĐIỂM SINH VIÊN</span>
+        <span>📋 ĐIỂM DANH</span>
         <span id="statusTag" class="status-tag warning">▲ Đang kết nối...</span>
       </div>
 
@@ -120,6 +122,7 @@
     </div>
   </div>
 
+  <!-- Nút truy cập Sheet (Hiện khi ấn F2) -->
   <div id="secretSheetBar" class="secret-sheet-bar">
     <a href="https://docs.google.com/spreadsheets/d/1VSMviBiQ8NCm1mQQe6UdtVciW2bZrVJJ-ivDCq43jZM" target="_blank" class="btn-secret">
       🔗 Truy cập </a>
@@ -133,7 +136,7 @@
   let rawStudentData = [];
 
   window.onload = function() {
-    // 1. Lấy dữ liệu từ bộ nhớ đệm hiển thị ngay lập tức
+    // 1. Đọc dữ liệu từ bộ nhớ đệm hiển thị tức thì
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
       try {
@@ -162,7 +165,7 @@
   async function fetchLatestData() {
     updateStatus('⏳ Đang đồng bộ...', false);
     try {
-      // Thêm timestamp để ép trình duyệt tải mới khi nhấn F5
+      // Thêm timestamp để vượt qua cache trình duyệt khi nhấn F5
       const res = await fetch(`${API_URL}&t=${Date.now()}`);
       const text = await res.text();
 
@@ -172,7 +175,7 @@
 
       processSheetRows(json.table.rows);
 
-      // Đè bản ghi mới vào bộ nhớ đệm
+      // Lưu bản ghi mới vào bộ nhớ đệm
       localStorage.setItem(STORAGE_KEY, JSON.stringify(rawStudentData));
 
       populateClassOptions();
@@ -195,10 +198,16 @@
     rows.forEach(r => {
       if (!r.c) return;
 
-      // Cột A: Thời gian, Cột B: Họ tên, Cột C: Lớp, Cột D: STT, Cột E: Điểm cộng
+      // Cột A: Thời gian (c[0]), Cột B: Họ tên (c[1]), Cột C: Lớp (c[2]), Cột D: STT (c[3]), Cột E: Điểm cộng (c[4])
       const timeStr = r.c[0] && r.c[0].f ? r.c[0].f : (r.c[0] && r.c[0].v ? String(r.c[0].v) : '');
       const hoTen = r.c[1] && r.c[1].v ? String(r.c[1].v).trim() : '';
       const lop = r.c[2] && r.c[2].v ? String(r.c[2].v).trim() : '';
+      
+      // Lấy STT từ Cột D (c[3])
+      let stt = 0;
+      if (r.c[3] && r.c[3].v !== null && r.c[3].v !== undefined) {
+        stt = parseInt(r.c[3].v) || 0;
+      }
 
       // Xử lý ô trống cho Cột E
       let diem = 0;
@@ -210,6 +219,7 @@
         const key = `${hoTen}_${lop}`;
         if (!studentMap[key]) {
           studentMap[key] = {
+            stt: stt,
             hoTen: hoTen,
             lop: lop,
             tongDiem: 0,
@@ -218,6 +228,7 @@
         }
         studentMap[key].tongDiem += diem;
         if (timeStr) studentMap[key].capNhatCuoi = timeStr;
+        if (stt > 0) studentMap[key].stt = stt; // Cập nhật STT đúng
       }
     });
 
@@ -248,6 +259,9 @@
       return matchTen && matchLop;
     });
 
+    // Sắp xếp dữ liệu tăng dần theo STT (Cột D)
+    filtered.sort((a, b) => a.stt - b.stt);
+
     renderTable(filtered);
   }
 
@@ -264,12 +278,12 @@
 
     let grandTotalScore = 0;
 
-    data.forEach((item, index) => {
+    data.forEach((item) => {
       grandTotalScore += item.tongDiem;
       const tr = document.createElement('tr');
 
       tr.innerHTML = `
-        <td class="text-center text-bold">${index + 1}</td>
+        <td class="text-center text-bold">${item.stt || '-'}</td>
         <td class="text-bold">${item.hoTen}</td>
         <td class="text-center">${item.lop}</td>
         <td class="text-center text-bold" style="color: ${item.tongDiem > 0 ? '#1e5631' : '#333'}">${item.tongDiem}</td>
