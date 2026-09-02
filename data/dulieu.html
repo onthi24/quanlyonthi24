@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Dữ Liệu Thu Chi</title>
+    <title>Quản Lý Thu Chi & Nhập Dữ Liệu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -17,27 +17,67 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #ffffff;
+            background-color: #f8fafc;
             color: var(--text-color);
             padding: 20px;
             font-size: 15px;
         }
 
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         .header-title {
             text-align: center; color: var(--primary-color); margin-bottom: 25px;
             font-size: 22px; text-transform: uppercase; font-weight: 700;
         }
 
-        /* BỘ LỌC TÌM KIẾM */
+        /* Bố cục chia 2 cột linh hoạt */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Khung Form Nhập Dữ Liệu */
+        .form-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-iframe {
+            width: 100%;
+            height: 680px;
+            border: none;
+        }
+
+        /* Khung Bảng Dữ Liệu */
+        .data-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
         .filter-section {
-            display: flex; gap: 15px; margin-bottom: 20px; background: var(--secondary-color);
-            padding: 15px; border-radius: 8px; align-items: center;
+            display: flex; gap: 15px; margin-bottom: 15px; background: var(--secondary-color);
+            padding: 12px; border-radius: 8px; align-items: center;
         }
-        .search-box {
-            flex: 1; position: relative;
-        }
+
+        .search-box { flex: 1; position: relative; }
         .search-box input {
             width: 100%; padding: 10px 12px 10px 35px; border-radius: 6px;
             border: 1px solid #cbd5e0; outline: none; font-size: 14px;
@@ -46,16 +86,23 @@
             position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;
         }
 
-        /* BẢNG DỮ LIỆU */
+        .btn-refresh {
+            background-color: #2563eb; color: white; border: none; padding: 10px 16px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 8px; font-size: 14px;
+        }
+        .btn-refresh:hover { background-color: #1d4ed8; }
+
         .table-responsive { 
             overflow-x: auto; 
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
         }
         
         table { width: 100%; border-collapse: collapse; background-color: white; }
-        thead { background-color: var(--primary-color); color: white; }
-        th, td { padding: 14px 15px; border-bottom: 1px solid var(--border-color); }
+        thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
         th { font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
         
         td { font-size: 14px; line-height: 1.5; }
@@ -67,37 +114,66 @@
         tbody tr:hover { background-color: #f1f5f9; }
 
         .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
+
+        /* Responsive cho thiết bị di động / màn hình nhỏ */
+        @media (max-width: 992px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .form-iframe {
+                height: 550px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 class="header-title"><i class="fa-solid fa-receipt"></i> QUẢN LÝ DỮ LIỆU CÂU TRẢ LỜI</h2>
+        <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
-        <!-- BỘ LỌC TÌM KIẾM HỌ TÊN -->
-        <div class="filter-section">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Tìm kiếm theo Họ và tên..." oninput="applyFilter()">
+        <div class="main-layout">
+            <!-- CỘT 1: FORM NHẬP DỮ LIỆU -->
+            <div class="form-card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
+                </div>
+                <!-- Nhúng Google Form trực tiếp -->
+                <iframe 
+                    class="form-iframe"
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/viewform?embedded=true">
+                    Đang tải form...
+                </iframe>
             </div>
-        </div>
 
-        <!-- BẢNG HIỂN THỊ DỮ LIỆU -->
-        <div class="table-responsive">
-            <table id="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">STT</th>
-                        <th style="text-align: left;">Họ và tên</th>
-                        <th style="width: 180px; text-align: right;">Số tiền</th>
-                        <th style="width: 160px;">Ngày tháng</th>
-                        <th style="width: 180px;">Ngày nhập</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="5" class="empty-message">Đang tải dữ liệu...</td></tr>
-                </tbody>
-            </table>
+            <!-- CỘT 2: BẢNG HIỂN THỊ DỮ LIỆU THU CHI -->
+            <div class="data-card">
+                <div class="filter-section">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="search-input" placeholder="Tìm kiếm theo Họ và tên..." oninput="applyFilter()">
+                    </div>
+                    <button class="btn-refresh" onclick="forceReloadData()">
+                        <i class="fa-solid fa-rotate"></i> Cập nhật dữ liệu
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th style="text-align: left;">Họ và tên</th>
+                                <th style="width: 140px; text-align: right;">Số tiền</th>
+                                <th style="width: 130px;">Ngày tháng</th>
+                                <th style="width: 160px;">Ngày nhập</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr><td colspan="5" class="empty-message">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -112,7 +188,6 @@
             loadData();
         };
 
-        // Hàm phân tích dòng CSV an toàn
         function parseCSVLine(text) {
             let result = [];
             let entry = '';
@@ -134,7 +209,6 @@
             return result;
         }
 
-        // Tải dữ liệu từ Google Sheets (Cache-First)
         function loadData() {
             const cachedData = localStorage.getItem(CACHE_KEY);
             if (cachedData) {
@@ -146,7 +220,12 @@
                 }
             }
 
-            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+            fetchDataFromSheet();
+        }
+
+        function fetchDataFromSheet() {
+            // Thêm timestamp ngẫu nhiên để ép trình duyệt fetch dữ liệu mới nhất từ Google Sheets
+            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&_t=${new Date().getTime()}`;
 
             fetch(CSV_URL)
                 .then(response => response.text())
@@ -154,15 +233,14 @@
                     let lines = text.split(/\r?\n/);
                     let rawData = [];
 
-                    // Bỏ qua dòng tiêu đề (i = 0), duyệt từ dòng dữ liệu (i = 1)
                     for (let i = 1; i < lines.length; i++) {
                         if (!lines[i].trim()) continue;
                         let cols = parseCSVLine(lines[i]);
 
-                        let timestamp = cols[0] ? cols[0].trim() : ""; // Cột A: Dấu thời gian
-                        let fullName = cols[1] ? cols[1].trim() : "";  // Cột B: Họ và tên
-                        let amount = cols[2] ? cols[2].trim() : "";    // Cột C: Số tiền
-                        let date = cols[3] ? cols[3].trim() : "";      // Cột D: Ngày tháng
+                        let timestamp = cols[0] ? cols[0].trim() : ""; 
+                        let fullName = cols[1] ? cols[1].trim() : "";  
+                        let amount = cols[2] ? cols[2].trim() : "";    
+                        let date = cols[3] ? cols[3].trim() : "";      
 
                         if (fullName || amount) {
                             rawData.push({
@@ -181,12 +259,15 @@
                         applyFilter();
                     }
                 })
-                .catch(err => {
-                    console.error("Lỗi đồng bộ Google Sheets:", err);
-                });
+                .catch(err => console.error("Lỗi đồng bộ dữ liệu:", err));
         }
 
-        // Hiển thị bảng dữ liệu
+        function forceReloadData() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-message"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu mới nhất...</td></tr>';
+            fetchDataFromSheet();
+        }
+
         function renderTable(dataArray) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
@@ -197,7 +278,6 @@
             }
 
             dataArray.forEach((item, index) => {
-                // Định dạng số tiền (Ví dụ: 1530 -> 1.530)
                 let formattedAmount = item.amount;
                 let num = parseFloat(item.amount.replace(/[^0-9.-]+/g, ""));
                 if (!isNaN(num)) {
@@ -216,7 +296,6 @@
             });
         }
 
-        // Đội bộ lọc tìm kiếm theo Họ và tên
         function applyFilter() {
             let keyword = document.getElementById('search-input').value.toLowerCase().trim();
             let filtered = allData.filter(item => item.fullName.toLowerCase().includes(keyword));
