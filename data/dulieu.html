@@ -31,7 +31,6 @@
             font-size: 22px; text-transform: uppercase; font-weight: 700;
         }
 
-        /* Bố cục 2 cột cân đối */
         .main-layout {
             display: grid;
             grid-template-columns: 380px 1fr;
@@ -39,7 +38,6 @@
             align-items: start;
         }
 
-        /* Phong cách Card */
         .card {
             background: #ffffff;
             border-radius: 12px;
@@ -59,7 +57,6 @@
             font-size: 15px;
         }
 
-        /* Khung Form Nhập Dữ Liệu */
         .form-iframe {
             width: 100%;
             height: 590px;
@@ -67,12 +64,10 @@
             display: block;
         }
 
-        /* Khung Bảng Dữ Liệu */
         .data-card-content {
             padding: 15px 20px 20px 20px;
         }
 
-        /* Thanh bộ lọc */
         .filter-section {
             display: flex;
             flex-wrap: wrap;
@@ -124,7 +119,6 @@
         .btn-reset { background-color: #e2e8f0; color: #475569; }
         .btn-reset:hover { background-color: #cbd5e0; }
 
-        /* Bảng dữ liệu */
         .table-responsive { 
             overflow-x: auto; 
             border-radius: 8px;
@@ -148,7 +142,6 @@
 
         .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
 
-        /* Thống kê tổng bên dưới bảng */
         .summary-bar {
             margin-top: 12px;
             display: flex;
@@ -160,7 +153,6 @@
             padding: 8px 5px;
         }
 
-        /* Nhãn trạng thái cập nhật ngầm */
         .sync-status {
             font-size: 12px;
             font-weight: 400;
@@ -170,7 +162,6 @@
             gap: 6px;
         }
 
-        /* Nút TRUY CẬP ẩn/hiện kích hoạt bằng F2 */
         #access-link-btn {
             position: fixed;
             bottom: 20px;
@@ -195,7 +186,6 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive */
         @media (max-width: 992px) {
             .main-layout { grid-template-columns: 1fr; }
             .form-iframe { height: 550px; }
@@ -287,7 +277,7 @@
 
         window.onload = function() {
             setupF2KeyShortcut();
-            loadDataWithStaleWhileRevalidate();
+            initDataWithCacheAndAutoUpdate();
         };
 
         function setupF2KeyShortcut() {
@@ -327,21 +317,23 @@
             return null;
         }
 
-        function loadDataWithStaleWhileRevalidate() {
+        // BƯỚC 1: Hiện dữ liệu bộ nhớ đệm ngay tức thì (0 giây chờ), sau đó tự gọi API cập nhật ngầm
+        function initDataWithCacheAndAutoUpdate() {
             const cachedData = localStorage.getItem(CACHE_KEY);
             
             if (cachedData) {
                 try {
                     allData = JSON.parse(cachedData);
-                    applyFilter();
-                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...');
+                    applyFilter(); // Đưa dữ liệu đệm lên màn hình ngay
+                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
                 } catch (e) {
-                    console.error("Lỗi đọc bộ nhớ đệm:", e);
+                    console.error("Lỗi bộ nhớ đệm:", e);
                 }
             } else {
-                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...');
+                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
             }
 
+            // Gọi API cập nhật tự động
             fetchDataFromSheet();
         }
 
@@ -350,6 +342,7 @@
             if (statusEl) statusEl.innerHTML = htmlContent;
         }
 
+        // BƯỚC 2: Tải dữ liệu mới từ Google Sheets, cập nhật lại màn hình và lưu đệm
         function fetchDataFromSheet() {
             const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
@@ -377,24 +370,20 @@
                         }
                     }
 
-                    // Đảo ngược thứ tự mảng để dòng cuối trong Google Sheet hiển thị lên đầu
+                    // Đảo ngược thứ tự: Đưa bản ghi nhập sau cùng lên đầu
                     rawData.reverse();
 
-                    const cachedData = localStorage.getItem(CACHE_KEY);
-                    const newDataString = JSON.stringify(rawData);
-
-                    if (newDataString !== cachedData) {
-                        localStorage.setItem(CACHE_KEY, newDataString);
-                        allData = rawData;
-                        applyFilter();
-                    }
+                    // Luôn ghi đè dữ liệu mới vào bộ nhớ đệm và hiển thị lên giao diện
+                    allData = rawData;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
+                    applyFilter();
                     
-                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật');
+                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
                     setTimeout(() => showSyncStatus(''), 3000);
                 })
                 .catch(err => {
                     console.error("Lỗi đồng bộ dữ liệu:", err);
-                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi đồng bộ');
+                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
                 });
         }
 
@@ -402,7 +391,7 @@
             const icon = document.getElementById('refresh-icon');
             if (icon) icon.classList.add('fa-spin');
             
-            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải mới...');
+            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
             fetchDataFromSheet();
             
             setTimeout(() => {
