@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Điểm Danh & Điểm Cộng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a4d2e;
+            --primary-hover: #143d24;
+            --secondary-color: #f4f6f9;
+            --text-color: #333;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: var(--text-color);
+            padding: 20px;
+            font-size: 15px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .header-title {
+            text-align: center; color: var(--primary-color); margin-bottom: 20px;
+            font-size: 22px; text-transform: uppercase; font-weight: 700;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .form-iframe {
+            width: 100%;
+            height: 590px;
+            border: none;
+            display: block;
+        }
+
+        .data-card-content {
+            padding: 15px 20px 20px 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: var(--secondary-color);
+            padding: 12px;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .search-box { flex: 1.5; min-width: 160px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 8px 12px 8px 35px; border-radius: 6px;
+            border: 1px solid #cbd5e0; outline: none; font-size: 14px;
+        }
+        .search-box i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;
+        }
+
+        .select-box {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            outline: none;
+            font-size: 13px;
+            background: white;
+            color: #333;
+            min-width: 120px;
+        }
+
+        .date-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .date-filter-group input[type="date"] {
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            outline: none;
+            font-size: 13px;
+            color: #333;
+            background: white;
+        }
+
+        .btn-action {
+            border: none; padding: 8px 14px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; font-size: 13px;
+        }
+
+        .btn-refresh { background-color: #2563eb; color: white; }
+        .btn-refresh:hover { background-color: #1d4ed8; }
+
+        .btn-reset { background-color: #e2e8f0; color: #475569; }
+        .btn-reset:hover { background-color: #cbd5e0; }
+
+        .table-responsive { 
+            overflow-x: auto; 
+            border-radius: 8px;
+            max-height: 520px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
+        
+        td { font-size: 14px; line-height: 1.5; }
+        td.text-center { text-align: center; }
+        td.text-right { text-align: right; }
+        td.font-weight-bold { font-weight: 600; }
+
+        tbody tr:nth-child(even) { background-color: #fbfbfb; }
+        tbody tr:hover { background-color: #f1f5f9; }
+
+        .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
+
+        .summary-bar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            padding: 8px 5px;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            font-weight: 400;
+            color: #cbd5e0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #access-link-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #16a34a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            transition: transform 0.2s, background-color 0.2s;
+            font-size: 14px;
+        }
+
+        #access-link-btn:hover {
+            background-color: #15803d;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 992px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .form-iframe { height: 550px; }
+            .filter-section { flex-direction: column; align-items: stretch; }
+            .date-filter-group { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="header-title"><i class="fa-solid fa-graduation-cap"></i> QUẢN LÝ ĐIỂM DANH & ĐIỂM CỘNG</h2>
+
+        <div class="main-layout">
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
+                </div>
+                <iframe 
+                    class="form-iframe"
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/viewform?embedded=true">
+                    Đang tải form...
+                </iframe>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-table-list"></i> DANH SÁCH SINH VIÊN ĐIỂM DANH</span>
+                    <span id="sync-indicator" class="sync-status"></span>
+                </div>
+                <div class="data-card-content">
+                    <div class="filter-section">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="search-input" placeholder="Tìm theo tên..." oninput="applyFilter()">
+                        </div>
+
+                        <select id="class-select" class="select-box" onchange="applyFilter()">
+                            <option value="">-- Tất cả lớp --</option>
+                        </select>
+
+                        <div class="date-filter-group">
+                            <span>Từ:</span>
+                            <input type="date" id="from-date" onchange="applyFilter()">
+                        </div>
+                        <div class="date-filter-group">
+                            <span>Đến:</span>
+                            <input type="date" id="to-date" onchange="applyFilter()">
+                        </div>
+
+                        <button class="btn-action btn-reset" onclick="resetFilter()" title="Xóa bộ lọc">
+                            <i class="fa-solid fa-filter-circle-xmark"></i>
+                        </button>
+                        <button class="btn-action btn-refresh" onclick="forceReloadData()">
+                            <i class="fa-solid fa-rotate" id="refresh-icon"></i> Cập nhật
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">STT</th>
+                                    <th style="text-align: left;">Họ và tên</th>
+                                    <th style="width: 130px; text-align: center;">Lớp</th>
+                                    <th style="width: 140px; text-align: center;">Điểm cộng (+/-)</th>
+                                    <th style="width: 180px; text-align: center;">Thời gian nhập</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr><td colspan="5" class="empty-message">Đang kiểm tra dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="summary-bar">
+                        <span id="record-count">Tổng số: 0 sinh viên</span>
+                        <span id="total-score" style="color: #0b694a;">Tổng điểm cộng: 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1tX-B_dsmJfuftV9fEA5Q-_TLWGauStsvE_3ZkGzv6Iw/edit?resourcekey=&gid=723427781#gid=723427781" target="_blank">
+        <i class="fa-solid fa-file-excel"></i> TRUY CẬP
+    </a>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
+        const CACHE_KEY = "STUDENT_ATTENDANCE_CACHE";
+        
+        let allData = [];
+
+        window.onload = function() {
+            setupF2KeyShortcut();
+            initDataWithCacheAndAutoUpdate();
+        };
+
+        function setupF2KeyShortcut() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'F2') {
+                    event.preventDefault();
+                    const btn = document.getElementById('access-link-btn');
+                    btn.style.display = (btn.style.display === 'none' || btn.style.display === '') ? 'inline-flex' : 'none';
+                }
+            });
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return "";
+            let str = String(dateStr).trim();
+            let d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                let day = String(d.getDate()).padStart(2, '0');
+                let month = String(d.getMonth() + 1).padStart(2, '0');
+                let year = d.getFullYear();
+                let hours = String(d.getHours()).padStart(2, '0');
+                let minutes = String(d.getMinutes()).padStart(2, '0');
+                let seconds = String(d.getSeconds()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+            }
+            return str;
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            const parts = String(dateStr).trim().split(' ')[0].split('/');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1;
+                const year = parseInt(parts[2], 10);
+                return new Date(year, month, day);
+            }
+            return null;
+        }
+
+        function populateClassDropdown(data) {
+            const selectEl = document.getElementById('class-select');
+            const currentValue = selectEl.value;
+            
+            let classes = new Set();
+            data.forEach(item => {
+                if (item.className) classes.add(item.className);
+            });
+
+            selectEl.innerHTML = '<option value="">-- Tất cả lớp --</option>';
+            Array.from(classes).sort().forEach(c => {
+                let opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                selectEl.appendChild(opt);
+            });
+
+            selectEl.value = currentValue;
+        }
+
+        function initDataWithCacheAndAutoUpdate() {
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            
+            if (cachedData) {
+                try {
+                    allData = JSON.parse(cachedData);
+                    populateClassDropdown(allData);
+                    applyFilter();
+                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
+                } catch (e) {
+                    console.error("Lỗi bộ nhớ đệm:", e);
+                }
+            } else {
+                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
+            }
+
+            fetchDataFromSheet();
+        }
+
+        function showSyncStatus(htmlContent) {
+            const statusEl = document.getElementById('sync-indicator');
+            if (statusEl) statusEl.innerHTML = htmlContent;
+        }
+
+        function fetchDataFromSheet() {
+            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
+
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let rawData = [];
+
+                    for (let i = 1; i < data.length; i++) {
+                        let row = data[i];
+                        if (!row || row.length === 0) continue;
+
+                        let timestamp = row[0] ? row[0] : ""; 
+                        let fullName = row[1] ? row[1] : "";  
+                        let className = row[2] ? row[2] : ""; 
+                        let score = row[3] ? row[3] : "0";    
+
+                        if (fullName || className) {
+                            rawData.push({
+                                originalIndex: i,
+                                timestamp: formatDateTime(timestamp),
+                                fullName: String(fullName).trim(),
+                                className: String(className).trim(),
+                                score: String(score).trim()
+                            });
+                        }
+                    }
+
+                    rawData.reverse();
+
+                    allData = rawData;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
+                    populateClassDropdown(allData);
+                    applyFilter();
+                    
+                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Đã cập nhật mới nhất');
+                    setTimeout(() => showSyncStatus(''), 3000);
+                })
+                .catch(err => {
+                    console.error("Lỗi đồng bộ dữ liệu:", err);
+                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Lỗi cập nhật (đang dùng đệm)');
+                });
+        }
+
+        function forceReloadData() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
+            
+            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
+            fetchDataFromSheet();
+            
+            setTimeout(() => {
+                if (icon) icon.classList.remove('fa-spin');
+            }, 1000);
+        }
+
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            let sumScore = 0;
+
+            if (dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+                document.getElementById('record-count').innerText = `Tổng số: 0 sinh viên`;
+                document.getElementById('total-score').innerText = `Tổng điểm cộng: 0`;
+                return;
+            }
+
+            dataArray.forEach((item) => {
+                let scoreNum = parseFloat(item.score.replace(/[^0-9.-]+/g, ""));
+                if (!isNaN(scoreNum)) {
+                    sumScore += scoreNum;
+                } else {
+                    scoreNum = 0;
+                }
+
+                let scoreColor = scoreNum > 0 ? '#0b694a' : (scoreNum < 0 ? '#dc2626' : '#333');
+                let scoreDisplay = scoreNum > 0 ? `+${scoreNum}` : `${scoreNum}`;
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center" style="font-weight: bold; color: #64748b;">${item.originalIndex}</td>
+                    <td class="font-weight-bold">${item.fullName}</td>
+                    <td class="text-center">${item.className}</td>
+                    <td class="text-center font-weight-bold" style="color: ${scoreColor};">${scoreDisplay}</td>
+                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.timestamp}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('record-count').innerText = `Tổng số: ${dataArray.length} sinh viên`;
+            document.getElementById('total-score').innerText = `Tổng điểm cộng: ${sumScore > 0 ? '+' + sumScore : sumScore}`;
+        }
+
+        function applyFilter() {
+            let keyword = document.getElementById('search-input').value.toLowerCase().trim();
+            let selectedClass = document.getElementById('class-select').value;
+            let fromDateVal = document.getElementById('from-date').value;
+            let toDateVal = document.getElementById('to-date').value;
+
+            let fromDate = fromDateVal ? new Date(fromDateVal) : null;
+            let toDate = toDateVal ? new Date(toDateVal) : null;
+
+            if (fromDate) fromDate.setHours(0, 0, 0, 0);
+            if (toDate) toDate.setHours(23, 59, 59, 999);
+
+            let filtered = allData.filter(item => {
+                let matchName = item.fullName.toLowerCase().includes(keyword);
+                let matchClass = selectedClass === "" || item.className === selectedClass;
+                let itemDate = parseDate(item.timestamp);
+                let matchDate = true;
+
+                if (itemDate) {
+                    if (fromDate && itemDate < fromDate) matchDate = false;
+                    if (toDate && itemDate > toDate) matchDate = false;
+                }
+
+                return matchName && matchClass && matchDate;
+            });
+
+            renderTable(filtered);
+        }
+
+        function resetFilter() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('class-select').value = '';
+            document.getElementById('from-date').value = '';
+            document.getElementById('to-date').value = '';
+            applyFilter();
+        }
+    </script>
+</body>
+</html>
