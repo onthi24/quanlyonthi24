@@ -3,149 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Dữ Liệu - Google Sheets</title>
+    <title>HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ TRỢ GIẢNG</title>
     <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius: 12px;
+            --primary-green: #1b4d3e;
+            --header-bg: #1e4d3b;
+            --panel-bg: #e8f5e9;
+            --panel-border: #c8e6c9;
+            --btn-blue: #0288d1;
+            --btn-blue-hover: #0277bd;
+            --border-color: #a5d6a7;
+            --text-color: #1b4d3e;
+            --table-hover: #f1f8e9;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 24px;
-            min-height: 100vh;
+            background-color: #f4f6f8;
+            color: #333;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Header Section */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            background: var(--card-bg);
-            padding: 20px 24px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
+        /* Title */
+        .page-title {
+            text-align: center;
+            color: var(--primary-green);
+            font-size: 24px;
             font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header h1 i {
-            color: var(--primary-color);
-        }
-
-        .status-badge {
-            font-size: 0.875rem;
-            padding: 6px 12px;
-            border-radius: 9999px;
-            background-color: #e0f2fe;
-            color: #0369a1;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Controls & Search */
-        .controls {
-            display: flex;
-            gap: 16px;
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Filter Panel Design */
+        .filter-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
             flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
         }
 
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 280px;
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .search-box i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
+        .filter-group label {
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 14px;
+            white-space: nowrap;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 12px 16px 12px 42px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            font-size: 0.95rem;
+        .filter-control {
+            padding: 8px 12px;
+            border: 1px solid #b0bec5;
+            border-radius: 4px;
+            font-size: 14px;
             outline: none;
-            transition: all 0.2s;
+            background-color: #fff;
+            min-width: 160px;
         }
 
-        .search-box input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        .filter-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 2px rgba(27, 77, 62, 0.2);
         }
 
-        .btn {
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            border: none;
-            background: var(--primary-color);
+        .btn-update {
+            background-color: var(--btn-blue);
             color: white;
-            font-weight: 600;
-            font-size: 0.95rem;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
+            gap: 6px;
+            transition: background-color 0.2s;
         }
 
-        .btn:hover {
-            background: var(--primary-hover);
+        .btn-update:hover {
+            background-color: var(--btn-blue-hover);
         }
 
-        /* Table Card & Responsive Container */
+        /* Table Design */
         .table-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
+            background: #fff;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        .table-container {
+        .table-responsive {
             width: 100%;
             overflow-x: auto;
         }
@@ -153,56 +127,82 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
-            font-size: 0.95rem;
+            text-align: center;
+            font-size: 14px;
         }
 
-        thead {
-            background-color: #f1f5f9;
-            border-bottom: 2px solid var(--border-color);
+        thead tr {
+            background-color: var(--header-bg);
+            color: white;
         }
 
         th {
-            padding: 16px 20px;
-            font-weight: 600;
-            color: var(--text-main);
+            padding: 12px 10px;
+            font-weight: 700;
+            border: 1px solid #2e7d32;
             white-space: nowrap;
         }
 
         td {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            color: #334155;
+            padding: 10px;
+            border: 1px solid var(--border-color);
             white-space: nowrap;
         }
 
-        tbody tr {
-            transition: background 0.15s;
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
         }
 
         tbody tr:hover {
-            background-color: #f8fafc;
+            background-color: var(--table-hover);
         }
 
-        tbody tr:last-child td {
-            border-bottom: none;
+        .align-left {
+            text-align: left;
         }
 
-        /* Loading & Empty State */
-        .loading-state, .empty-state {
-            padding: 48px 24px;
+        .check-icon {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .badge-class {
+            background-color: #e8f5e9;
+            color: var(--primary-green);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* Table Footer / Summary */
+        tfoot tr {
+            background-color: var(--panel-bg);
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        tfoot td {
+            border-top: 2px solid var(--primary-green);
+        }
+
+        /* Status & Loading */
+        .loading-box, .empty-box {
             text-align: center;
-            color: var(--text-muted);
+            padding: 30px;
+            color: #666;
+            font-size: 15px;
         }
 
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
+            border-top: 3px solid var(--primary-green);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 16px auto;
+            margin: 0 auto 10px auto;
         }
 
         @keyframes spin {
@@ -210,311 +210,301 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Footer */
-        .footer {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        /* Responsive Styles */
         @media (max-width: 768px) {
-            body { padding: 12px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .controls { flex-direction: column; }
-            .search-box { width: 100%; }
-            .btn { width: 100%; justify-content: center; }
+            .filter-panel { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-direction: column; align-items: flex-start; }
+            .filter-control { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Header -->
-    <header class="header">
-        <h1><i class="fa-solid fa-table-list"></i> Dữ Liệu Từ Google Sheets</h1>
-        <div id="statusBadge" class="status-badge">
-            <i class="fa-solid fa-sync fa-spin"></i> Đang khởi tạo...
-        </div>
-    </header>
+    <h1 class="page-title">BẢNG THỐNG KÊ LỊCH HỌC VÀ TRỢ GIẢNG</h1>
 
-    <!-- Controls -->
-    <div class="controls">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="Tìm kiếm dữ liệu..." oninput="filterData()">
+    <!-- Khung bộ lọc dữ liệu -->
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label for="daySelect">LỰA CHỌN THỨ / CA:</label>
+            <select id="daySelect" class="filter-control" onchange="filterData()">
+                <option value="ALL">-- Tất cả các Thứ / Ca --</option>
+                <!-- Các cột Ca/Thứ từ cột J trở đi sẽ tự động load vào đây -->
+            </select>
         </div>
-        <button class="btn" onclick="fetchSheetData(true)">
-            <i class="fa-solid fa-arrows-rotate"></i> Tải lại dữ liệu
+
+        <div class="filter-group">
+            <label for="classSelect">DANH SÁCH LỚP:</label>
+            <select id="classSelect" class="filter-control" onchange="filterData()">
+                <option value="ALL">-- Tất cả các lớp --</option>
+                <option value="T12">Toán 12 (T12)</option>
+                <option value="L12">Lí 12 (L12)</option>
+                <option value="TL12">Cả Toán 12 & Lí 12 (TL12)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="searchInput">TÌM TÊN (TG/HS):</label>
+            <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên Trợ giảng hoặc Học sinh..." oninput="filterData()">
+        </div>
+
+        <button class="btn-update" onclick="fetchData()">
+            <i class="fa-solid fa-rotate"></i> Cập nhật
         </button>
     </div>
 
-    <!-- Table Card -->
+    <!-- Bảng hiển thị dữ liệu -->
     <div class="table-card">
-        <div class="table-container">
+        <div class="table-responsive">
             <table id="dataTable">
-                <thead id="tableHead">
-                    <!-- Tiêu đề cột sẽ tự động render tại đây -->
+                <thead>
+                    <tr id="tableHeader">
+                        <th>STT</th>
+                        <th>Tên Trợ Giảng</th>
+                        <th>Tên Học Sinh</th>
+                        <th>Mã Lớp</th>
+                        <!-- Các cột Ca / Thứ từ cột J trở đi sẽ tự động sinh ở đây -->
+                    </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- Hàng dữ liệu sẽ tự động render tại đây -->
+                    <!-- Dữ liệu render tại đây -->
                 </tbody>
+                <tfoot id="tableFooter">
+                    <!-- Dòng thống kê tổng cộng -->
+                </tfoot>
             </table>
-            
-            <div id="loadingState" class="loading-state">
+
+            <div id="loadingBox" class="loading-box">
                 <div class="spinner"></div>
-                <p>Đang truy xuất dữ liệu từ Google Sheets...</p>
+                <span>Đang tải dữ liệu từ Google Sheets...</span>
             </div>
 
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
-                <p>Không tìm thấy dữ liệu phù hợp.</p>
+            <div id="emptyBox" class="empty-box" style="display: none;">
+                <i class="fa-regular fa-folder-open" style="font-size: 30px; margin-bottom: 8px;"></i>
+                <p>Không tìm thấy dữ liệu phù hợp với bộ lọc.</p>
             </div>
         </div>
-    </div>
-
-    <!-- Footer Information -->
-    <div class="footer">
-        <span id="recordCount">Tổng số: 0 bản ghi</span>
-        <span id="lastUpdated">Cập nhật lần cuối: --:--</span>
     </div>
 </div>
 
 <script>
-    // Configuration Parameters
+    // Configuration
     const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
     const SHEET_NAME = 'dulieu';
     const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-    const CACHE_KEY = 'gsheet_cache_dulieu';
-    const CACHE_TIME_KEY = 'gsheet_cache_time_dulieu';
 
-    // Global State
-    let headers = [];
-    let rawData = [];
+    // Global Data Store
+    let rawRows = [];
+    let dynamicHeaders = []; // Danh sách tên các Ca/Thứ (từ Cột J trở đi)
 
-    // Initialize application
     document.addEventListener('DOMContentLoaded', () => {
-        initDataWithCache();
+        fetchData();
     });
 
     /**
-     * Khởi tạo và nạp dữ liệu từ Cache trước, sau đó đồng bộ ngầm
+     * Tải dữ liệu từ Google Sheets API (/gviz/tq)
      */
-    function initDataWithCache() {
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-
-        if (cachedData) {
-            try {
-                const parsed = JSON.parse(cachedData);
-                headers = parsed.headers || [];
-                rawData = parsed.data || [];
-                
-                renderTable(headers, rawData);
-                updateStatusBadge('Đã nạp từ Cache (Đang đồng bộ...)', 'info');
-                if (cachedTime) {
-                    document.getElementById('lastUpdated').innerText = `Cập nhật lần cuối: ${cachedTime}`;
-                }
-            } catch (e) {
-                console.error('Lỗi đọc Cache:', e);
-            }
-        }
-
-        // Tải dữ liệu mới nhất từ Google Sheets
-        fetchSheetData(false);
-    }
-
-    /**
-     * Lấy dữ liệu trực tiếp từ Google Visualization API (/gviz/tq)
-     */
-    async function fetchSheetData(isManualRefresh = false) {
-        if (isManualRefresh) {
-            showLoading(true);
-            updateStatusBadge('Đang làm mới...', 'loading');
-        }
-
+    async function fetchData() {
+        showLoading(true);
         try {
-            const response = await fetch(GVIZ_URL);
-            if (!response.ok) {
-                throw new Error(`Lỗi kết nối HTTP! Status: ${response.status}`);
-            }
+            const res = await fetch(GVIZ_URL);
+            const text = await res.text();
+            
+            // Extract JSON from JSONP wrapper
+            const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);?/s);
+            if (!match || !match[1]) throw new Error("Cấu trúc dữ liệu không hợp lệ");
 
-            const responseText = await response.text();
-
-            // Bóc tách chuỗi JSONP dạng: google.visualization.Query.setResponse({...});
-            const regex = /google\.visualization\.Query\.setResponse\((.*)\);?/s;
-            const match = responseText.match(regex);
-
-            if (!match || !match[1]) {
-                throw new Error('Cấu trúc dữ liệu Google Sheet trả về không hợp lệ.');
-            }
-
-            const jsonObject = JSON.parse(match[1]);
-
-            if (jsonObject.status === 'error') {
-                throw new Error(jsonObject.errors[0]?.detailed_message || 'Không thể truy cập dữ liệu.');
-            }
-
-            // Xử lý biến đổi bảng dữ liệu
-            parseGVizData(jsonObject.table);
-
-            // Lưu dữ liệu mới vào LocalStorage Cache
-            const nowString = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ headers, data: rawData }));
-            localStorage.setItem(CACHE_TIME_KEY, nowString);
-
-            // Cập nhật giao diện
-            renderTable(headers, rawData);
-            updateStatusBadge('Đã kết nối trực tiếp', 'success');
-            document.getElementById('lastUpdated').innerText = `Cập nhật lần cuối: ${nowString}`;
-
-        } catch (error) {
-            console.error('Lỗi tải dữ liệu:', error);
-            if (rawData.length === 0) {
-                showEmptyState(true, 'Không thể tải dữ liệu từ Google Sheets. Vui lòng kiểm tra lại quyền truy cập file.');
-            }
-            updateStatusBadge('Lỗi đồng bộ', 'error');
+            const json = JSON.parse(match[1]);
+            processRawData(json.table);
+            
+            // Build dropdown Thứ / Ca
+            populateDayDropdown();
+            
+            // Filter & Render
+            filterData();
+        } catch (err) {
+            console.error("Lỗi khi tải dữ liệu:", err);
+            alert("Không thể kết nối dữ liệu Google Sheet. Vui lòng kiểm tra lại quyền truy cập file!");
         } finally {
             showLoading(false);
         }
     }
 
     /**
-     * Chuyển đổi dữ liệu từ cấu trúc table.cols và table.rows của gviz
+     * Bóc tách bảng dữ liệu thô
      */
-    function parseGVizData(table) {
+    function processRawData(table) {
         if (!table) return;
 
-        // Trích xuất tiêu đề cột (cols)
-        headers = table.cols.map((col, index) => {
-            return col.label && col.label.trim() !== '' ? col.label : `Cột ${index + 1}`;
-        });
+        // Trích xuất danh sách cột Ca / Thứ từ cột J (Index 9) trở đi
+        dynamicHeaders = [];
+        for (let i = 9; i < table.cols.length; i++) {
+            const label = table.cols[i]?.label || `Ca ${i - 8}`;
+            dynamicHeaders.push({ index: i, label: label });
+        }
 
-        // Trích xuất từng hàng dữ liệu (rows)
-        rawData = table.rows.map(row => {
-            return row.c.map(cell => {
+        // Bóc tách hàng dữ liệu
+        rawRows = table.rows.map(row => {
+            const cells = row.c || [];
+            return cells.map(cell => {
                 if (!cell) return '';
-                // Ưu tiên lấy giá trị formatted text (f), nếu không có lấy giá trị thực (v)
                 return cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '');
             });
         });
     }
 
     /**
-     * Render cấu trúc bảng HTML
+     * Nạp danh sách Thứ / Ca học vào Dropdown bộ lọc
      */
-    function renderTable(headerList, dataList) {
-        const thead = document.getElementById('tableHead');
-        const tbody = document.getElementById('tableBody');
+    function populateDayDropdown() {
+        const daySelect = document.getElementById('daySelect');
+        const currentValue = daySelect.value;
         
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
+        daySelect.innerHTML = '<option value="ALL">-- Tất cả các Thứ / Ca --</option>';
+        dynamicHeaders.forEach(dh => {
+            const opt = document.createElement('option');
+            opt.value = dh.index;
+            opt.innerText = dh.label;
+            daySelect.appendChild(opt);
+        });
 
-        if (!dataList || dataList.length === 0) {
-            showEmptyState(true);
-            document.getElementById('recordCount').innerText = 'Tổng số: 0 bản ghi';
+        daySelect.value = currentValue;
+    }
+
+    /**
+     * Thuật toán lọc đa điều kiện
+     */
+    function filterData() {
+        const dayFilter = document.getElementById('daySelect').value;
+        const classFilter = document.getElementById('classSelect').value;
+        const searchKey = document.getElementById('searchInput').value.toLowerCase().trim();
+
+        const filtered = rawRows.filter(row => {
+            // Cột B (Index 1): Tên Trợ Giảng, Cột C (Index 2): Tên Học Sinh, Cột D (Index 3): Mã Lớp
+            const troGiang = String(row[1] || '');
+            const hocSinh = String(row[2] || '');
+            const maLop = String(row[3] || '').toUpperCase();
+
+            // 1. Lọc theo lớp (T12, L12, TL12)
+            if (classFilter !== 'ALL') {
+                if (classFilter === 'T12') {
+                    // Chọn Toán 12 -> Lấy cả T12 và TL12
+                    if (!maLop.includes('T12') && !maLop.includes('TL12')) return false;
+                } else if (classFilter === 'L12') {
+                    // Chọn Lí 12 -> Lấy cả L12 và TL12
+                    if (!maLop.includes('L12') && !maLop.includes('TL12')) return false;
+                } else if (classFilter === 'TL12') {
+                    // Chọn TL12 -> Lấy chính xác TL12
+                    if (maLop !== 'TL12') return false;
+                }
+            }
+
+            // 2. Lọc theo Thứ / Ca (Cột J trở đi có số 1)
+            if (dayFilter !== 'ALL') {
+                const colIdx = parseInt(dayFilter);
+                const val = String(row[colIdx] || '').trim();
+                // Nếu giá trị không phải là 1 (hoặc >0) -> Loại
+                if (val !== '1' && val !== '1.0' && val !== 'x' && val !== 'X') return false;
+            }
+
+            // 3. Tìm kiếm theo tên Trợ Giảng hoặc Học Sinh (Cột B, C, D)
+            if (searchKey !== '') {
+                const matchTG = troGiang.toLowerCase().includes(searchKey);
+                const matchHS = hocSinh.toLowerCase().includes(searchKey);
+                const matchLop = maLop.toLowerCase().includes(searchKey);
+                if (!matchTG && !matchHS && !matchLop) return false;
+            }
+
+            return true;
+        });
+
+        renderTable(filtered);
+    }
+
+    /**
+     * Render dữ liệu ra bảng HTML
+     */
+    function renderTable(data) {
+        const theadTr = document.getElementById('tableHeader');
+        const tbody = document.getElementById('tableBody');
+        const tfoot = document.getElementById('tableFooter');
+
+        // Clean table
+        tbody.innerHTML = '';
+        tfoot.innerHTML = '';
+
+        // Build Table Header Dynamically
+        theadTr.innerHTML = `
+            <th style="width: 50px;">STT</th>
+            <th>Tên Trợ Giảng</th>
+            <th>Tên Học Sinh</th>
+            <th>Lớp</th>
+        `;
+        
+        dynamicHeaders.forEach(dh => {
+            const th = document.createElement('th');
+            th.innerText = dh.label;
+            theadTr.appendChild(th);
+        });
+
+        if (data.length === 0) {
+            showEmpty(true);
             return;
         }
+        showEmpty(false);
 
-        showEmptyState(false);
+        // Mảng tính tổng số lượt tham gia cho từng Ca/Thứ
+        const dayCounts = new Array(dynamicHeaders.length).fill(0);
 
-        // Render Head
-        const trHead = document.createElement('tr');
-        headerList.forEach(headerText => {
-            const th = document.createElement('th');
-            th.innerText = headerText;
-            trHead.appendChild(th);
-        });
-        thead.appendChild(trHead);
-
-        // Render Body
-        dataList.forEach(rowData => {
+        // Build Table Rows
+        data.forEach((row, idx) => {
             const tr = document.createElement('tr');
-            rowData.forEach(cellValue => {
-                const td = document.createElement('td');
-                td.innerText = cellValue;
-                tr.appendChild(td);
+
+            const troGiang = row[1] || '';
+            const hocSinh = row[2] || '';
+            const maLop = row[3] || '';
+
+            let rowHtml = `
+                <td>${idx + 1}</td>
+                <td class="align-left">${troGiang}</td>
+                <td class="align-left"><strong>${hocSinh}</strong></td>
+                <td><span class="badge-class">${maLop}</span></td>
+            `;
+
+            // Duyệt qua các cột Thứ/Ca
+            dynamicHeaders.forEach((dh, dIdx) => {
+                const val = String(row[dh.index] || '').trim();
+                const isPresent = (val === '1' || val === '1.0' || val.toLowerCase() === 'x');
+
+                if (isPresent) {
+                    dayCounts[dIdx]++;
+                    rowHtml += `<td><span class="check-icon">✓</span></td>`;
+                } else {
+                    rowHtml += `<td>-</td>`;
+                }
             });
+
+            tr.innerHTML = rowHtml;
             tbody.appendChild(tr);
         });
 
-        document.getElementById('recordCount').innerText = `Tổng số: ${dataList.length} bản ghi`;
-    }
-
-    /**
-     * Lọc dữ liệu theo từ khóa tìm kiếm
-     */
-    function filterData() {
-        const query = document.getElementById('searchInput').value.toLowerCase().trim();
-        
-        if (!query) {
-            renderTable(headers, rawData);
-            return;
-        }
-
-        const filtered = rawData.filter(row => {
-            return row.some(cell => String(cell).toLowerCase().includes(query));
+        // Build Table Footer (Thống kê Tổng cộng)
+        let footHtml = `
+            <tr>
+                <td colspan="4" style="text-align: right; padding-right: 15px;">TỔNG CỘNG ĐĂNG KÝ:</td>
+        `;
+        dayCounts.forEach(count => {
+            footHtml += `<td>${count}</td>`;
         });
-
-        renderTable(headers, filtered);
+        footHtml += `</tr>`;
+        tfoot.innerHTML = footHtml;
     }
 
-    /**
-     * Hiển thị / Ẩn hiệu ứng Loading
-     */
     function showLoading(visible) {
-        const loadingEl = document.getElementById('loadingState');
-        loadingEl.style.display = visible ? 'block' : 'none';
+        document.getElementById('loadingBox').style.display = visible ? 'block' : 'none';
     }
 
-    /**
-     * Hiển thị / Ẩn trạng thái dữ liệu trống
-     */
-    function showEmptyState(visible, message = null) {
-        const emptyEl = document.getElementById('emptyState');
-        if (message) {
-            emptyEl.querySelector('p').innerText = message;
-        }
-        emptyEl.style.display = visible ? 'block' : 'none';
-    }
-
-    /**
-     * Cập nhật Badge trạng thái trên Header
-     */
-    function updateStatusBadge(text, type) {
-        const badge = document.getElementById('statusBadge');
-        let icon = '';
-        let bgColor = '#e0f2fe';
-        let textColor = '#0369a1';
-
-        switch (type) {
-            case 'success':
-                icon = '<i class="fa-solid fa-circle-check"></i>';
-                bgColor = '#dcfce7';
-                textColor = '#15803d';
-                break;
-            case 'error':
-                icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                bgColor = '#fee2e2';
-                textColor = '#b91c1c';
-                break;
-            case 'loading':
-                icon = '<i class="fa-solid fa-sync fa-spin"></i>';
-                bgColor = '#fef3c7';
-                textColor = '#b45309';
-                break;
-            default:
-                icon = '<i class="fa-solid fa-database"></i>';
-                bgColor = '#e0f2fe';
-                textColor = '#0369a1';
-        }
-
-        badge.style.backgroundColor = bgColor;
-        badge.style.color = textColor;
-        badge.innerHTML = `${icon} ${text}`;
+    function showEmpty(visible) {
+        document.getElementById('emptyBox').style.display = visible ? 'block' : 'none';
     }
 </script>
 
