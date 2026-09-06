@@ -62,9 +62,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: opacity 0.2s;
         }
-        .btn-reset:hover { opacity: 0.9; }
 
         .section-header {
             display: flex;
@@ -93,6 +91,8 @@
 
         .tag-class { background: #e8f5e9; color: #1b4d3e; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; border: 1px solid #c8e6c9; }
         .tag-subject { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+        
+        .status-loading { text-align: center; padding: 40px; font-weight: 600; color: var(--primary-dark); }
     </style>
 </head>
 <body>
@@ -130,34 +130,13 @@
             <label><i class="fa-solid fa-users"></i> LỚP / KHỐI:</label>
             <select id="classSelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả lớp --</option>
-                <!-- Khối 12 -->
-                <option value="T12">T12</option>
-                <option value="L12">L12</option>
-                <option value="TL12">TL12</option>
-                <!-- Khối 11 -->
-                <option value="T11">T11</option>
-                <option value="L11">L11</option>
-                <option value="TL11">TL11</option>
-                <!-- Khối 10 -->
-                <option value="T10">T10</option>
-                <option value="L10">L10</option>
-                <option value="TL10">TL10</option>
-                <!-- Khối 9 -->
-                <option value="T9">T9</option>
-                <option value="L9">L9</option>
-                <option value="TL9">TL9</option>
-                <!-- Khối 8 -->
-                <option value="T8">T8</option>
-                <option value="L8">L8</option>
-                <option value="TL8">TL8</option>
-                <!-- Khối 7 -->
-                <option value="T7">T7</option>
-                <option value="L7">L7</option>
-                <option value="TL7">TL7</option>
-                <!-- Khối 6 -->
-                <option value="T6">T6</option>
-                <option value="L6">L6</option>
-                <option value="TL6">TL6</option>
+                <option value="T12">T12</option><option value="L12">L12</option><option value="TL12">TL12</option>
+                <option value="T11">T11</option><option value="L11">L11</option><option value="TL11">TL11</option>
+                <option value="T10">T10</option><option value="L10">L10</option><option value="TL10">TL10</option>
+                <option value="T9">T9</option><option value="L9">L9</option><option value="TL9">TL9</option>
+                <option value="T8">T8</option><option value="L8">L8</option><option value="TL8">TL8</option>
+                <option value="T7">T7</option><option value="L7">L7</option><option value="TL7">TL7</option>
+                <option value="T6">T6</option><option value="L6">L6</option><option value="TL6">TL6</option>
             </select>
         </div>
 
@@ -169,83 +148,168 @@
         <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
     </div>
 
-    <!-- BẢNG 1: TRỢ GIẢNG (Ẩn mặc định, chỉ hiện khi người dùng lọc) -->
-    <div id="troGiangSection" style="display: none;">
-        <div class="section-header">
-            <div class="section-title"><i class="fa-solid fa-user-tie" style="color: #0369a1;"></i> DANH SÁCH TRỢ GIẢNG</div>
-            <span id="tgCount" class="badge-count">0</span>
-        </div>
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">STT</th>
-                        <th>Họ và Tên Trợ Giảng</th>
-                        <th>Trạng Thái Lịch Trực</th>
-                    </tr>
-                </thead>
-                <tbody id="tgTableBody"></tbody>
-            </table>
-        </div>
+    <!-- MÀN HÌNH CHỜ TẢI DỮ LIỆU API -->
+    <div id="loadingStatus" class="status-loading">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang kết nối API và lấy dữ liệu từ Google Sheet...
     </div>
 
-    <!-- BẢNG 2: HỌC SINH -->
-    <div id="hocSinhSection">
-        <div class="section-header">
-            <div class="section-title"><i class="fa-solid fa-user-graduate" style="color: #1b4d3e;"></i> DANH SÁCH HỌC SINH</div>
-            <span id="hsCount" class="badge-count">0</span>
+    <div id="mainContainer" style="display: none;">
+        <!-- BẢNG 1: TRỢ GIẢNG (Ẩn mặc định, chỉ hiện khi lọc) -->
+        <div id="troGiangSection" style="display: none;">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-user-tie" style="color: #0369a1;"></i> DANH SÁCH TRỢ GIẢNG</div>
+                <span id="tgCount" class="badge-count">0</span>
+            </div>
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th>Họ và Tên Trợ Giảng</th>
+                            <th>Trạng Thái Lịch Trực</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tgTableBody"></tbody>
+                </table>
+            </div>
         </div>
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">STT</th>
-                        <th>Họ và Tên Học Sinh</th>
-                        <th>Lớp (Cột D)</th>
-                        <th>Môn Học (Tự bóc tách)</th>
-                    </tr>
-                </thead>
-                <tbody id="hsTableBody"></tbody>
-            </table>
+
+        <!-- BẢNG 2: HỌC SINH -->
+        <div id="hocSinhSection">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-user-graduate" style="color: #1b4d3e;"></i> DANH SÁCH HỌC SINH</div>
+                <span id="hsCount" class="badge-count">0</span>
+            </div>
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th>Họ và Tên Học Sinh</th>
+                            <th>Lớp (Cột D)</th>
+                            <th>Môn Học (Tự bóc tách)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hsTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Dữ liệu Trợ Giảng (Tương ứng hàng 4 - 11)
-    const rawTroGiang = [
-        { ho: '', ten: 'Chi', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Bình', ten: 'Anh', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Tường', ten: 'Duy', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Hoàng', ten: 'Đức', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Đức', ten: 'Huy', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Quang', ten: 'Anh', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Ngọc', ten: 'Nam', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } },
-        { ho: 'Thùy', ten: 'Linh', schedule: { I:1, R:1, AA:1, AJ:1, AS:1, BB:1 } }
-    ];
+    const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
+    const SHEET_NAME = 'dulieu';
+    
+    // URL API tải dữ liệu dưới dạng CSV trực tiếp từ sheet 'dulieu'
+    const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
-    // Dữ liệu Học Sinh mẫu phủ đầy đủ các khối lớp từ 6 đến 12
-    const rawHocSinh = [
-        { ho: 'Lâm (2001)', ten: 'Hải', lopRaw: 'T12', schedule: { I:1, R:0, AA:1, AJ:0, AS:0, BB:0 } },
-        { ho: 'Bá', ten: 'Huy', lopRaw: 'L12', schedule: { I:1, R:0, AA:0, AJ:0, AS:0, BB:0 } },
-        { ho: 'Châu', ten: 'Giang', lopRaw: 'TL12', schedule: { I:1, R:0, AA:0, AJ:0, AS:0, BB:0 } },
-        { ho: 'Nguyễn Văn', ten: 'An', lopRaw: 'T11', schedule: { I:1, R:1, AA:0, AJ:0, AS:0, BB:0 } },
-        { ho: 'Trần Thị', ten: 'Bích', lopRaw: 'TL11', schedule: { I:0, R:1, AA:1, AJ:0, AS:0, BB:0 } },
-        { ho: 'Phạm Minh', ten: 'Đức', lopRaw: 'L11', schedule: { I:1, R:0, AA:1, AJ:0, AS:0, BB:0 } },
-        { ho: 'Lê Hoàng', ten: 'Nam', lopRaw: 'T10', schedule: { I:0, R:0, AA:1, AJ:1, AS:0, BB:0 } },
-        { ho: 'Vũ Quốc', ten: 'Bảo', lopRaw: 'TL10', schedule: { I:1, R:0, AA:0, AJ:1, AS:0, BB:0 } },
-        { ho: 'Đặng Ngọc', ten: 'Ánh', lopRaw: 'L10', schedule: { I:0, R:1, AA:0, AJ:0, AS:1, BB:0 } },
-        { ho: 'Hoàng Văn', ten: 'Cường', lopRaw: 'T9', schedule: { I:1, R:0, AA:1, AJ:0, AS:0, BB:0 } },
-        { ho: 'Bùi Thị', ten: 'Dung', lopRaw: 'TL9', schedule: { I:0, R:1, AA:0, AJ:1, AS:0, BB:0 } },
-        { ho: 'Đỗ Tiến', ten: 'Đạt', lopRaw: 'T8', schedule: { I:1, R:0, AA:0, AJ:0, AS:1, BB:0 } },
-        { ho: 'Nghiêm Xuân', ten: 'Hùng', lopRaw: 'TL8', schedule: { I:0, R:1, AA:1, AJ:0, AS:0, BB:0 } },
-        { ho: 'Ngô Thanh', ten: 'Hương', lopRaw: 'T7', schedule: { I:1, R:0, AA:0, AJ:1, AS:0, BB:0 } },
-        { ho: 'Trịnh Quốc', ten: 'Khánh', lopRaw: 'TL7', schedule: { I:0, R:0, AA:1, AJ:0, AS:1, BB:0 } },
-        { ho: 'Phan Văn', ten: 'Lâm', lopRaw: 'T6', schedule: { I:1, R:1, AA:0, AJ:0, AS:0, BB:0 } },
-        { ho: 'Lương Thu', ten: 'Trang', lopRaw: 'TL6', schedule: { I:0, R:0, AA:1, AJ:1, AS:0, BB:0 } }
-    ];
+    let parsedTroGiang = [];
+    let parsedHocSinh = [];
 
-    // Thuật toán bóc tách Môn học từ Cột D (Chứa 'T' -> Toán, 'L' -> Vật Lí, chứa cả 2 -> Toán & Vật Lí)
+    // Chỉ số cột tương ứng (Tính từ 0: B=1, C=2, D=3, I=8, R=17, AA=26, AJ=35, AS=44, BB=53)
+    const COL_INDEX = { HO: 1, TEN: 2, LOP: 3, I: 8, R: 17, AA: 26, AJ: 35, AS: 44, BB: 53 };
+
+    document.addEventListener('DOMContentLoaded', fetchSheetData);
+
+    // Hàm gọi API lấy dữ liệu Google Sheet
+    function fetchSheetData() {
+        fetch(API_URL)
+            .then(response => {
+                if (!response.ok) throw new Error('Không thể tải dữ liệu từ Google Sheet');
+                return response.text();
+            })
+            .then(csvText => {
+                processCSVData(csvText);
+                document.getElementById('loadingStatus').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                onFilterChange();
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('loadingStatus').innerHTML = 
+                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi tải dữ liệu. Hãy đảm bảo File Google Sheet đã được cài đặt chế độ <b>"Bất kỳ ai có liên kết đều có thể xem"</b>.</span>`;
+            });
+    }
+
+    // Xử lý đọc chuỗi CSV trả về từ API
+    function processCSVData(csvText) {
+        const rows = parseCSVRows(csvText);
+        parsedTroGiang = [];
+        parsedHocSinh = [];
+
+        // 1. Đọc Trợ giảng (Hàng 4 đến hàng 11 -> Index 3 đến 10)
+        for (let i = 3; i <= 10 && i < rows.length; i++) {
+            const row = rows[i];
+            const ho = row[COL_INDEX.HO] || '';
+            const ten = row[COL_INDEX.TEN] || '';
+            if (ten.trim() !== '') {
+                parsedTroGiang.push({
+                    ho: ho,
+                    ten: ten,
+                    schedule: {
+                        I:  row[COL_INDEX.I]  ? 1 : 0,
+                        R:  row[COL_INDEX.R]  ? 1 : 0,
+                        AA: row[COL_INDEX.AA] ? 1 : 0,
+                        AJ: row[COL_INDEX.AJ] ? 1 : 0,
+                        AS: row[COL_INDEX.AS] ? 1 : 0,
+                        BB: row[COL_INDEX.BB] ? 1 : 0
+                    }
+                });
+            }
+        }
+
+        // 2. Đọc Học sinh (Từ Hàng 13 trở đi -> Index 12)
+        for (let j = 12; j < rows.length; j++) {
+            const row = rows[j];
+            const ho = row[COL_INDEX.HO] || '';
+            const ten = row[COL_INDEX.TEN] || '';
+            const lopRaw = row[COL_INDEX.LOP] || '';
+
+            if (ten.trim() !== '') {
+                parsedHocSinh.push({
+                    ho: ho,
+                    ten: ten,
+                    lopRaw: lopRaw,
+                    schedule: {
+                        I:  row[COL_INDEX.I]  ? 1 : 0,
+                        R:  row[COL_INDEX.R]  ? 1 : 0,
+                        AA: row[COL_INDEX.AA] ? 1 : 0,
+                        AJ: row[COL_INDEX.AJ] ? 1 : 0,
+                        AS: row[COL_INDEX.AS] ? 1 : 0,
+                        BB: row[COL_INDEX.BB] ? 1 : 0
+                    }
+                });
+            }
+        }
+    }
+
+    // Hàm tách dòng CSV chuẩn
+    function parseCSVRows(text) {
+        let p = '', c = '', r = [];
+        let q = false;
+        let row = [''];
+        for (let i = 0; i < text.length; i++) {
+            c = text[i];
+            let next = text[i+1];
+            if (c === '"') {
+                if (q && next === '"') { row[row.length - 1] += '"'; i++; }
+                else { q = !q; }
+            } else if (c === ',' && !q) {
+                row.push('');
+            } else if ((c === '\r' || c === '\n') && !q) {
+                if (c === '\r' && next === '\n') { i++; }
+                r.push(row);
+                row = [''];
+            } else {
+                row[row.length - 1] += c;
+            }
+        }
+        if (row.length > 1 || row[0] !== '') r.push(row);
+        return r;
+    }
+
+    // Tự động nhận diện Môn học dựa vào ký tự T/L ở cột D
     function parseSubject(code) {
         if (!code) return 'Chưa xếp';
         let subjects = [];
@@ -254,12 +318,7 @@
         return subjects.join(' & ') || 'Khác';
     }
 
-    // Khởi tạo bảng ngay khi load trang
-    document.addEventListener('DOMContentLoaded', () => {
-        onFilterChange();
-    });
-
-    // Hàm xử lý lọc dữ liệu
+    // Xử lý sự kiện khi thay đổi bộ lọc
     function onFilterChange() {
         const day = document.getElementById('daySelect').value;
         const subject = document.getElementById('subjectSelect').value;
@@ -268,11 +327,11 @@
 
         const isFiltering = (day !== 'ALL' || subject !== 'ALL' || className !== 'ALL' || search !== '');
 
-        // 1. TRỢ GIẢNG: Chỉ hiện khi thực hiện lọc
+        // Lọc Trợ giảng (Chỉ hiện khi lọc)
         const tgSection = document.getElementById('troGiangSection');
         if (isFiltering) {
             tgSection.style.display = 'block';
-            const filteredTG = rawTroGiang.filter(item => {
+            const filteredTG = parsedTroGiang.filter(item => {
                 const fullName = `${item.ho} ${item.ten}`.toLowerCase();
                 if (search && !fullName.includes(search)) return false;
                 if (day !== 'ALL' && !item.schedule[day]) return false;
@@ -283,8 +342,8 @@
             tgSection.style.display = 'none';
         }
 
-        // 2. HỌC SINH: Lọc theo điều kiện Chọn Lớp, Môn, Thứ, Tên
-        const filteredHS = rawHocSinh.filter(item => {
+        // Lọc Học sinh
+        const filteredHS = parsedHocSinh.filter(item => {
             const fullName = `${item.ho} ${item.ten}`.toLowerCase();
             const monHoc = parseSubject(item.lopRaw);
 
@@ -299,7 +358,6 @@
         renderHSTable(filteredHS);
     }
 
-    // Render Bảng Trợ Giảng
     function renderTGTable(data) {
         const tbody = document.getElementById('tgTableBody');
         document.getElementById('tgCount').innerText = data.length;
@@ -322,7 +380,6 @@
         });
     }
 
-    // Render Bảng Học Sinh
     function renderHSTable(data) {
         const tbody = document.getElementById('hsTableBody');
         document.getElementById('hsCount').innerText = data.length;
@@ -349,7 +406,6 @@
         });
     }
 
-    // Đặt lại bộ lọc
     function resetFilters() {
         document.getElementById('daySelect').value = 'ALL';
         document.getElementById('subjectSelect').value = 'ALL';
