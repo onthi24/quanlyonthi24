@@ -200,13 +200,13 @@
             <label><i class="fa-solid fa-users"></i> LỚP / KHỐI:</label>
             <select id="classSelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả lớp --</option>
-                <option value="T12">T12</option><option value="L12">L12</option><option value="TL12">TL12</option>
-                <option value="T11">T11</option><option value="L11">L11</option><option value="TL11">TL11</option>
-                <option value="T10">T10</option><option value="L10">L10</option><option value="TL10">TL10</option>
-                <option value="T9">T9</option><option value="L9">L9</option><option value="TL9">TL9</option>
-                <option value="T8">T8</option><option value="L8">L8</option><option value="TL8">TL8</option>
-                <option value="T7">T7</option><option value="L7">L7</option><option value="TL7">TL7</option>
-                <option value="T6">T6</option><option value="L6">L6</option><option value="TL6">TL6</option>
+                <option value="12">Khối 12 (T12, L12, TL12...)</option>
+                <option value="11">Khối 11 (T11, L11, TL11...)</option>
+                <option value="10">Khối 10 (T10, L10, TL10...)</option>
+                <option value="9">Khối 9 (T9, L9, TL9...)</option>
+                <option value="8">Khối 8 (T8, L8, TL8...)</option>
+                <option value="7">Khối 7 (T7, L7, TL7...)</option>
+                <option value="6">Khối 6 (T6, L6, TL6...)</option>
             </select>
         </div>
 
@@ -238,9 +238,7 @@
                 </button>
             </div>
             <div id="detailExtraInfo" style="margin-bottom: 12px; font-size: 14px; color: #555;"></div>
-            <div class="schedule-grid" id="detailScheduleGrid">
-                <!-- Nội dung các thứ trong tuần sẽ render linh hoạt tại đây -->
-            </div>
+            <div class="schedule-grid" id="detailScheduleGrid"></div>
         </div>
 
         <!-- BẢNG 1: TRỢ GIẢNG -->
@@ -426,10 +424,10 @@
     function onFilterChange() {
         const day = document.getElementById('daySelect').value;
         const subject = document.getElementById('subjectSelect').value;
-        const className = document.getElementById('classSelect').value;
+        const selectedGrade = document.getElementById('classSelect').value; // Lấy khối lớp (12, 11, 10...)
         const search = document.getElementById('searchInput').value.toLowerCase().trim();
 
-        const isFiltering = (day !== 'ALL' || subject !== 'ALL' || className !== 'ALL' || search !== '');
+        const isFiltering = (day !== 'ALL' || subject !== 'ALL' || selectedGrade !== 'ALL' || search !== '');
 
         // Lọc Trợ Giảng
         const tgSection = document.getElementById('troGiangSection');
@@ -449,16 +447,22 @@
         // Lọc Học Sinh
         const filteredHS = parsedHocSinh.filter(item => {
             const monHoc = parseSubject(item.lopRaw);
+
             if (search && !item.fullName.toLowerCase().includes(search)) return false;
             if (day !== 'ALL' && !item.schedule[day]) return false;
-            if (className !== 'ALL' && item.lopRaw !== className) return false;
             if (subject !== 'ALL' && !monHoc.includes(subject)) return false;
+
+            // LOGIC LỌC THEO KHỐI: Kiểm tra mã lớp (Cột D) có chứa số khối (ví dụ '12' khớp T12, L12, TL12)
+            if (selectedGrade !== 'ALL') {
+                if (!item.lopRaw || !item.lopRaw.includes(selectedGrade)) return false;
+            }
+
             return true;
         });
 
         renderHSTable(filteredHS);
 
-        // TỰ ĐỘNG BẬT BẢNG CHI TIẾT KHI TÌM KIẾM ĐÚNG 1 NGƯỜI
+        // Tự động bật bảng chi tiết khi kết quả tìm kiếm đúng 1 người
         if (search.length >= 2) {
             const totalMatches = filteredTG.length + filteredHS.length;
             if (totalMatches === 1) {
@@ -526,7 +530,6 @@
         });
     }
 
-    // Hiển thị Card chi tiết theo ID
     function showPersonDetailById(id, type) {
         const person = (type === 'TG') 
             ? parsedTroGiang.find(p => p.id === id)
@@ -534,7 +537,6 @@
         if (person) showPersonDetail(person);
     }
 
-    // Render thông tin và Lịch chi tiết 7 ngày trong tuần
     function showPersonDetail(person) {
         const card = document.getElementById('personDetailCard');
         document.getElementById('detailName').innerText = person.fullName;
