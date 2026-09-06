@@ -3,35 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ TRỢ GIẢNG</title>
+    <title>Hệ Thống Quản Lý Lịch Học & Trợ Giảng</title>
     <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-green: #1b4d3e;
-            --header-bg: #1e4d3b;
+            --primary-dark: #1b4d3e;
+            --primary-header: #1e4d3b;
             --panel-bg: #e8f5e9;
             --panel-border: #c8e6c9;
-            --btn-blue: #0288d1;
-            --btn-blue-hover: #0277bd;
+            --accent-blue: #0288d1;
+            --accent-hover: #0277bd;
             --border-color: #a5d6a7;
             --text-color: #1b4d3e;
-            --table-hover: #f1f8e9;
+            --hover-bg: #f1f8e9;
+            --card-shadow: 0 4px 12px rgba(27, 77, 62, 0.08);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background-color: #f4f6f8;
+            background-color: #f4f7f6;
             color: #333;
-            padding: 20px;
+            padding: 24px;
+            min-height: 100vh;
         }
 
         .container {
@@ -39,84 +41,133 @@
             margin: 0 auto;
         }
 
-        /* Title */
-        .page-title {
+        /* Title Header */
+        .page-header {
             text-align: center;
-            color: var(--primary-green);
-            font-size: 24px;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            color: var(--primary-dark);
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
 
         /* Filter Panel Design */
         .filter-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .filter-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
         }
 
         .filter-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .filter-group label {
             font-weight: 700;
-            color: var(--primary-green);
+            color: var(--primary-dark);
             font-size: 14px;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .filter-control {
-            padding: 8px 12px;
+            padding: 10px 14px;
             border: 1px solid #b0bec5;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 14px;
             outline: none;
             background-color: #fff;
-            min-width: 160px;
+            min-width: 180px;
+            transition: all 0.2s;
         }
 
         .filter-control:focus {
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 2px rgba(27, 77, 62, 0.2);
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.15);
         }
 
         .btn-update {
-            background-color: var(--btn-blue);
+            background-color: var(--accent-blue);
             color: white;
             border: none;
-            padding: 8px 18px;
-            border-radius: 4px;
-            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(2, 136, 209, 0.2);
         }
 
         .btn-update:hover {
-            background-color: var(--btn-blue-hover);
+            background-color: var(--accent-hover);
         }
 
-        /* Table Design */
+        /* Section Header Layout */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-badge {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Table Card Container */
         .table-card {
             background: #fff;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 28px;
         }
 
         .table-responsive {
@@ -132,19 +183,19 @@
         }
 
         thead tr {
-            background-color: var(--header-bg);
+            background-color: var(--primary-header);
             color: white;
         }
 
         th {
-            padding: 12px 10px;
-            font-weight: 700;
+            padding: 13px 12px;
+            font-weight: 600;
             border: 1px solid #2e7d32;
             white-space: nowrap;
         }
 
         td {
-            padding: 10px;
+            padding: 11px 12px;
             border: 1px solid var(--border-color);
             white-space: nowrap;
         }
@@ -154,7 +205,7 @@
         }
 
         tbody tr:hover {
-            background-color: var(--table-hover);
+            background-color: var(--hover-bg);
         }
 
         .align-left {
@@ -169,40 +220,50 @@
 
         .badge-class {
             background-color: #e8f5e9;
-            color: var(--primary-green);
+            color: var(--primary-dark);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            border: 1px solid #c8e6c9;
+            display: inline-block;
+        }
+
+        .role-tag {
+            font-size: 12px;
             padding: 2px 8px;
             border-radius: 4px;
-            font-weight: bold;
-            border: 1px solid #c8e6c9;
+            font-weight: 600;
         }
+        .role-tg { background-color: #e0f2fe; color: #0369a1; }
+        .role-hs { background-color: #fef3c7; color: #b45309; }
 
         /* Table Footer / Summary */
         tfoot tr {
             background-color: var(--panel-bg);
             font-weight: bold;
-            color: var(--primary-green);
+            color: var(--primary-dark);
         }
 
         tfoot td {
-            border-top: 2px solid var(--primary-green);
+            border-top: 2px solid var(--primary-dark);
         }
 
         /* Status & Loading */
         .loading-box, .empty-box {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             color: #666;
             font-size: 15px;
         }
 
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-green);
+            border-top: 3px solid var(--primary-dark);
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px auto;
+            margin: 0 auto 12px auto;
         }
 
         @keyframes spin {
@@ -210,9 +271,9 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .filter-panel { flex-direction: column; align-items: stretch; }
-            .filter-group { flex-direction: column; align-items: flex-start; }
+            .filter-inputs { flex-direction: column; align-items: stretch; }
             .filter-control { width: 100%; }
         }
     </style>
@@ -220,88 +281,158 @@
 <body>
 
 <div class="container">
-    <h1 class="page-title">BẢNG THỐNG KÊ LỊCH HỌC VÀ TRỢ GIẢNG</h1>
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1 class="page-title">
+            <i class="fa-solid fa-calendar-check"></i> BẢNG THỐNG KÊ LỊCH HỌC VÀ TRỢ GIẢNG
+        </h1>
+    </header>
 
-    <!-- Khung bộ lọc dữ liệu -->
+    <!-- Filter Control Panel -->
     <div class="filter-panel">
-        <div class="filter-group">
-            <label for="daySelect">LỰA CHỌN THỨ / CA:</label>
-            <select id="daySelect" class="filter-control" onchange="filterData()">
-                <option value="ALL">-- Tất cả các Thứ / Ca --</option>
-                <!-- Các cột Ca/Thứ từ cột J trở đi sẽ tự động load vào đây -->
-            </select>
-        </div>
+        <div class="filter-inputs">
+            <div class="filter-group">
+                <label for="daySelect"><i class="fa-regular fa-calendar-days"></i> CHỌN THỨ / CA:</label>
+                <select id="daySelect" class="filter-control" onchange="filterData()">
+                    <option value="ALL">-- Tất cả các Thứ / Ca --</option>
+                    <!-- Tự động nạp danh sách Thứ/Ca từ Cột J trở đi -->
+                </select>
+            </div>
 
-        <div class="filter-group">
-            <label for="classSelect">DANH SÁCH LỚP:</label>
-            <select id="classSelect" class="filter-control" onchange="filterData()">
-                <option value="ALL">-- Tất cả các lớp --</option>
-                <option value="T12">Toán 12 (T12)</option>
-                <option value="L12">Lí 12 (L12)</option>
-                <option value="TL12">Cả Toán 12 & Lí 12 (TL12)</option>
-            </select>
-        </div>
+            <div class="filter-group">
+                <label for="classSelect"><i class="fa-solid fa-graduation-cap"></i> CHỌN LỚP:</label>
+                <select id="classSelect" class="filter-control" onchange="filterData()">
+                    <option value="ALL">-- Tất cả các lớp --</option>
+                    <option value="T12">Toán 12 (T12)</option>
+                    <option value="L12">Lí 12 (L12)</option>
+                    <option value="TL12">Cả Toán 12 & Lí 12 (TL12)</option>
+                </select>
+            </div>
 
-        <div class="filter-group">
-            <label for="searchInput">TÌM TÊN (TG/HS):</label>
-            <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên Trợ giảng hoặc Học sinh..." oninput="filterData()">
+            <div class="filter-group">
+                <label for="searchInput"><i class="fa-solid fa-magnifying-glass"></i> TÌM TÊN:</label>
+                <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên Trợ giảng / Học sinh..." oninput="filterData()">
+            </div>
         </div>
 
         <button class="btn-update" onclick="fetchData()">
-            <i class="fa-solid fa-rotate"></i> Cập nhật
+            <i class="fa-solid fa-arrows-rotate"></i> Cập nhật dữ liệu
         </button>
     </div>
 
-    <!-- Bảng hiển thị dữ liệu -->
-    <div class="table-card">
-        <div class="table-responsive">
-            <table id="dataTable">
-                <thead>
-                    <tr id="tableHeader">
-                        <th>STT</th>
-                        <th>Tên Trợ Giảng</th>
-                        <th>Tên Học Sinh</th>
-                        <th>Mã Lớp</th>
-                        <!-- Các cột Ca / Thứ từ cột J trở đi sẽ tự động sinh ở đây -->
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Dữ liệu render tại đây -->
-                </tbody>
-                <tfoot id="tableFooter">
-                    <!-- Dòng thống kê tổng cộng -->
-                </tfoot>
-            </table>
+    <!-- Loading State -->
+    <div id="loadingBox" class="loading-box">
+        <div class="spinner"></div>
+        <span>Đang kết nối và tải dữ liệu từ Google Sheets...</span>
+    </div>
 
-            <div id="loadingBox" class="loading-box">
-                <div class="spinner"></div>
-                <span>Đang tải dữ liệu từ Google Sheets...</span>
+    <!-- MAIN DISPLAY AREA -->
+    <div id="mainDisplayArea" style="display: none;">
+
+        <!-- MODE 1: KHU VỰC HIỂN THỊ CHẾ ĐỘ CHỌN THỨ CỤ THỂ (TÁCH 2 BẢNG) -->
+        <div id="splitModeView" style="display: none;">
+            
+            <!-- BẢNG 1: TRỢ GIẢNG -->
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-user-tie" style="color: #0369a1;"></i> DANH SÁCH TRỢ GIẢNG
+                </div>
+                <span id="tgCountBadge" class="section-badge">0 Trợ giảng</span>
+            </div>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">STT</th>
+                                <th>Tên Trợ Giảng</th>
+                                <th>Học Sinh Phụ Trách</th>
+                                <th>Lớp</th>
+                                <th>Trạng Thái Đi Ca</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tgTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div id="emptyBox" class="empty-box" style="display: none;">
-                <i class="fa-regular fa-folder-open" style="font-size: 30px; margin-bottom: 8px;"></i>
-                <p>Không tìm thấy dữ liệu phù hợp với bộ lọc.</p>
+            <!-- BẢNG 2: HỌC SINH -->
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-user-graduate" style="color: #b45309;"></i> DANH SÁCH HỌC SINH
+                </div>
+                <span id="hsCountBadge" class="section-badge">0 Học sinh</span>
+            </div>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">STT</th>
+                                <th>Tên Học Sinh</th>
+                                <th>Trợ Giảng Phụ Trách</th>
+                                <th>Lớp</th>
+                                <th>Trạng Thái Đi Học</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <!-- MODE 2: KHU VỰC HIỂN THỊ TOÀN BỘ DANH SÁCH (BẢNG TỔNG HỢP GỘP) -->
+        <div id="fullModeView" style="display: none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-list-check"></i> TOÀN BỘ DANH SÁCH TỔNG HỢP
+                </div>
+                <span id="totalCountBadge" class="section-badge">0 Bản ghi</span>
+            </div>
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr id="fullTableHeader">
+                                <th style="width: 50px;">STT</th>
+                                <th>Tên Trợ Giảng</th>
+                                <th>Tên Học Sinh</th>
+                                <th>Lớp</th>
+                                <!-- Cột Ca/Thứ động được nạp ở đây -->
+                            </tr>
+                        </thead>
+                        <tbody id="fullTableBody"></tbody>
+                        <tfoot id="fullTableFooter"></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyBox" class="empty-box" style="display: none;">
+            <i class="fa-regular fa-folder-open" style="font-size: 36px; margin-bottom: 12px; color: #999;"></i>
+            <p>Không tìm thấy dữ liệu phù hợp với điều kiện lọc.</p>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // Configuration
+    // System Configurations
     const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
     const SHEET_NAME = 'dulieu';
     const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
-    // Global Data Store
+    // Global Variables
     let rawRows = [];
-    let dynamicHeaders = []; // Danh sách tên các Ca/Thứ (từ Cột J trở đi)
+    let dynamicHeaders = []; // Danh sách tên các Ca/Thứ (từ Cột J - index 9 trở đi)
 
     document.addEventListener('DOMContentLoaded', () => {
         fetchData();
     });
 
     /**
-     * Tải dữ liệu từ Google Sheets API (/gviz/tq)
+     * Tải dữ liệu trực tiếp từ Google Sheets API (/gviz/tq)
      */
     async function fetchData() {
         showLoading(true);
@@ -309,51 +440,64 @@
             const res = await fetch(GVIZ_URL);
             const text = await res.text();
             
-            // Extract JSON from JSONP wrapper
+            // Trích xuất JSON từ chuỗi phản hồi gviz
             const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);?/s);
-            if (!match || !match[1]) throw new Error("Cấu trúc dữ liệu không hợp lệ");
+            if (!match || !match[1]) throw new Error("Cấu trúc dữ liệu phản hồi không hợp lệ");
 
             const json = JSON.parse(match[1]);
             processRawData(json.table);
             
-            // Build dropdown Thứ / Ca
+            // Load các Ca/Thứ vào Dropdown
             populateDayDropdown();
             
-            // Filter & Render
+            // Tiến hành lọc và render ban đầu
             filterData();
         } catch (err) {
-            console.error("Lỗi khi tải dữ liệu:", err);
-            alert("Không thể kết nối dữ liệu Google Sheet. Vui lòng kiểm tra lại quyền truy cập file!");
+            console.error("Lỗi truy xuất dữ liệu:", err);
+            alert("Không thể kết nối dữ liệu Google Sheet. Vui lòng kiểm tra lại quyền chia sẻ file!");
         } finally {
             showLoading(false);
         }
     }
 
     /**
-     * Bóc tách bảng dữ liệu thô
+     * Bóc tách và làm sạch dữ liệu
      */
     function processRawData(table) {
         if (!table) return;
 
-        // Trích xuất danh sách cột Ca / Thứ từ cột J (Index 9) trở đi
+        // Trích xuất tiêu đề các Thứ/Ca từ Cột J (Index 9) trở đi
         dynamicHeaders = [];
         for (let i = 9; i < table.cols.length; i++) {
-            const label = table.cols[i]?.label || `Ca ${i - 8}`;
+            const label = table.cols[i]?.label && table.cols[i].label.trim() !== '' 
+                ? table.cols[i].label 
+                : `Ca ${i - 8}`;
             dynamicHeaders.push({ index: i, label: label });
         }
 
-        // Bóc tách hàng dữ liệu
-        rawRows = table.rows.map(row => {
-            const cells = row.c || [];
-            return cells.map(cell => {
-                if (!cell) return '';
-                return cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '');
-            });
-        });
+        // Bóc tách hàng dữ liệu & LOẠI BỎ HÀNG TRỐNG TÊN HỌC SINH Ở CUỐI
+        rawRows = [];
+        const rows = table.rows || [];
+
+        for (let r = 0; r < rows.length; r++) {
+            const cells = rows[r].c || [];
+            const hocSinh = getCellValue(cells[2]); // Cột C (Index 2): Tên Học Sinh
+            
+            // Bỏ qua các hàng trống Tên Học Sinh
+            if (!hocSinh || hocSinh.trim() === '') continue;
+
+            const rowData = cells.map(c => getCellValue(c));
+            rawRows.push(rowData);
+        }
+    }
+
+    function getCellValue(cell) {
+        if (!cell) return '';
+        return cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '');
     }
 
     /**
-     * Nạp danh sách Thứ / Ca học vào Dropdown bộ lọc
+     * Nạp danh sách Thứ/Ca vào Dropdown
      */
     function populateDayDropdown() {
         const daySelect = document.getElementById('daySelect');
@@ -371,42 +515,31 @@
     }
 
     /**
-     * Thuật toán lọc đa điều kiện
+     * Bộ lọc đa điều kiện & Điều hướng Chế độ xem
      */
     function filterData() {
         const dayFilter = document.getElementById('daySelect').value;
         const classFilter = document.getElementById('classSelect').value;
         const searchKey = document.getElementById('searchInput').value.toLowerCase().trim();
 
+        // Lọc mảng dữ liệu cơ bản
         const filtered = rawRows.filter(row => {
-            // Cột B (Index 1): Tên Trợ Giảng, Cột C (Index 2): Tên Học Sinh, Cột D (Index 3): Mã Lớp
             const troGiang = String(row[1] || '');
             const hocSinh = String(row[2] || '');
             const maLop = String(row[3] || '').toUpperCase();
 
-            // 1. Lọc theo lớp (T12, L12, TL12)
+            // 1. Lọc theo Lớp học (T12, L12, TL12)
             if (classFilter !== 'ALL') {
                 if (classFilter === 'T12') {
-                    // Chọn Toán 12 -> Lấy cả T12 và TL12
                     if (!maLop.includes('T12') && !maLop.includes('TL12')) return false;
                 } else if (classFilter === 'L12') {
-                    // Chọn Lí 12 -> Lấy cả L12 và TL12
                     if (!maLop.includes('L12') && !maLop.includes('TL12')) return false;
                 } else if (classFilter === 'TL12') {
-                    // Chọn TL12 -> Lấy chính xác TL12
                     if (maLop !== 'TL12') return false;
                 }
             }
 
-            // 2. Lọc theo Thứ / Ca (Cột J trở đi có số 1)
-            if (dayFilter !== 'ALL') {
-                const colIdx = parseInt(dayFilter);
-                const val = String(row[colIdx] || '').trim();
-                // Nếu giá trị không phải là 1 (hoặc >0) -> Loại
-                if (val !== '1' && val !== '1.0' && val !== 'x' && val !== 'X') return false;
-            }
-
-            // 3. Tìm kiếm theo tên Trợ Giảng hoặc Học Sinh (Cột B, C, D)
+            // 2. Lọc theo Từ khóa Tìm kiếm tên (Trợ giảng, Học sinh, Lớp)
             if (searchKey !== '') {
                 const matchTG = troGiang.toLowerCase().includes(searchKey);
                 const matchHS = hocSinh.toLowerCase().includes(searchKey);
@@ -417,22 +550,106 @@
             return true;
         });
 
-        renderTable(filtered);
+        // Điều phối Chế độ xem dựa trên việc chọn Thứ cụ thể hay Tất cả
+        if (dayFilter === 'ALL') {
+            document.getElementById('splitModeView').style.display = 'none';
+            document.getElementById('fullModeView').style.display = 'block';
+            renderFullMode(filtered);
+        } else {
+            document.getElementById('fullModeView').style.display = 'none';
+            document.getElementById('splitModeView').style.display = 'block';
+            renderSplitMode(filtered, parseInt(dayFilter));
+        }
     }
 
     /**
-     * Render dữ liệu ra bảng HTML
+     * CHẾ ĐỘ 1: TÁCH BẢNG TRỢ GIẢNG & HỌC SINH (Khi chọn 1 Thứ/Ca cụ thể)
      */
-    function renderTable(data) {
-        const theadTr = document.getElementById('tableHeader');
-        const tbody = document.getElementById('tableBody');
-        const tfoot = document.getElementById('tableFooter');
+    function renderSplitMode(data, dayColIndex) {
+        const tgBody = document.getElementById('tgTableBody');
+        const hsBody = document.getElementById('hsTableBody');
+        
+        tgBody.innerHTML = '';
+        hsBody.innerHTML = '';
 
-        // Clean table
+        // Lọc các bản ghi có tham gia trong Ca/Thứ này (Cột tương ứng có giá trị 1)
+        const activeRows = data.filter(row => {
+            const val = String(row[dayColIndex] || '').trim();
+            return (val === '1' || val === '1.0' || val.toLowerCase() === 'x');
+        });
+
+        if (activeRows.length === 0) {
+            showEmpty(true);
+            document.getElementById('tgCountBadge').innerText = '0 Trợ giảng';
+            document.getElementById('hsCountBadge').innerText = '0 Học sinh';
+            return;
+        }
+        showEmpty(false);
+
+        // Map riêng danh sách Học Sinh và Trợ Giảng
+        let hsList = [];
+        let tgMap = new Map(); // Dùng Map để nhóm học sinh theo trợ giảng
+
+        activeRows.forEach(row => {
+            const tg = row[1] || 'Chưa xếp';
+            const hs = row[2] || '';
+            const lop = row[3] || '';
+
+            // Thêm vào danh sách học sinh
+            hsList.push({ hocSinh: hs, troGiang: tg, lop: lop });
+
+            // Gom nhóm Trợ giảng
+            if (!tgMap.has(tg)) {
+                tgMap.set(tg, { troGiang: tg, danhSachHS: [hs], lopList: [lop] });
+            } else {
+                const item = tgMap.get(tg);
+                item.danhSachHS.push(hs);
+                if (!item.lopList.includes(lop)) item.lopList.push(lop);
+            }
+        });
+
+        // 1. RENDER BẢNG TRỢ GIẢNG
+        let tgIndex = 1;
+        tgMap.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${tgIndex++}</td>
+                <td class="align-left"><strong>${item.troGiang}</strong></td>
+                <td class="align-left">${item.danhSachHS.join(', ')}</td>
+                <td><span class="badge-class">${item.lopList.join(', ')}</span></td>
+                <td><span class="check-icon"><i class="fa-solid fa-circle-check"></i> Có ca trực</span></td>
+            `;
+            tgBody.appendChild(tr);
+        });
+        document.getElementById('tgCountBadge').innerText = `${tgMap.size} Trợ giảng`;
+
+        // 2. RENDER BẢNG HỌC SINH
+        hsList.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td class="align-left"><strong>${item.hocSinh}</strong></td>
+                <td class="align-left">${item.troGiang}</td>
+                <td><span class="badge-class">${item.lop}</span></td>
+                <td><span class="check-icon"><i class="fa-solid fa-circle-check"></i> Có mặt</span></td>
+            `;
+            hsBody.appendChild(tr);
+        });
+        document.getElementById('hsCountBadge').innerText = `${hsList.length} Học sinh`;
+    }
+
+    /**
+     * CHẾ ĐỘ 2: BẢNG TỔNG HỢP TOÀN BỘ DANH SÁCH (Khi chọn Tất cả các Thứ)
+     */
+    function renderFullMode(data) {
+        const theadTr = document.getElementById('fullTableHeader');
+        const tbody = document.getElementById('fullTableBody');
+        const tfoot = document.getElementById('fullTableFooter');
+
         tbody.innerHTML = '';
         tfoot.innerHTML = '';
 
-        // Build Table Header Dynamically
+        // Dựng lại tiêu đề cột động
         theadTr.innerHTML = `
             <th style="width: 50px;">STT</th>
             <th>Tên Trợ Giảng</th>
@@ -448,17 +665,16 @@
 
         if (data.length === 0) {
             showEmpty(true);
+            document.getElementById('totalCountBadge').innerText = '0 Bản ghi';
             return;
         }
         showEmpty(false);
 
-        // Mảng tính tổng số lượt tham gia cho từng Ca/Thứ
         const dayCounts = new Array(dynamicHeaders.length).fill(0);
 
-        // Build Table Rows
+        // Render từng hàng
         data.forEach((row, idx) => {
             const tr = document.createElement('tr');
-
             const troGiang = row[1] || '';
             const hocSinh = row[2] || '';
             const maLop = row[3] || '';
@@ -470,7 +686,6 @@
                 <td><span class="badge-class">${maLop}</span></td>
             `;
 
-            // Duyệt qua các cột Thứ/Ca
             dynamicHeaders.forEach((dh, dIdx) => {
                 const val = String(row[dh.index] || '').trim();
                 const isPresent = (val === '1' || val === '1.0' || val.toLowerCase() === 'x');
@@ -487,20 +702,23 @@
             tbody.appendChild(tr);
         });
 
-        // Build Table Footer (Thống kê Tổng cộng)
+        // Dựng dòng Tổng cộng ở cuối
         let footHtml = `
             <tr>
-                <td colspan="4" style="text-align: right; padding-right: 15px;">TỔNG CỘNG ĐĂNG KÝ:</td>
+                <td colspan="4" style="text-align: right; padding-right: 15px;">TỔNG ĐĂNG KÝ HỌC / TRỰC:</td>
         `;
         dayCounts.forEach(count => {
             footHtml += `<td>${count}</td>`;
         });
         footHtml += `</tr>`;
         tfoot.innerHTML = footHtml;
+
+        document.getElementById('totalCountBadge').innerText = `${data.length} Học sinh`;
     }
 
     function showLoading(visible) {
         document.getElementById('loadingBox').style.display = visible ? 'block' : 'none';
+        document.getElementById('mainDisplayArea').style.display = visible ? 'none' : 'block';
     }
 
     function showEmpty(visible) {
