@@ -5,119 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Lịch Học & Trợ Giảng</title>
     <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-dark: #1b4d3e;
+            --primary-green: #1b4d3e;
             --primary-header: #1e4d3b;
             --panel-bg: #e8f5e9;
             --border-color: #a5d6a7;
-            --card-shadow: 0 4px 12px rgba(27, 77, 62, 0.08);
             --accent-blue: #0288d1;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #f4f7f6; color: #333; padding: 24px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background-color: #ffffff; color: #333; padding: 16px; }
+        .container { max-width: 800px; margin: 0 auto; }
 
-        .page-header { text-align: center; margin-bottom: 20px; }
-        .page-title { color: var(--primary-dark); font-size: 24px; font-weight: 700; text-transform: uppercase; }
+        /* Tiêu đề trang giống ảnh mẫu */
+        .page-header { text-align: center; margin-bottom: 16px; }
+        .page-title { color: var(--primary-green); font-size: 22px; font-weight: 700; text-transform: uppercase; line-height: 1.3; }
 
-        /* Khung điều khiển bộ lọc */
+        /* Khung điều khiển bộ lọc kiểu ứng dụng di động theo ảnh mẫu */
         .filter-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px 20px;
+            border-radius: 8px;
+            padding: 16px;
             margin-bottom: 20px;
-            box-shadow: var(--card-shadow);
             display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .filter-group { display: flex; align-items: center; gap: 8px; }
-        .filter-group label { font-weight: 600; color: var(--primary-dark); font-size: 13px; white-space: nowrap; }
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 15px;
+            width: 90px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
         .filter-control {
+            flex: 1;
             padding: 8px 12px;
             border: 1px solid #b0bec5;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
             background: #fff;
-            min-width: 150px;
+            color: #333;
+            width: 100%;
         }
 
-        .btn-reset {
-            margin-left: auto;
+        .btn-action {
             background-color: var(--accent-blue);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px;
             border-radius: 6px;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        /* Thẻ hiển thị thông tin thống kê CQ12 & CR12 */
+        .stats-badge-container {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .stat-badge {
+            background: #e0f2fe;
+            color: #0288d1;
+            border: 1px solid #b3e5fc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         /* Khung hiển thị Lịch chi tiết cá nhân */
         .person-detail-card {
             background: #ffffff;
-            border: 2px solid var(--primary-dark);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .detail-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .detail-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: var(--primary-green);
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .detail-badge {
-            background: #0288d1;
-            color: white;
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
+            gap: 8px;
         }
 
         .schedule-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px;
         }
 
         .day-box {
             border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 6px;
+            padding: 8px;
             text-align: center;
             background-color: #fafafa;
         }
@@ -127,9 +144,9 @@
             background-color: #e8f5e9;
         }
 
-        .day-name { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 4px; }
+        .day-name { font-size: 12px; font-weight: 700; color: #555; }
         .day-box.active .day-name { color: #1b4d3e; }
-        .day-status { font-size: 12px; font-weight: 600; }
+        .day-status { font-size: 11px; font-weight: 600; margin-top: 4px; }
         .status-active { color: #2e7d32; }
         .status-inactive { color: #9e9e9e; }
 
@@ -138,44 +155,45 @@
             justify-content: space-between;
             align-items: center;
             margin: 16px 0 8px 0;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .section-title { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
-        .badge-count { background: var(--primary-dark); color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        .section-title { font-size: 15px; font-weight: 700; color: var(--primary-green); }
+        .badge-count { background: var(--primary-green); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
 
-        /* Bảng dữ liệu */
+        /* Bảng hiển thị dạng giao diện mẫu */
         .table-card {
             background: #fff;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
+            overflow-x: auto;
             margin-bottom: 20px;
         }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
         thead tr { background-color: var(--primary-header); color: white; }
-        th, td { padding: 10px 14px; border: 1px solid var(--border-color); }
+        th, td { padding: 8px 10px; border: 1px solid var(--border-color); text-align: center; }
         tbody tr:nth-child(even) { background-color: #fafafa; }
-        tbody tr { cursor: pointer; transition: background-color 0.15s; }
+        tbody tr { cursor: pointer; }
         tbody tr:hover { background-color: #f1f8e9; }
 
-        .tag-class { background: #e8f5e9; color: #1b4d3e; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; border: 1px solid #c8e6c9; }
-        .tag-subject { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+        .tag-class { background: #e8f5e9; color: #1b4d3e; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 12px; }
+        .tag-subject { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 12px; }
         
-        .status-loading { text-align: center; padding: 40px; font-weight: 600; color: var(--primary-dark); }
+        .status-loading { text-align: center; padding: 30px; font-weight: 600; color: var(--primary-green); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header class="page-header">
-        <h1 class="page-title"><i class="fa-solid fa-graduation-cap"></i> QUẢN LÝ LỊCH HỌC & TRỢ GIẢNG</h1>
+        <h1 class="page-title">QUẢN LÝ LỊCH HỌC & TRỢ GIẢNG</h1>
     </header>
 
-    <!-- BỘ LỌC DỮ LIỆU -->
+    <!-- BỘ LỌC DỮ LIỆU THIẾT KẾ THEO ẢNH MẪU -->
     <div class="filter-panel">
-        <div class="filter-group">
-            <label><i class="fa-regular fa-calendar"></i> THỨ:</label>
+        <div class="filter-row">
+            <span class="filter-label">THỨ:</span>
             <select id="daySelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả các Thứ --</option>
                 <option value="T2">Thứ 2</option>
@@ -187,8 +205,8 @@
             </select>
         </div>
 
-        <div class="filter-group">
-            <label><i class="fa-solid fa-book"></i> MÔN HỌC:</label>
+        <div class="filter-row">
+            <span class="filter-label">MÔN HỌC:</span>
             <select id="subjectSelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả môn --</option>
                 <option value="Toán">Toán</option>
@@ -196,8 +214,8 @@
             </select>
         </div>
 
-        <div class="filter-group">
-            <label><i class="fa-solid fa-users"></i> LỚP / KHỐI:</label>
+        <div class="filter-row">
+            <span class="filter-label">LỚP/KHỐI:</span>
             <select id="classSelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả lớp --</option>
                 <option value="12">Khối 12 (T12, L12, TL12...)</option>
@@ -210,51 +228,50 @@
             </select>
         </div>
 
-        <div class="filter-group">
-            <label><i class="fa-solid fa-magnifying-glass"></i> TÌM TÊN:</label>
-            <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên..." oninput="onFilterChange()">
+        <div class="filter-row">
+            <span class="filter-label">TÌM TÊN:</span>
+            <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên cần tìm..." oninput="onFilterChange()">
         </div>
 
-        <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
+        <button class="btn-action" onclick="resetFilters()"><i class="fa-solid fa-rotate"></i> Đặt lại bộ lọc</button>
     </div>
 
-    <!-- MÀN HÌNH CHỜ TẢI DỮ LIỆU -->
+    <!-- MÀN HÌNH TẢI DỮ LIỆU -->
     <div id="loadingStatus" class="status-loading">
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu từ Google Sheet...
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang đồng bộ dữ liệu từ Google Sheet...
     </div>
 
     <div id="mainContainer" style="display: none;">
 
-        <!-- KHUNG HIỂN THỊ CHI TIẾT LỊCH KHI CHỌN HOẶC TÌM TÊN -->
+        <!-- KHUNG CHI TIẾT KHI CLICK CHỌN NGƯỜI -->
         <div id="personDetailCard" class="person-detail-card">
             <div class="detail-header">
                 <div class="detail-title">
-                    <i class="fa-solid fa-id-card" style="color: var(--primary-dark);"></i>
+                    <i class="fa-solid fa-id-card"></i>
                     <span id="detailName">Nguyễn Văn A</span>
-                    <span id="detailRole" class="detail-badge">Học sinh</span>
                 </div>
                 <button onclick="closeDetailCard()" style="background:none; border:none; cursor:pointer; font-size:18px; color:#888;">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div id="detailExtraInfo" style="margin-bottom: 12px; font-size: 14px; color: #555;"></div>
+            <div id="detailExtraInfo" style="margin-bottom: 10px; font-size: 13px; color: #555;"></div>
             <div class="schedule-grid" id="detailScheduleGrid"></div>
         </div>
 
         <!-- BẢNG 1: TRỢ GIẢNG -->
         <div id="troGiangSection" style="display: none;">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-user-tie" style="color: #0369a1;"></i> DANH SÁCH TRỢ GIẢNG</div>
+                <div class="section-title"><i class="fa-solid fa-user-tie"></i> DANH SÁCH TRỢ GIẢNG</div>
                 <span id="tgCount" class="badge-count">0</span>
             </div>
             <div class="table-card">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 50px;">STT</th>
-                            <th>Họ và Tên Trợ Giảng</th>
+                            <th style="width: 40px;">STT</th>
+                            <th>Họ và Tên</th>
                             <th>Trạng Thái Lịch Trực</th>
-                            <th style="width: 120px; text-align: center;">Thao Tác</th>
+                            <th style="width: 90px;">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody id="tgTableBody"></tbody>
@@ -265,18 +282,25 @@
         <!-- BẢNG 2: HỌC SINH -->
         <div id="hocSinhSection">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-user-graduate" style="color: #1b4d3e;"></i> DANH SÁCH HỌC SINH</div>
-                <span id="hsCount" class="badge-count">0</span>
+                <div class="section-title">
+                    <i class="fa-solid fa-user-graduate"></i> DANH SÁCH HỌC SINH
+                </div>
+                <!-- BỔ SUNG CÁC SỐ LIỆU CQ12 VÀ CR12 NGAY SAU DANH SÁCH HỌC SINH -->
+                <div class="stats-badge-container">
+                    <span class="stat-badge">CQ12: <span id="valCQ12">...</span></span>
+                    <span class="stat-badge">CR12: <span id="valCR12">...</span></span>
+                    <span id="hsCount" class="badge-count">0</span>
+                </div>
             </div>
             <div class="table-card">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 50px;">STT</th>
+                            <th style="width: 40px;">STT</th>
                             <th>Họ và Tên Học Sinh</th>
-                            <th>Lớp (Cột D)</th>
+                            <th>Lớp</th>
                             <th>Môn Học</th>
-                            <th style="width: 120px; text-align: center;">Thao Tác</th>
+                            <th style="width: 90px;">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody id="hsTableBody"></tbody>
@@ -297,14 +321,11 @@
     const HS_COL = { T2: 8, T3: 17, T4: 26, T5: 35, T6: 44, CN: 53 };
     const TG_COL = { T2: 9, T3: 18, T4: 27, T5: 36, T6: 45, CN: 54 };
 
-    const DAY_NAMES = {
-        T2: 'Thứ 2',
-        T3: 'Thứ 3',
-        T4: 'Thứ 4',
-        T5: 'Thứ 5',
-        T6: 'Thứ 6',
-        CN: 'Chủ Nhật'
-    };
+    // Cột CQ là cột thứ 95 (chỉ số 94 trong mảng cào về từ CSV), CR là cột thứ 96 (chỉ số 95)
+    const COL_CQ = 94; 
+    const COL_CR = 95;
+
+    const DAY_NAMES = { T2: 'Thứ 2', T3: 'Thứ 3', T4: 'Thứ 4', T5: 'Thứ 5', T6: 'Thứ 6', CN: 'Chủ Nhật' };
 
     document.addEventListener('DOMContentLoaded', fetchSheetData);
 
@@ -323,7 +344,7 @@
             .catch(err => {
                 console.error(err);
                 document.getElementById('loadingStatus').innerHTML = 
-                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi tải dữ liệu. Hãy kiểm tra kết nối Google Sheet.</span>`;
+                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi kết nối Google Sheet.</span>`;
             });
     }
 
@@ -332,7 +353,17 @@
         parsedTroGiang = [];
         parsedHocSinh = [];
 
-        // 1. Trợ giảng (Hàng 4 -> 11)
+        // Đọc 2 giá trị ô CQ12 và CR12 (hàng 12 tương ứng với chỉ số index 11 trong mảng)
+        if (rows.length >= 12) {
+            const row12 = rows[11];
+            const cq12Val = row12[COL_CQ] !== undefined ? row12[COL_CQ].trim() : '0';
+            const cr12Val = row12[COL_CR] !== undefined ? row12[COL_CR].trim() : '0';
+
+            document.getElementById('valCQ12').innerText = cq12Val || '0';
+            document.getElementById('valCR12').innerText = cr12Val || '0';
+        }
+
+        // 1. Trợ giảng (Hàng 4 -> 11 trong Google Sheet tương ứng index 3 -> 10)
         for (let i = 3; i <= 10 && i < rows.length; i++) {
             const row = rows[i];
             const ho = row[1] || '';
@@ -341,8 +372,6 @@
                 parsedTroGiang.push({
                     id: 'TG_' + i,
                     type: 'Trợ Giảng',
-                    ho: ho,
-                    ten: ten,
                     fullName: `${ho} ${ten}`.trim(),
                     schedule: {
                         T2: isChecked(row[TG_COL.T2]),
@@ -356,7 +385,7 @@
             }
         }
 
-        // 2. Học sinh (Hàng 13 trở đi)
+        // 2. Học sinh (Từ Hàng 13 trở đi trong Google Sheet tương ứng index 12 trở đi)
         for (let j = 12; j < rows.length; j++) {
             const row = rows[j];
             const ho = row[1] || '';
@@ -367,8 +396,6 @@
                 parsedHocSinh.push({
                     id: 'HS_' + j,
                     type: 'Học Sinh',
-                    ho: ho,
-                    ten: ten,
                     fullName: `${ho} ${ten}`.trim(),
                     lopRaw: lopRaw,
                     schedule: {
@@ -424,7 +451,7 @@
     function onFilterChange() {
         const day = document.getElementById('daySelect').value;
         const subject = document.getElementById('subjectSelect').value;
-        const selectedGrade = document.getElementById('classSelect').value; // Lấy khối lớp (12, 11, 10...)
+        const selectedGrade = document.getElementById('classSelect').value;
         const search = document.getElementById('searchInput').value.toLowerCase().trim();
 
         const isFiltering = (day !== 'ALL' || subject !== 'ALL' || selectedGrade !== 'ALL' || search !== '');
@@ -452,7 +479,7 @@
             if (day !== 'ALL' && !item.schedule[day]) return false;
             if (subject !== 'ALL' && !monHoc.includes(subject)) return false;
 
-            // LOGIC LỌC THEO KHỐI: Kiểm tra mã lớp (Cột D) có chứa số khối (ví dụ '12' khớp T12, L12, TL12)
+            // Lọc theo Khối (Chứa số khối như 12, 11,...)
             if (selectedGrade !== 'ALL') {
                 if (!item.lopRaw || !item.lopRaw.includes(selectedGrade)) return false;
             }
@@ -462,7 +489,7 @@
 
         renderHSTable(filteredHS);
 
-        // Tự động bật bảng chi tiết khi kết quả tìm kiếm đúng 1 người
+        // Hiển thị khung lịch chi tiết khi gõ đúng tên 1 người
         if (search.length >= 2) {
             const totalMatches = filteredTG.length + filteredHS.length;
             if (totalMatches === 1) {
@@ -480,7 +507,7 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">Không có trợ giảng phù hợp</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">Không có dữ liệu</td></tr>`;
             return;
         }
 
@@ -488,11 +515,11 @@
             tbody.innerHTML += `
                 <tr onclick="showPersonDetailById('${item.id}', 'TG')">
                     <td>${index + 1}</td>
-                    <td><strong>${item.fullName}</strong></td>
-                    <td><span style="color: #2e7d32; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Có lịch trực</span></td>
-                    <td style="text-align: center;">
+                    <td style="text-align:left;"><strong>${item.fullName}</strong></td>
+                    <td><span style="color: #2e7d32; font-weight:600;"><i class="fa-solid fa-check"></i> Có trực</span></td>
+                    <td>
                         <button class="tag-subject" style="border:none; cursor:pointer;" onclick="event.stopPropagation(); showPersonDetailById('${item.id}', 'TG')">
-                            Xem lịch
+                            Xem
                         </button>
                     </td>
                 </tr>
@@ -506,23 +533,23 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Không tìm thấy học sinh phù hợp</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Không tìm thấy học sinh</td></tr>`;
             return;
         }
 
         data.forEach((item, index) => {
             const monHoc = parseSubject(item.lopRaw);
-            const lopDisplay = item.lopRaw ? `<span class="tag-class">${item.lopRaw}</span>` : '<span style="color:#aaa;">Chưa xếp</span>';
+            const lopDisplay = item.lopRaw ? `<span class="tag-class">${item.lopRaw}</span>` : '-';
 
             tbody.innerHTML += `
                 <tr onclick="showPersonDetailById('${item.id}', 'HS')">
                     <td>${index + 1}</td>
-                    <td><strong>${item.fullName}</strong></td>
+                    <td style="text-align:left;"><strong>${item.fullName}</strong></td>
                     <td>${lopDisplay}</td>
                     <td><span class="tag-subject">${monHoc}</span></td>
-                    <td style="text-align: center;">
+                    <td>
                         <button class="tag-subject" style="border:none; cursor:pointer;" onclick="event.stopPropagation(); showPersonDetailById('${item.id}', 'HS')">
-                            Xem lịch
+                            Xem
                         </button>
                     </td>
                 </tr>
@@ -540,14 +567,12 @@
     function showPersonDetail(person) {
         const card = document.getElementById('personDetailCard');
         document.getElementById('detailName').innerText = person.fullName;
-        document.getElementById('detailRole').innerText = person.type;
-        document.getElementById('detailRole').style.backgroundColor = (person.type === 'Trợ Giảng') ? '#0288d1' : '#1b4d3e';
 
         const extraInfo = document.getElementById('detailExtraInfo');
         if (person.type === 'Học Sinh') {
-            extraInfo.innerHTML = `<strong>Lớp:</strong> ${person.lopRaw || 'Chưa xếp'} | <strong>Môn học:</strong> ${parseSubject(person.lopRaw)}`;
+            extraInfo.innerHTML = `<strong>Lớp:</strong> ${person.lopRaw || 'Chưa xếp'} | <strong>Môn:</strong> ${parseSubject(person.lopRaw)}`;
         } else {
-            extraInfo.innerHTML = `<strong>Nhiệm vụ:</strong> Trực hỗ trợ & Trợ giảng`;
+            extraInfo.innerHTML = `<strong>Vai trò:</strong> Trợ giảng`;
         }
 
         const grid = document.getElementById('detailScheduleGrid');
@@ -557,7 +582,7 @@
             const hasSchedule = person.schedule[dayKey];
             const activeClass = hasSchedule ? 'active' : '';
             const statusText = hasSchedule 
-                ? (person.type === 'Học Sinh' ? '<span class="status-active"><i class="fa-solid fa-check"></i> Có lịch học</span>' : '<span class="status-active"><i class="fa-solid fa-clock"></i> Có lịch trực</span>')
+                ? '<span class="status-active">Có lịch</span>'
                 : '<span class="status-inactive">Nghỉ</span>';
 
             grid.innerHTML += `
