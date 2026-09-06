@@ -24,9 +24,7 @@
         .page-header { text-align: center; margin-bottom: 20px; }
         .page-title { color: var(--primary-dark); font-size: 24px; font-weight: 700; text-transform: uppercase; }
 
-        /* ============================================================
-           1. GIAO DIỆN DÀNH CHO MÁY TÍNH (MẶC ĐỊNH / DESKTOP STYLES)
-           ============================================================ */
+        /* MÁY TÍNH (DESKTOP) */
         .filter-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -64,9 +62,11 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: background-color 0.2s;
         }
+        .btn-action:hover { background-color: #0277bd; }
 
-        /* Thẻ thống kê CQ12 & CR12 */
+        /* THẺ HIỂN THỊ CQ12 VÀ CR12 */
         .stats-badge-container {
             display: inline-flex;
             gap: 8px;
@@ -82,7 +82,7 @@
             font-weight: 700;
         }
 
-        /* Khung hiển thị Lịch chi tiết cá nhân */
+        /* Khung hiển thị Lịch chi tiết */
         .person-detail-card {
             background: #ffffff;
             border: 2px solid var(--primary-dark);
@@ -91,12 +91,6 @@
             margin-bottom: 24px;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
             display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .detail-header {
@@ -152,7 +146,6 @@
         .section-title { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
         .badge-count { background: var(--primary-dark); color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
 
-        /* Bảng dữ liệu Desktop */
         .table-card {
             background: #fff;
             border-radius: 8px;
@@ -174,16 +167,12 @@
         
         .status-loading { text-align: center; padding: 40px; font-weight: 600; color: var(--primary-dark); }
 
-        /* ============================================================
-           2. GIAO DIỆN DÀNH CHO ĐIỆN THOẠI (MOBILE RESPONSIVE <= 768px)
-           ============================================================ */
+        /* ĐIỆN THOẠI (MOBILE <= 768px) */
         @media screen and (max-width: 768px) {
             body { padding: 0; background-color: #fff; font-family: 'Roboto', sans-serif; }
             .container { padding: 12px; }
-            
             .page-title { font-size: 20px; }
 
-            /* Bộ lọc chuyển sang dạng thẻ dọc kiểu App Mobile */
             .filter-panel {
                 flex-direction: column;
                 align-items: stretch;
@@ -223,16 +212,9 @@
                 font-size: 15px;
             }
 
-            /* Điều chỉnh lại bảng trên điện thoại */
             .table-card { overflow-x: auto; border-radius: 6px; }
             th, td { padding: 8px 6px; font-size: 13px; }
-            
-            .section-header {
-                flex-wrap: wrap;
-            }
-            .stats-badge-container {
-                margin-top: 4px;
-            }
+            .section-header { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -243,7 +225,7 @@
         <h1 class="page-title"><i class="fa-solid fa-graduation-cap"></i> QUẢN LÝ LỊCH HỌC & TRỢ GIẢNG</h1>
     </header>
 
-    <!-- BỘ LỌC DỮ LIỆU AUTOMATIC RESPONSIVE -->
+    <!-- BỘ LỌC DỮ LIỆU -->
     <div class="filter-panel">
         <div class="filter-group">
             <label><i class="fa-regular fa-calendar"></i> THỨ:</label>
@@ -286,17 +268,20 @@
             <input type="text" id="searchInput" class="filter-control" placeholder="Nhập tên..." oninput="onFilterChange()">
         </div>
 
-        <button class="btn-action" onclick="resetFilters()"><i class="fa-solid fa-rotate"></i> Đặt lại bộ lọc</button>
+        <!-- NÚT CẬP NHẬT MỚI: VỪA LÀM SẠCH BỘ LỌC VỪA TẢI LẠI DỮ LIỆU MỚI -->
+        <button id="btnRefresh" class="btn-action" onclick="refreshDataAndFilter()">
+            <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i> Cập nhật
+        </button>
     </div>
 
     <!-- MÀN HÌNH CHỜ TẢI DỮ LIỆU -->
     <div id="loadingStatus" class="status-loading">
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang đồng bộ dữ liệu từ Google Sheet...
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu...
     </div>
 
     <div id="mainContainer" style="display: none;">
 
-        <!-- KHUNG HIỂN THỊ CHI TIẾT LỊCH KHI CHỌN NÚT "XEM" -->
+        <!-- KHUNG CHI TIẾT -->
         <div id="personDetailCard" class="person-detail-card">
             <div class="detail-header">
                 <div class="detail-title">
@@ -338,10 +323,10 @@
                 <div class="section-title">
                     <i class="fa-solid fa-user-graduate"></i> DANH SÁCH HỌC SINH
                 </div>
-                <!-- HIỂN THỊ SỐ LIỆU CQ12 VÀ CR12 NGAY SAU TÊN BẢNG -->
+                <!-- SỐ LIỆU CQ12 VÀ CR12 -->
                 <div class="stats-badge-container">
-                    <span class="stat-badge">Tổng 1: <span id="valCQ12">...</span></span>
-                    <span class="stat-badge">Tổng 2: <span id="valCR12">...</span></span>
+                    <span class="stat-badge">CQ12: <span id="valCQ12">...</span></span>
+                    <span class="stat-badge">CR12: <span id="valCR12">...</span></span>
                     <span id="hsCount" class="badge-count">0</span>
                 </div>
             </div>
@@ -364,9 +349,11 @@
 </div>
 
 <script>
-    const SPREADSHEET_ID = '1Qf2RVonvihglQLyvhf-kAqqVqE9Ed10hu6ctOOAl2Hs';
+    const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
     const SHEET_NAME = 'dulieu';
     const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+    const CACHE_KEY = 'app_sheet_data_cache';
 
     let parsedTroGiang = [];
     let parsedHocSinh = [];
@@ -374,21 +361,47 @@
     const HS_COL = { T2: 8, T3: 17, T4: 26, T5: 35, T6: 44, CN: 53 };
     const TG_COL = { T2: 9, T3: 18, T4: 27, T5: 36, T6: 45, CN: 54 };
 
-    // Vị trí chỉ số mảng tương ứng cột CQ (95) và CR (96)
     const COL_CQ = 94; 
     const COL_CR = 95;
 
     const DAY_NAMES = { T2: 'Thứ 2', T3: 'Thứ 3', T4: 'Thứ 4', T5: 'Thứ 5', T6: 'Thứ 6', CN: 'Chủ Nhật' };
 
-    document.addEventListener('DOMContentLoaded', fetchSheetData);
+    document.addEventListener('DOMContentLoaded', initData);
 
-    function fetchSheetData() {
+    function initData() {
+        const cachedCSV = localStorage.getItem(CACHE_KEY);
+
+        if (cachedCSV) {
+            // 1. Lấy dữ liệu từ Bộ nhớ đệm (Cache) để hiển thị ngay lập tức
+            processCSVData(cachedCSV);
+            document.getElementById('loadingStatus').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            onFilterChange();
+
+            // 2. Tự động đồng bộ ngầm 1 lần để cập nhật dữ liệu mới nhất
+            fetchSheetData(true);
+        } else {
+            // Lần đầu tiên mở app chưa có cache: Hiện màn hình loading và tải dữ liệu
+            fetchSheetData(false);
+        }
+    }
+
+    function fetchSheetData(isBackground = false) {
+        if (!isBackground) {
+            document.getElementById('loadingStatus').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
         fetch(API_URL)
             .then(res => {
                 if (!res.ok) throw new Error('Lỗi kết nối API');
                 return res.text();
             })
             .then(csvText => {
+                // Lưu vào bộ nhớ đệm (localStorage)
+                localStorage.setItem(CACHE_KEY, csvText);
+                
+                // Xử lý và vẽ giao diện
                 processCSVData(csvText);
                 document.getElementById('loadingStatus').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'block';
@@ -396,8 +409,36 @@
             })
             .catch(err => {
                 console.error(err);
-                document.getElementById('loadingStatus').innerHTML = 
-                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Không thể kết nối dữ liệu Google Sheet.</span>`;
+                if (!isBackground) {
+                    document.getElementById('loadingStatus').innerHTML = 
+                        `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Không thể kết nối dữ liệu Google Sheet.</span>`;
+                }
+            });
+    }
+
+    // NÚT CẬP NHẬT DỮ LIỆU & BỘ LỌC
+    function refreshDataAndFilter() {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('fa-spin'); // Tạo hiệu ứng xoay nút
+
+        // Xóa sạch bộ lọc
+        document.getElementById('daySelect').value = 'ALL';
+        document.getElementById('subjectSelect').value = 'ALL';
+        document.getElementById('classSelect').value = 'ALL';
+        document.getElementById('searchInput').value = '';
+        closeDetailCard();
+
+        // Tải lại dữ liệu mới nhất từ Sheet
+        fetch(API_URL)
+            .then(res => res.text())
+            .then(csvText => {
+                localStorage.setItem(CACHE_KEY, csvText);
+                processCSVData(csvText);
+                onFilterChange();
+            })
+            .catch(err => alert('Chưa thể kết nối mạng để tải dữ liệu mới!'))
+            .finally(() => {
+                setTimeout(() => icon.classList.remove('fa-spin'), 500);
             });
     }
 
@@ -406,7 +447,6 @@
         parsedTroGiang = [];
         parsedHocSinh = [];
 
-        // 1. Đọc dữ liệu ô CQ12 và CR12 (index hàng là 11)
         if (rows.length >= 12) {
             const row12 = rows[11];
             const cq12Val = row12[COL_CQ] !== undefined ? row12[COL_CQ].trim() : '0';
@@ -416,7 +456,6 @@
             document.getElementById('valCR12').innerText = cr12Val || '0';
         }
 
-        // 2. Trợ giảng (Hàng 4 -> 11 trong Google Sheet)
         for (let i = 3; i <= 10 && i < rows.length; i++) {
             const row = rows[i];
             const ho = row[1] || '';
@@ -438,7 +477,6 @@
             }
         }
 
-        // 3. Học sinh (Từ Hàng 13 trở đi)
         for (let j = 12; j < rows.length; j++) {
             const row = rows[j];
             const ho = row[1] || '';
@@ -509,7 +547,6 @@
 
         const isFiltering = (day !== 'ALL' || subject !== 'ALL' || selectedGrade !== 'ALL' || search !== '');
 
-        // Lọc Trợ Giảng
         const tgSection = document.getElementById('troGiangSection');
         const filteredTG = parsedTroGiang.filter(item => {
             if (search && !item.fullName.toLowerCase().includes(search)) return false;
@@ -524,7 +561,6 @@
             tgSection.style.display = 'none';
         }
 
-        // Lọc Học Sinh
         const filteredHS = parsedHocSinh.filter(item => {
             const monHoc = parseSubject(item.lopRaw);
 
@@ -532,7 +568,6 @@
             if (day !== 'ALL' && !item.schedule[day]) return false;
             if (subject !== 'ALL' && !monHoc.includes(subject)) return false;
 
-            // Lọc theo Khối (Chứa số khối như 12, 11,...)
             if (selectedGrade !== 'ALL') {
                 if (!item.lopRaw || !item.lopRaw.includes(selectedGrade)) return false;
             }
@@ -542,7 +577,6 @@
 
         renderHSTable(filteredHS);
 
-        // Hiển thị khung lịch chi tiết khi tìm kiếm ra 1 kết quả duy nhất
         if (search.length >= 2) {
             const totalMatches = filteredTG.length + filteredHS.length;
             if (totalMatches === 1) {
@@ -652,15 +686,6 @@
 
     function closeDetailCard() {
         document.getElementById('personDetailCard').style.display = 'none';
-    }
-
-    function resetFilters() {
-        document.getElementById('daySelect').value = 'ALL';
-        document.getElementById('subjectSelect').value = 'ALL';
-        document.getElementById('classSelect').value = 'ALL';
-        document.getElementById('searchInput').value = '';
-        closeDetailCard();
-        onFilterChange();
     }
 </script>
 
