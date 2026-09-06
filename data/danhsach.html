@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Dữ Liệu - Google Sheets</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 i {
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            font-size: 0.875rem;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Controls & Search */
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Table Card & Responsive Container */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            background-color: #f1f5f9;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        th {
+            padding: 16px 20px;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Loading & Empty State */
+        .loading-state, .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .controls { flex-direction: column; }
+            .search-box { width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1><i class="fa-solid fa-table-list"></i> Dữ Liệu Từ Google Sheets</h1>
+        <div id="statusBadge" class="status-badge">
+            <i class="fa-solid fa-sync fa-spin"></i> Đang khởi tạo...
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm dữ liệu..." oninput="filterData()">
+        </div>
+        <button class="btn" onclick="fetchSheetData(true)">
+            <i class="fa-solid fa-arrows-rotate"></i> Tải lại dữ liệu
+        </button>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-container">
+            <table id="dataTable">
+                <thead id="tableHead">
+                    <!-- Tiêu đề cột sẽ tự động render tại đây -->
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Hàng dữ liệu sẽ tự động render tại đây -->
+                </tbody>
+            </table>
+            
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p>Đang truy xuất dữ liệu từ Google Sheets...</p>
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+                <p>Không tìm thấy dữ liệu phù hợp.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Information -->
+    <div class="footer">
+        <span id="recordCount">Tổng số: 0 bản ghi</span>
+        <span id="lastUpdated">Cập nhật lần cuối: --:--</span>
+    </div>
+</div>
+
+<script>
+    // Configuration Parameters
+    const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
+    const SHEET_NAME = 'dulieu';
+    const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    const CACHE_KEY = 'gsheet_cache_dulieu';
+    const CACHE_TIME_KEY = 'gsheet_cache_time_dulieu';
+
+    // Global State
+    let headers = [];
+    let rawData = [];
+
+    // Initialize application
+    document.addEventListener('DOMContentLoaded', () => {
+        initDataWithCache();
+    });
+
+    /**
+     * Khởi tạo và nạp dữ liệu từ Cache trước, sau đó đồng bộ ngầm
+     */
+    function initDataWithCache() {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                headers = parsed.headers || [];
+                rawData = parsed.data || [];
+                
+                renderTable(headers, rawData);
+                updateStatusBadge('Đã nạp từ Cache (Đang đồng bộ...)', 'info');
+                if (cachedTime) {
+                    document.getElementById('lastUpdated').innerText = `Cập nhật lần cuối: ${cachedTime}`;
+                }
+            } catch (e) {
+                console.error('Lỗi đọc Cache:', e);
+            }
+        }
+
+        // Tải dữ liệu mới nhất từ Google Sheets
+        fetchSheetData(false);
+    }
+
+    /**
+     * Lấy dữ liệu trực tiếp từ Google Visualization API (/gviz/tq)
+     */
+    async function fetchSheetData(isManualRefresh = false) {
+        if (isManualRefresh) {
+            showLoading(true);
+            updateStatusBadge('Đang làm mới...', 'loading');
+        }
+
+        try {
+            const response = await fetch(GVIZ_URL);
+            if (!response.ok) {
+                throw new Error(`Lỗi kết nối HTTP! Status: ${response.status}`);
+            }
+
+            const responseText = await response.text();
+
+            // Bóc tách chuỗi JSONP dạng: google.visualization.Query.setResponse({...});
+            const regex = /google\.visualization\.Query\.setResponse\((.*)\);?/s;
+            const match = responseText.match(regex);
+
+            if (!match || !match[1]) {
+                throw new Error('Cấu trúc dữ liệu Google Sheet trả về không hợp lệ.');
+            }
+
+            const jsonObject = JSON.parse(match[1]);
+
+            if (jsonObject.status === 'error') {
+                throw new Error(jsonObject.errors[0]?.detailed_message || 'Không thể truy cập dữ liệu.');
+            }
+
+            // Xử lý biến đổi bảng dữ liệu
+            parseGVizData(jsonObject.table);
+
+            // Lưu dữ liệu mới vào LocalStorage Cache
+            const nowString = new Date().toLocaleTimeString('vi-VN') + ' ' + new Date().toLocaleDateString('vi-VN');
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ headers, data: rawData }));
+            localStorage.setItem(CACHE_TIME_KEY, nowString);
+
+            // Cập nhật giao diện
+            renderTable(headers, rawData);
+            updateStatusBadge('Đã kết nối trực tiếp', 'success');
+            document.getElementById('lastUpdated').innerText = `Cập nhật lần cuối: ${nowString}`;
+
+        } catch (error) {
+            console.error('Lỗi tải dữ liệu:', error);
+            if (rawData.length === 0) {
+                showEmptyState(true, 'Không thể tải dữ liệu từ Google Sheets. Vui lòng kiểm tra lại quyền truy cập file.');
+            }
+            updateStatusBadge('Lỗi đồng bộ', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    /**
+     * Chuyển đổi dữ liệu từ cấu trúc table.cols và table.rows của gviz
+     */
+    function parseGVizData(table) {
+        if (!table) return;
+
+        // Trích xuất tiêu đề cột (cols)
+        headers = table.cols.map((col, index) => {
+            return col.label && col.label.trim() !== '' ? col.label : `Cột ${index + 1}`;
+        });
+
+        // Trích xuất từng hàng dữ liệu (rows)
+        rawData = table.rows.map(row => {
+            return row.c.map(cell => {
+                if (!cell) return '';
+                // Ưu tiên lấy giá trị formatted text (f), nếu không có lấy giá trị thực (v)
+                return cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '');
+            });
+        });
+    }
+
+    /**
+     * Render cấu trúc bảng HTML
+     */
+    function renderTable(headerList, dataList) {
+        const thead = document.getElementById('tableHead');
+        const tbody = document.getElementById('tableBody');
+        
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        if (!dataList || dataList.length === 0) {
+            showEmptyState(true);
+            document.getElementById('recordCount').innerText = 'Tổng số: 0 bản ghi';
+            return;
+        }
+
+        showEmptyState(false);
+
+        // Render Head
+        const trHead = document.createElement('tr');
+        headerList.forEach(headerText => {
+            const th = document.createElement('th');
+            th.innerText = headerText;
+            trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+
+        // Render Body
+        dataList.forEach(rowData => {
+            const tr = document.createElement('tr');
+            rowData.forEach(cellValue => {
+                const td = document.createElement('td');
+                td.innerText = cellValue;
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('recordCount').innerText = `Tổng số: ${dataList.length} bản ghi`;
+    }
+
+    /**
+     * Lọc dữ liệu theo từ khóa tìm kiếm
+     */
+    function filterData() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        
+        if (!query) {
+            renderTable(headers, rawData);
+            return;
+        }
+
+        const filtered = rawData.filter(row => {
+            return row.some(cell => String(cell).toLowerCase().includes(query));
+        });
+
+        renderTable(headers, filtered);
+    }
+
+    /**
+     * Hiển thị / Ẩn hiệu ứng Loading
+     */
+    function showLoading(visible) {
+        const loadingEl = document.getElementById('loadingState');
+        loadingEl.style.display = visible ? 'block' : 'none';
+    }
+
+    /**
+     * Hiển thị / Ẩn trạng thái dữ liệu trống
+     */
+    function showEmptyState(visible, message = null) {
+        const emptyEl = document.getElementById('emptyState');
+        if (message) {
+            emptyEl.querySelector('p').innerText = message;
+        }
+        emptyEl.style.display = visible ? 'block' : 'none';
+    }
+
+    /**
+     * Cập nhật Badge trạng thái trên Header
+     */
+    function updateStatusBadge(text, type) {
+        const badge = document.getElementById('statusBadge');
+        let icon = '';
+        let bgColor = '#e0f2fe';
+        let textColor = '#0369a1';
+
+        switch (type) {
+            case 'success':
+                icon = '<i class="fa-solid fa-circle-check"></i>';
+                bgColor = '#dcfce7';
+                textColor = '#15803d';
+                break;
+            case 'error':
+                icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                bgColor = '#fee2e2';
+                textColor = '#b91c1c';
+                break;
+            case 'loading':
+                icon = '<i class="fa-solid fa-sync fa-spin"></i>';
+                bgColor = '#fef3c7';
+                textColor = '#b45309';
+                break;
+            default:
+                icon = '<i class="fa-solid fa-database"></i>';
+                bgColor = '#e0f2fe';
+                textColor = '#0369a1';
+        }
+
+        badge.style.backgroundColor = bgColor;
+        badge.style.color = textColor;
+        badge.innerHTML = `${icon} ${text}`;
+    }
+</script>
+
+</body>
+</html>
