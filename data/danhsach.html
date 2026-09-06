@@ -108,12 +108,12 @@
             <label><i class="fa-regular fa-calendar"></i> THỨ:</label>
             <select id="daySelect" class="filter-control" onchange="onFilterChange()">
                 <option value="ALL">-- Tất cả các Thứ --</option>
-                <option value="I">Thứ 2 (Cột I)</option>
-                <option value="R">Thứ 3 (Cột R)</option>
-                <option value="AA">Thứ 4 (Cột AA)</option>
-                <option value="AJ">Thứ 5 (Cột AJ)</option>
-                <option value="AS">Thứ 6 (Cột AS)</option>
-                <option value="BB">Chủ Nhật (Cột BB)</option>
+                <option value="T2">Thứ 2 (Cột I / J)</option>
+                <option value="T3">Thứ 3 (Cột R / S)</option>
+                <option value="T4">Thứ 4 (Cột AA / AB)</option>
+                <option value="T5">Thứ 5 (Cột AJ / AK)</option>
+                <option value="T6">Thứ 6 (Cột AS / AT)</option>
+                <option value="CN">Chủ Nhật (Cột BB / BC)</option>
             </select>
         </div>
 
@@ -148,13 +148,13 @@
         <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
     </div>
 
-    <!-- MÀN HÌNH CHỜ TẢI DỮ LIỆU API -->
+    <!-- MÀN HÌNH CHỜ TẢI DỮ LIỆU -->
     <div id="loadingStatus" class="status-loading">
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang kết nối API và lấy dữ liệu từ Google Sheet...
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu từ Google Sheet...
     </div>
 
     <div id="mainContainer" style="display: none;">
-        <!-- BẢNG 1: TRỢ GIẢNG (Ẩn mặc định, chỉ hiện khi lọc) -->
+        <!-- BẢNG 1: TRỢ GIẢNG (Chỉ hiện khi thực hiện lọc) -->
         <div id="troGiangSection" style="display: none;">
             <div class="section-header">
                 <div class="section-title"><i class="fa-solid fa-user-tie" style="color: #0369a1;"></i> DANH SÁCH TRỢ GIẢNG</div>
@@ -200,24 +200,28 @@
 <script>
     const SPREADSHEET_ID = '184GlzoYfIgPssbLO1yJEOYr41UsOSqF_';
     const SHEET_NAME = 'dulieu';
-    
-    // URL API tải dữ liệu dưới dạng CSV trực tiếp từ sheet 'dulieu'
     const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
     let parsedTroGiang = [];
     let parsedHocSinh = [];
 
-    // Chỉ số cột tương ứng (Tính từ 0: B=1, C=2, D=3, I=8, R=17, AA=26, AJ=35, AS=44, BB=53)
-    const COL_INDEX = { HO: 1, TEN: 2, LOP: 3, I: 8, R: 17, AA: 26, AJ: 35, AS: 44, BB: 53 };
+    /*
+      CHỈ SỐ CỘT (Tính từ 0: B=1, C=2, D=3)
+      - Học sinh (I, R, AA, AJ, AS, BB):
+        I=8, R=17, AA=26, AJ=35, AS=44, BB=53
+      - Trợ giảng lấy cột phụ ngay sau (J, S, AB, AK, AT, BC):
+        J=9, S=18, AB=27, AK=36, AT=45, BC=54
+    */
+    const HS_COL = { T2: 8, T3: 17, T4: 26, T5: 35, T6: 44, CN: 53 };
+    const TG_COL = { T2: 9, T3: 18, T4: 27, T5: 36, T6: 45, CN: 54 };
 
     document.addEventListener('DOMContentLoaded', fetchSheetData);
 
-    // Hàm gọi API lấy dữ liệu Google Sheet
     function fetchSheetData() {
         fetch(API_URL)
-            .then(response => {
-                if (!response.ok) throw new Error('Không thể tải dữ liệu từ Google Sheet');
-                return response.text();
+            .then(res => {
+                if (!res.ok) throw new Error('Lỗi kết nối API');
+                return res.text();
             })
             .then(csvText => {
                 processCSVData(csvText);
@@ -225,46 +229,45 @@
                 document.getElementById('mainContainer').style.display = 'block';
                 onFilterChange();
             })
-            .catch(error => {
-                console.error(error);
+            .catch(err => {
+                console.error(err);
                 document.getElementById('loadingStatus').innerHTML = 
-                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi tải dữ liệu. Hãy đảm bảo File Google Sheet đã được cài đặt chế độ <b>"Bất kỳ ai có liên kết đều có thể xem"</b>.</span>`;
+                    `<span style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi tải dữ liệu. Hãy kiểm tra lại kết nối hoặc quyền chia sẻ của Google Sheet.</span>`;
             });
     }
 
-    // Xử lý đọc chuỗi CSV trả về từ API
     function processCSVData(csvText) {
         const rows = parseCSVRows(csvText);
         parsedTroGiang = [];
         parsedHocSinh = [];
 
-        // 1. Đọc Trợ giảng (Hàng 4 đến hàng 11 -> Index 3 đến 10)
+        // 1. Đọc Trợ giảng (Hàng 4 -> 11, tương ứng index 3 -> 10)
         for (let i = 3; i <= 10 && i < rows.length; i++) {
             const row = rows[i];
-            const ho = row[COL_INDEX.HO] || '';
-            const ten = row[COL_INDEX.TEN] || '';
+            const ho = row[1] || '';
+            const ten = row[2] || '';
             if (ten.trim() !== '') {
                 parsedTroGiang.push({
                     ho: ho,
                     ten: ten,
                     schedule: {
-                        I:  row[COL_INDEX.I]  ? 1 : 0,
-                        R:  row[COL_INDEX.R]  ? 1 : 0,
-                        AA: row[COL_INDEX.AA] ? 1 : 0,
-                        AJ: row[COL_INDEX.AJ] ? 1 : 0,
-                        AS: row[COL_INDEX.AS] ? 1 : 0,
-                        BB: row[COL_INDEX.BB] ? 1 : 0
+                        T2: isChecked(row[TG_COL.T2]),
+                        T3: isChecked(row[TG_COL.T3]),
+                        T4: isChecked(row[TG_COL.T4]),
+                        T5: isChecked(row[TG_COL.T5]),
+                        T6: isChecked(row[TG_COL.T6]),
+                        CN: isChecked(row[TG_COL.CN])
                     }
                 });
             }
         }
 
-        // 2. Đọc Học sinh (Từ Hàng 13 trở đi -> Index 12)
+        // 2. Đọc Học sinh (Hàng 13 trở đi, tương ứng index 12 trở đi)
         for (let j = 12; j < rows.length; j++) {
             const row = rows[j];
-            const ho = row[COL_INDEX.HO] || '';
-            const ten = row[COL_INDEX.TEN] || '';
-            const lopRaw = row[COL_INDEX.LOP] || '';
+            const ho = row[1] || '';
+            const ten = row[2] || '';
+            const lopRaw = row[3] || '';
 
             if (ten.trim() !== '') {
                 parsedHocSinh.push({
@@ -272,19 +275,25 @@
                     ten: ten,
                     lopRaw: lopRaw,
                     schedule: {
-                        I:  row[COL_INDEX.I]  ? 1 : 0,
-                        R:  row[COL_INDEX.R]  ? 1 : 0,
-                        AA: row[COL_INDEX.AA] ? 1 : 0,
-                        AJ: row[COL_INDEX.AJ] ? 1 : 0,
-                        AS: row[COL_INDEX.AS] ? 1 : 0,
-                        BB: row[COL_INDEX.BB] ? 1 : 0
+                        T2: isChecked(row[HS_COL.T2]),
+                        T3: isChecked(row[HS_COL.T3]),
+                        T4: isChecked(row[HS_COL.T4]),
+                        T5: isChecked(row[HS_COL.T5]),
+                        T6: isChecked(row[HS_COL.T6]),
+                        CN: isChecked(row[HS_COL.CN])
                     }
                 });
             }
         }
     }
 
-    // Hàm tách dòng CSV chuẩn
+    // Kiểm tra ô có chứa giá trị '1' hay không
+    function isChecked(val) {
+        if (!val) return false;
+        return val.toString().trim() === '1';
+    }
+
+    // Hàm đọc dữ liệu dòng CSV
     function parseCSVRows(text) {
         let p = '', c = '', r = [];
         let q = false;
@@ -309,7 +318,6 @@
         return r;
     }
 
-    // Tự động nhận diện Môn học dựa vào ký tự T/L ở cột D
     function parseSubject(code) {
         if (!code) return 'Chưa xếp';
         let subjects = [];
@@ -318,7 +326,6 @@
         return subjects.join(' & ') || 'Khác';
     }
 
-    // Xử lý sự kiện khi thay đổi bộ lọc
     function onFilterChange() {
         const day = document.getElementById('daySelect').value;
         const subject = document.getElementById('subjectSelect').value;
@@ -327,7 +334,7 @@
 
         const isFiltering = (day !== 'ALL' || subject !== 'ALL' || className !== 'ALL' || search !== '');
 
-        // Lọc Trợ giảng (Chỉ hiện khi lọc)
+        // Lọc Trợ Giảng (chỉ hiện khi có lọc)
         const tgSection = document.getElementById('troGiangSection');
         if (isFiltering) {
             tgSection.style.display = 'block';
@@ -342,7 +349,7 @@
             tgSection.style.display = 'none';
         }
 
-        // Lọc Học sinh
+        // Lọc Học Sinh
         const filteredHS = parsedHocSinh.filter(item => {
             const fullName = `${item.ho} ${item.ten}`.toLowerCase();
             const monHoc = parseSubject(item.lopRaw);
@@ -364,7 +371,7 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">Không có trợ giảng phù hợp</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">Không có trợ giảng trực vào thời gian này</td></tr>`;
             return;
         }
 
@@ -374,7 +381,7 @@
                 <tr>
                     <td>${index + 1}</td>
                     <td><strong>${fullName}</strong></td>
-                    <td><span style="color: #2e7d32; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Có ca trực</span></td>
+                    <td><span style="color: #2e7d32; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Có lịch trực</span></td>
                 </tr>
             `;
         });
