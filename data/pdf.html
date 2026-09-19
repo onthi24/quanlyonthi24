@@ -5,54 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bài giảng Toán 12</title>
     <style>
-        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #0f172a; /* Nền tối sang trọng, làm nổi bật tài liệu */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        header {
-            background-color: #1e293b;
-            color: #ffffff;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .viewer-container {
-            flex: 1;
-            padding: 20px;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 30px;
             display: flex;
             justify-content: center;
-            align-items: center;
         }
-        .pdf-frame {
+
+        /* Khung chứa giao diện đồng bộ giống mục Lời ngỏ */
+        .content-card {
+            background: #ffffff;
             width: 100%;
-            max-width: 900px; /* Giới hạn độ rộng để đọc trên máy tính không bị quá dài */
+            max-width: 850px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #166534; /* Màu xanh lá chủ đề */
+            padding-left: 12px;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Khung nhúng tài liệu PDF bên trong */
+        .pdf-viewer-container {
+            width: 100%;
+            height: 650px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .pdf-viewer-container iframe {
+            width: 100%;
             height: 100%;
             border: none;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            background: #white;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <span>📚 Khóa học Bồi dưỡng kiến thức Toán 12</span>
-        <span style="font-size: 0.9rem; color: #94a3b8;">Thầy Nguyễn Ngọc Hải</span>
-    </header>
+    <div class="content-card">
+        <!-- Tiêu đề phong cách Lời ngỏ -->
+        <div class="card-header">
+            <h2>Nội dung bài học: Bài 3. Đường tiệm cận của đồ thị hàm số</h2>
+        </div>
 
-    <div class="viewer-container">
-        <iframe class="pdf-frame" src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview?rm=minimal"></iframe>
+        <!-- Khung hiển thị PDF từ Google Drive đã làm sạch giao diện -->
+        <div class="pdf-viewer-container">
+            <iframe src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview?rm=minimal"></iframe>
+        </div>
     </div>
 
 </body>
