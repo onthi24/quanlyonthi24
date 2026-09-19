@@ -17,7 +17,6 @@
             justify-content: center;
         }
 
-        /* Khung chứa chính (Card giao diện) */
         .content-card {
             background: #ffffff;
             width: 100%;
@@ -31,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* Tiêu đề mục */
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -49,7 +47,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Nút bấm Toàn màn hình tùy chỉnh */
         .fullscreen-btn {
             background-color: #166534;
             color: white;
@@ -69,7 +66,6 @@
             background-color: #14532d;
         }
 
-        /* Khung hiển thị PDF bọc bên trong */
         .pdf-viewer-container {
             width: 100%;
             height: 650px;
@@ -77,21 +73,31 @@
             border-radius: 8px;
             overflow: hidden;
             background: #f1f5f9;
-            position: relative;
+            position: relative; /* Cực kỳ quan trọng để neo lớp phủ */
         }
 
-        /* Thẻ embed hiển thị PDF sạch sẽ, không lộ link gốc Drive */
         .pdf-viewer-container embed {
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* --- LỚP PHỦ CSS ĐỂ CHE NÚT GOOGLE DRIVE --- */
+        .hide-drive-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;   /* Độ rộng che trùm nút */
+            height: 50px;  /* Chiều cao che trùm nút */
+            background-color: #ffffff; /* Đồng bộ màu nền góc trên bên phải của khung PDF */
+            z-index: 10;   /* Nằm đè lên trên thẻ embed */
+            pointer-events: auto; /* Chặn hoàn toàn thao tác click chuột vào nút bên dưới */
         }
     </style>
 </head>
 <body>
 
     <div class="content-card" id="pdf-card">
-        <!-- Tiêu đề và nút bấm Fullscreen -->
         <div class="card-header">
             <h2>Nội dung bài học: Bài 3. Đường tiệm cận của đồ thị hàm số</h2>
             <button class="fullscreen-btn" onclick="toggleFullScreen()">
@@ -99,34 +105,32 @@
             </button>
         </div>
 
-        <!-- Khung chứa tài liệu PDF -->
         <div class="pdf-viewer-container" id="fullscreen-target">
-            <!-- Dùng link preview của Google Drive gắn vào thẻ embed -->
-            <script>
-                // Tự động gán link để tránh lộ trực tiếp hoặc dễ quản lý
-                document.write('<embed src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview" type="application/pdf">');
-            </script>
+            <!-- Lớp mặt nạ che khuất nút mở rộng của Google Drive -->
+            <div class="hide-drive-btn"></div>
+            
+            <!-- Thẻ hiển thị PDF -->
+            <embed src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview" type="application/pdf">
         </div>
     </div>
 
     <script>
-        // Hàm kích hoạt chế độ toàn màn hình cho khung bài giảng
         function toggleFullScreen() {
             var elem = document.getElementById("pdf-card");
             if (!document.fullscreenElement) {
                 if (elem.requestFullscreen) {
                     elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                } else if (elem.webkitRequestFullscreen) {
                     elem.webkitRequestFullscreen();
-                } else if (elem.msRequestFullscreen) { /* IE11 */
+                } else if (elem.msRequestFullscreen) {
                     elem.msRequestFullscreen();
                 }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) { /* Safari */
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { /* IE11 */
+                } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
