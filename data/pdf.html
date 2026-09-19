@@ -5,11 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bài giảng Toán 12</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a; /* Nền tối sang trọng, làm nổi bật tài liệu */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .viewer-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .pdf-frame {
+            width: 100%;
+            max-width: 900px; /* Giới hạn độ rộng để đọc trên máy tính không bị quá dài */
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: #white;
+        }
     </style>
 </head>
 <body>
-    <iframe src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview"></iframe>
+
+    <header>
+        <span>📚 Khóa học Bồi dưỡng kiến thức Toán 12</span>
+        <span style="font-size: 0.9rem; color: #94a3b8;">Thầy Nguyễn Ngọc Hải</span>
+    </header>
+
+    <div class="viewer-container">
+        <iframe class="pdf-frame" src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview?rm=minimal"></iframe>
+    </div>
+
 </body>
 </html>
