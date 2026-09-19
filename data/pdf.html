@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài giảng Toán 12</title>
+    <title>Bài giảng Toán 12 - ONTHI24.COM</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
@@ -14,36 +17,59 @@
             justify-content: center;
         }
 
-        /* Khung chứa giao diện đồng bộ giống mục Lời ngỏ */
+        /* Khung chứa chính (Card giao diện) */
         .content-card {
             background: #ffffff;
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             padding: 24px;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Tiêu đề mục */
         .card-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #166534; /* Màu xanh lá chủ đề */
+            margin-bottom: 16px;
+            border-left: 4px solid #166534;
             padding-left: 12px;
         }
 
         .card-header h2 {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             color: #1e293b;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* Khung nhúng tài liệu PDF bên trong */
+        /* Nút bấm Toàn màn hình tùy chỉnh */
+        .fullscreen-btn {
+            background-color: #166534;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            background-color: #14532d;
+        }
+
+        /* Khung hiển thị PDF bọc bên trong */
         .pdf-viewer-container {
             width: 100%;
             height: 650px;
@@ -51,9 +77,11 @@
             border-radius: 8px;
             overflow: hidden;
             background: #f1f5f9;
+            position: relative;
         }
 
-        .pdf-viewer-container iframe {
+        /* Thẻ embed hiển thị PDF sạch sẽ, không lộ link gốc Drive */
+        .pdf-viewer-container embed {
             width: 100%;
             height: 100%;
             border: none;
@@ -62,17 +90,48 @@
 </head>
 <body>
 
-    <div class="content-card">
-        <!-- Tiêu đề phong cách Lời ngỏ -->
+    <div class="content-card" id="pdf-card">
+        <!-- Tiêu đề và nút bấm Fullscreen -->
         <div class="card-header">
             <h2>Nội dung bài học: Bài 3. Đường tiệm cận của đồ thị hàm số</h2>
+            <button class="fullscreen-btn" onclick="toggleFullScreen()">
+                ⛶ Phóng to toàn màn hình
+            </button>
         </div>
 
-        <!-- Khung hiển thị PDF từ Google Drive đã làm sạch giao diện -->
-        <div class="pdf-viewer-container">
-            <iframe src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview?rm=minimal"></iframe>
+        <!-- Khung chứa tài liệu PDF -->
+        <div class="pdf-viewer-container" id="fullscreen-target">
+            <!-- Dùng link preview của Google Drive gắn vào thẻ embed -->
+            <script>
+                // Tự động gán link để tránh lộ trực tiếp hoặc dễ quản lý
+                document.write('<embed src="https://drive.google.com/file/d/1HDtN3iK6_o1pufpNkmk33Lm294WHZiD_/preview" type="application/pdf">');
+            </script>
         </div>
     </div>
+
+    <script>
+        // Hàm kích hoạt chế độ toàn màn hình cho khung bài giảng
+        function toggleFullScreen() {
+            var elem = document.getElementById("pdf-card");
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                }
+            }
+        }
+    </script>
 
 </body>
 </html>
