@@ -231,14 +231,15 @@
         <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- CỘT BÊN TRÁI: GOOGLE FORM (Đã gắn đúng link nhập dữ liệu) -->
+            <!-- CỘT BÊN TRÁI: GOOGLE FORM -->
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
                 </div>
                 <iframe 
+                    id="google-form-iframe"
                     class="form-iframe"
-                    src="https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true">
+                    src="">
                     Đang tải form...
                 </iframe>
             </div>
@@ -281,39 +282,58 @@
                                 <tr>
                                     <th style="width: 50px;">STT</th>
                                     <th style="text-align: left;">Họ và tên</th>
-                                    <th style="width: 140px; text-align: right;">Dữ liệu</th>
-                                    <th style="width: 130px;">Tháng</th>
-                                    <th style="width: 130px;">Ngày nhập</th>
+                                    <th style="width: 120px; text-align: center;">Ngày sinh</th>
+                                    <th style="width: 90px; text-align: center;">Tháng</th>
+                                    <th style="width: 110px; text-align: center;">Môn</th>
+                                    <th style="width: 90px; text-align: right;">Điểm</th>
+                                    <th style="width: 120px; text-align: center;">Ngày nhập</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body">
-                                <tr><td colspan="5" class="empty-message">Đang kiểm tra dữ liệu...</td></tr>
+                                <tr><td colspan="7" class="empty-message">Đang kiểm tra dữ liệu...</td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="summary-bar">
                         <span id="record-count">Tổng số: 0 bản ghi</span>
-                        <span id="total-amount" style="color: #0b694a;">Tổng tiền: 0 đ</span>
+                        <span id="total-amount" style="color: #0b694a;"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Nút mở nhanh Google Sheets chính xác của bạn (Bấm F2 để ẩn/hiện) -->
-    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110" target="_blank">
+    <!-- Nút mở nhanh Google Sheets (Bấm F2 để ẩn/hiện) -->
+    <a id="access-link-btn" href="" target="_blank">
         <i class="fa-solid fa-file-excel"></i> TRUY CẬP SHEETS
     </a>
 
     <script>
-        // Sử dụng chung Web App URL đã được triển khai từ Google Sheets để đọc dữ liệu
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
-        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_V2";
+        // =========================================================================
+        // KHU VỰC CẤU HÌNH HẰNG SỐ (Bạn có thể dễ dàng thay đổi các đường link ở đây)
+        // =========================================================================
         
+        // 1. Link nhúng Google Form (Dùng dạng embedded cho iframe bên trái)
+        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
+        
+        // 2. Link truy cập trực tiếp Google Sheets (Dùng cho nút mở nhanh ở góc màn hình)
+        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
+        
+        // 3. Link Web App (Dùng để lấy dữ liệu JSON từ Google Sheets hiển thị lên bảng)
+        // Lưu ý: Nhớ thay thế link Web App Apps Script của bạn vào đây nếu tạo mới
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
+
+        // =========================================================================
+
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_V3";
         let allData = [];
 
         window.onload = function() {
+            // Tự động gán link vào iframe và thẻ a từ các hằng số phía trên
+            document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
+            document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
+
             setupF2KeyShortcut();
             initDataWithCacheAndAutoUpdate();
 
@@ -397,21 +417,32 @@
                 .then(data => {
                     let rawData = [];
 
+                    // Cấu trúc bảng tương ứng từ Google Sheet:
+                    // Col A: Dấu thời gian (index 0)
+                    // Col B: Họ và tên (index 1)
+                    // Col C: Ngày sinh (index 2)
+                    // Col D: Tháng (index 3)
+                    // Col E: Môn (index 4)
+                    // Col F: Điểm (index 5)
                     for (let i = 1; i < data.length; i++) {
                         let row = data[i];
                         if (!row || row.length === 0) continue;
 
                         let timestamp = row[0] ? row[0] : ""; 
                         let fullName = row[1] ? row[1] : "";  
-                        let amount = row[2] ? row[2] : "";    
-                        let date = row[3] ? row[3] : "";      
+                        let dob = row[2] ? row[2] : "";       
+                        let month = row[3] ? row[3] : "";     
+                        let subject = row[4] ? row[4] : "";   
+                        let score = row[5] ? row[5] : "";     
 
-                        if (fullName || amount) {
+                        if (fullName || subject || score) {
                             rawData.push({
                                 inputDate: formatDateOnly(timestamp),
                                 fullName: String(fullName).trim(),
-                                amount: String(amount).trim(),
-                                date: formatDateOnly(date)
+                                dob: formatDateOnly(dob),
+                                month: String(month).trim(),
+                                subject: String(subject).trim(),
+                                score: String(score).trim()
                             });
                         }
                     }
@@ -442,12 +473,11 @@
             }, 1000);
         }
 
-        // Tính năng gợi ý tên khi gõ vào ô tìm kiếm
         function handleSearchInput() {
             let keyword = document.getElementById('search-input').value.toLowerCase().trim();
             let suggestionsBox = document.getElementById('suggestions-list');
 
-            applyFilter(); // Vẫn tiến hành lọc danh sách bảng theo ý bạn
+            applyFilter();
 
             if (!keyword) {
                 suggestionsBox.style.display = 'none';
@@ -477,36 +507,27 @@
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
 
-            let sumAmount = 0;
-
             if (dataArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-message">Không tìm thấy dữ liệu phù hợp.</td></tr>';
                 document.getElementById('record-count').innerText = `Tổng số: 0 bản ghi`;
-                document.getElementById('total-amount').innerText = `Tổng tiền: 0 đ`;
                 return;
             }
 
             dataArray.forEach((item, index) => {
-                let formattedAmount = item.amount;
-                let num = parseFloat(item.amount.replace(/[^0-9.-]+/g, ""));
-                if (!isNaN(num)) {
-                    formattedAmount = num.toLocaleString('vi-VN');
-                    sumAmount += num;
-                }
-
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="text-center" style="font-weight: bold;">${index + 1}</td>
                     <td class="font-weight-bold">${item.fullName}</td>
-                    <td class="text-right font-weight-bold" style="color: #0b694a;">${formattedAmount}</td>
-                    <td class="text-center">${item.date}</td>
+                    <td class="text-center">${item.dob}</td>
+                    <td class="text-center">${item.month}</td>
+                    <td class="text-center font-weight-bold" style="color: #2563eb;">${item.subject}</td>
+                    <td class="text-right font-weight-bold" style="color: #0b694a;">${item.score}</td>
                     <td class="text-center" style="color: #64748b; font-size: 13px;">${item.inputDate}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
             document.getElementById('record-count').innerText = `Tổng số: ${dataArray.length} bản ghi`;
-            document.getElementById('total-amount').innerText = `Tổng tiền: ${sumAmount.toLocaleString('vi-VN')} đ`;
         }
 
         function applyFilter() {
@@ -522,7 +543,7 @@
 
             let filtered = allData.filter(item => {
                 let matchName = item.fullName.toLowerCase().includes(keyword);
-                let itemDate = parseDate(item.date) || parseDate(item.inputDate);
+                let itemDate = parseDate(item.inputDate);
                 let matchDate = true;
 
                 if (itemDate) {
