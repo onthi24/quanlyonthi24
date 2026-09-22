@@ -85,6 +85,7 @@
             font-size: 13px;
             color: #475569;
             font-weight: 600;
+            position: relative;
         }
 
         .input-group input, .input-group select {
@@ -102,7 +103,37 @@
             opacity: 0.7;
         }
 
-        .search-name { flex: 1.2; min-width: 160px; }
+        .search-name { flex: 1.2; min-width: 160px; position: relative; }
+
+        /* Khung gợi ý tên */
+        #suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 180px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 2px;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
 
         .btn-action {
             border: none; padding: 8px 14px;
@@ -206,7 +237,6 @@
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP ĐIỂM MỚI</span>
                 </div>
-                <!-- Sử dụng đúng link Google Form của bạn ở dạng viewform nhúng -->
                 <iframe 
                     class="form-iframe"
                     src="https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true">
@@ -223,8 +253,10 @@
                 <div class="data-card-content">
                     
                     <div class="filter-section">
+                        <!-- Ô nhập tên kèm khung gợi ý -->
                         <div class="input-group search-name">
-                            <input type="text" id="search-name" placeholder="Nhập Họ và tên (Cột B)..." oninput="handleLookup()">
+                            <input type="text" id="search-name" placeholder="Nhập hoặc chọn Họ và tên..." oninput="handleNameInput()" autocomplete="off">
+                            <div id="suggestions-list"></div>
                         </div>
 
                         <div class="input-group">
@@ -283,14 +315,14 @@
         </div>
     </div>
 
-    <!-- Nút mở nhanh Google Sheets chuẩn của bạn (Bấm F2 để ẩn/hiện) -->
+    <!-- Nút mở nhanh Google Sheets (Bấm F2 để ẩn/hiện) -->
     <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110" target="_blank">
         <i class="fa-solid fa-file-excel"></i> MỞ GOOGLE SHEETS
     </a>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
-        const CACHE_KEY = "STUDENT_SCORES_CACHE_V5";
+        const CACHE_KEY = "STUDENT_SCORES_CACHE_V6";
         
         let allData = [];
         let matchedStudentData = [];
@@ -298,6 +330,13 @@
         window.onload = function() {
             setupF2KeyShortcut();
             initDataWithCacheAndAutoUpdate();
+            
+            // Ẩn bảng gợi ý khi click ra ngoài
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-name')) {
+                    document.getElementById('suggestions-list').style.display = 'none';
+                }
+            });
         };
 
         function setupF2KeyShortcut() {
@@ -401,6 +440,38 @@
             showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
             fetchDataFromSheet();
             setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
+        }
+
+        // Tính năng Gợi ý tên khi gõ
+        function handleNameInput() {
+            let keyword = document.getElementById('search-name').value.toLowerCase().trim();
+            let suggestionsBox = document.getElementById('suggestions-list');
+            
+            handleLookup(); // Gọi tìm kiếm thông thường đồng thời
+
+            if (!keyword) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            // Lọc danh sách tên duy nhất khớp với từ khóa
+            let uniqueNames = [...new Set(allData.map(item => item.fullName))];
+            let matchedNames = uniqueNames.filter(name => name.toLowerCase().includes(keyword));
+
+            if (matchedNames.length > 0) {
+                suggestionsBox.innerHTML = matchedNames.map(name => 
+                    `<div class="suggestion-item" onclick="selectSuggestedName('${name}')">${name}</div>`
+                ).join('');
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        function selectSuggestedName(name) {
+            document.getElementById('search-name').value = name;
+            document.getElementById('suggestions-list').style.display = 'none';
+            handleLookup();
         }
 
         function handleLookup() {
@@ -514,6 +585,7 @@
             document.getElementById('search-dob').value = '';
             document.getElementById('filter-subject').value = '';
             document.getElementById('filter-month').value = '';
+            document.getElementById('suggestions-list').style.display = 'none';
             handleLookup();
         }
     </script>
