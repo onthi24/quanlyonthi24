@@ -67,7 +67,6 @@
 
         .data-card-content { padding: 15px 20px 20px 20px; }
 
-        /* Filter layout */
         .filter-section {
             display: flex;
             flex-wrap: wrap;
@@ -117,7 +116,6 @@
         .btn-reset { background-color: #e2e8f0; color: #475569; }
         .btn-reset:hover { background-color: #cbd5e0; }
 
-        /* Table CSS */
         .table-responsive { 
             overflow-x: auto; 
             border-radius: 8px;
@@ -208,10 +206,10 @@
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP ĐIỂM MỚI</span>
                 </div>
-                <!-- Link nhúng Google Form của bạn -->
+                <!-- Link nhúng chuẩn Google Form của bạn -->
                 <iframe 
                     class="form-iframe"
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/viewform?embedded=true">
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSc1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true">
                     Đang tải form...
                 </iframe>
             </div>
@@ -224,20 +222,16 @@
                 </div>
                 <div class="data-card-content">
                     
-                    <!-- BỘ LỌC THÔNG TIN -->
                     <div class="filter-section">
-                        <!-- Nhập Tên -->
                         <div class="input-group search-name">
                             <input type="text" id="search-name" placeholder="Nhập Họ và tên (Cột B)..." oninput="handleLookup()">
                         </div>
 
-                        <!-- Nhập Ngày Sinh -->
                         <div class="input-group">
                             <span>Ngày sinh:</span>
                             <input type="date" id="search-dob" onchange="handleLookup()">
                         </div>
 
-                        <!-- Chọn Môn Học (Khóa mặc định) -->
                         <div class="input-group">
                             <span>Môn:</span>
                             <select id="filter-subject" disabled onchange="applyFilter()">
@@ -245,7 +239,6 @@
                             </select>
                         </div>
 
-                        <!-- Chọn Tháng (Khóa mặc định) -->
                         <div class="input-group">
                             <span>Tháng:</span>
                             <select id="filter-month" disabled onchange="applyFilter()">
@@ -253,7 +246,6 @@
                             </select>
                         </div>
 
-                        <!-- Nút Thao tác -->
                         <button class="btn-action btn-reset" onclick="resetFilter()" title="Xóa bộ lọc">
                             <i class="fa-solid fa-filter-circle-xmark"></i>
                         </button>
@@ -262,7 +254,6 @@
                         </button>
                     </div>
 
-                    <!-- BẢNG HIỂN THỊ DỮ LIỆU -->
                     <div class="table-responsive">
                         <table id="data-table">
                             <thead>
@@ -282,7 +273,6 @@
                         </table>
                     </div>
 
-                    <!-- THANH TỔNG KẾT -->
                     <div class="summary-bar">
                         <span id="record-count">Tổng số: 0 bài thi</span>
                         <span id="student-status-badge"></span>
@@ -293,15 +283,13 @@
         </div>
     </div>
 
-    <!-- NÚT MỞ NHANH GOOGLE SHEETS (Phím tắt F2) -->
     <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?usp=sharing" target="_blank">
         <i class="fa-solid fa-file-excel"></i> MỞ GOOGLE SHEETS
     </a>
 
     <script>
-        // Đường dẫn API Apps Script liên kết với Google Sheet
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
-        const CACHE_KEY = "STUDENT_SCORES_CACHE_V2";
+        const CACHE_KEY = "STUDENT_SCORES_CACHE_V4";
         
         let allData = [];
         let matchedStudentData = [];
@@ -321,7 +309,6 @@
             });
         }
 
-        // Đảm bảo định dạng Ngày chuẩn DD/MM/YYYY
         function formatDateOnly(dateStr) {
             if (!dateStr) return "";
             let str = String(dateStr).trim();
@@ -341,7 +328,6 @@
             return str.split(' ')[0];
         }
 
-        // Chuyển chuỗi Ngày về dạng Date để so sánh chính xác
         function parseDate(dateStr) {
             if (!dateStr) return null;
             const parts = String(dateStr).trim().split(' ')[0].split('/');
@@ -371,7 +357,6 @@
             if (statusEl) statusEl.innerHTML = htmlContent;
         }
 
-        // Lấy dữ liệu từ Google Sheets
         function fetchDataFromSheet() {
             const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
@@ -380,9 +365,6 @@
                 .then(data => {
                     let rawData = [];
 
-                    // Ánh xạ các cột tương ứng trong Google Sheet:
-                    // Cột A (0): Ngày nhập | Cột B (1): Họ tên | Cột C (2): Ngày sinh
-                    // Cột D (3): Môn học | Cột E (4): Điểm số  | Cột F (5): Tháng
                     for (let i = 1; i < data.length; i++) {
                         let row = data[i];
                         if (!row || row.length === 0) continue;
@@ -390,30 +372,29 @@
                         let timestamp = row[0] || ""; 
                         let fullName  = row[1] || ""; 
                         let dob       = row[2] || ""; 
-                        let subject   = row[3] || ""; 
-                        let score     = row[4] || ""; 
-                        let month     = row[5] || ""; 
+                        let month     = row[3] || ""; 
+                        let subject   = row[4] || ""; 
+                        let score     = row[5] || ""; 
 
                         if (fullName || dob) {
                             rawData.push({
                                 inputDate: formatDateOnly(timestamp),
                                 fullName: String(fullName).trim(),
                                 dob: formatDateOnly(dob),
+                                month: String(month).trim(),
                                 subject: String(subject).trim(),
-                                score: String(score).trim(),
-                                month: String(month).trim()
+                                score: String(score).trim()
                             });
                         }
                     }
 
-                    rawData.reverse(); // Đưa thông tin mới nhất lên đầu
+                    rawData.reverse();
                     allData = rawData;
                     localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
                     
                     showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Sẵn sàng');
                     setTimeout(() => showSyncStatus(''), 3000);
 
-                    // Kiểm tra và hiển thị lại nếu người dùng đã nhập thông tin từ trước
                     handleLookup();
                 })
                 .catch(err => {
@@ -430,17 +411,15 @@
             setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
         }
 
-        // BƯỚC XỬ LÝ TRA CỨU THEO TÊN + NGÀY SINH
         function handleLookup() {
             let nameVal = document.getElementById('search-name').value.toLowerCase().trim();
-            let dobVal = document.getElementById('search-dob').value; // YYYY-MM-DD
+            let dobVal = document.getElementById('search-dob').value; 
             let formattedDobInput = formatDateOnly(dobVal);
 
             const subjectSelect = document.getElementById('filter-subject');
             const monthSelect = document.getElementById('filter-month');
             const statusBadge = document.getElementById('student-status-badge');
 
-            // Bắt buộc phải có cả Họ tên và Ngày sinh mới tiến hành tra cứu
             if (!nameVal || !dobVal) {
                 subjectSelect.disabled = true;
                 monthSelect.disabled = true;
@@ -452,7 +431,6 @@
                 return;
             }
 
-            // Quét tìm học sinh trùng khớp Họ tên (Cột B) và Ngày sinh (Cột C)
             matchedStudentData = allData.filter(item => {
                 let matchName = item.fullName.toLowerCase().includes(nameVal);
                 let matchDob = item.dob === formattedDobInput;
@@ -460,18 +438,15 @@
             });
 
             if (matchedStudentData.length > 0) {
-                // Đã tìm thấy dữ liệu học sinh -> Mở khóa ô chọn Môn học và Tháng
                 subjectSelect.disabled = false;
                 monthSelect.disabled = false;
                 statusBadge.innerHTML = `<span class="badge-found"><i class="fa-solid fa-circle-check"></i> Đã tìm thấy học sinh</span>`;
 
-                // Nạp danh sách Môn học động
                 let subjects = [...new Set(matchedStudentData.map(i => i.subject))].filter(Boolean);
                 let currentSub = subjectSelect.value;
                 subjectSelect.innerHTML = '<option value="">-- Tất cả --</option>' + 
                     subjects.map(s => `<option value="${s}" ${s === currentSub ? 'selected' : ''}>${s}</option>`).join('');
 
-                // Nạp danh sách Tháng động
                 let months = [...new Set(matchedStudentData.map(i => i.month))].filter(Boolean);
                 let currentMon = monthSelect.value;
                 monthSelect.innerHTML = '<option value="">-- Tất cả --</option>' + 
@@ -479,7 +454,6 @@
 
                 applyFilter();
             } else {
-                // Không tìm thấy kết quả
                 subjectSelect.disabled = true;
                 monthSelect.disabled = true;
                 statusBadge.innerHTML = `<span style="color: #ef4444; font-size: 12px; font-weight:600;">Không tìm thấy thông tin</span>`;
@@ -487,7 +461,6 @@
             }
         }
 
-        // Lọc theo Môn học và Tháng khi học sinh đã được xác thực
         function applyFilter() {
             let selectedSubject = document.getElementById('filter-subject').value;
             let selectedMonth = document.getElementById('filter-month').value;
@@ -501,7 +474,6 @@
             renderTable(filtered);
         }
 
-        // Hiển thị bảng kết quả
         function renderTable(dataArray) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
