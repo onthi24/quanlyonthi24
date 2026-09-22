@@ -206,10 +206,10 @@
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP ĐIỂM MỚI</span>
                 </div>
-                <!-- Link nhúng chuẩn Google Form của bạn -->
+                <!-- Sử dụng đúng link Google Form của bạn ở dạng viewform nhúng -->
                 <iframe 
                     class="form-iframe"
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSc1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true">
+                    src="https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true">
                     Đang tải form...
                 </iframe>
             </div>
@@ -283,13 +283,14 @@
         </div>
     </div>
 
-    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?usp=sharing" target="_blank">
+    <!-- Nút mở nhanh Google Sheets chuẩn của bạn (Bấm F2 để ẩn/hiện) -->
+    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110" target="_blank">
         <i class="fa-solid fa-file-excel"></i> MỞ GOOGLE SHEETS
     </a>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
-        const CACHE_KEY = "STUDENT_SCORES_CACHE_V4";
+        const CACHE_KEY = "STUDENT_SCORES_CACHE_V5";
         
         let allData = [];
         let matchedStudentData = [];
@@ -326,15 +327,6 @@
                 return `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
             return str.split(' ')[0];
-        }
-
-        function parseDate(dateStr) {
-            if (!dateStr) return null;
-            const parts = String(dateStr).trim().split(' ')[0].split('/');
-            if (parts.length === 3) {
-                return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-            }
-            return null;
         }
 
         function initDataWithCacheAndAutoUpdate() {
