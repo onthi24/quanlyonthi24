@@ -297,22 +297,14 @@
 
     <script>
         // =========================================================================
-        // CÁC HẰNG SỐ CẤU HÌNH (Thầy dễ dàng thay đổi đường link tại đây)
+        // CÁC HẰNG SỐ CẤU HÌNH
         // =========================================================================
-        
-        // 1. Link nhúng Google Form (Khung bên trái)
         const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
-        
-        // 2. Link truy cập trực tiếp Google Sheets (Dùng cho nút mở nhanh khi bấm phím F2)
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
-        
-        // 3. Link CSV công khai lấy trực tiếp từ Google Sheets (Không cần Apps Script)
-        // Cấu trúc: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET/gviz/tq?tqx=out:csv&gid=GID_CUA_TAB
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&gid=939986110";
-
         // =========================================================================
 
-        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV";
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV_V2";
         let allData = [];
         let matchedStudentData = [];
 
@@ -406,13 +398,6 @@
                     let lines = text.split(/\r?\n/);
                     let rawData = [];
 
-                    // Ánh xạ các cột chuẩn từ file Sheets của thầy:
-                    // Col A: Dấu thời gian (index 0)
-                    // Col B: Họ và tên (index 1)
-                    // Col C: Mã số (index 2)
-                    // Col D: Tháng (index 3)
-                    // Col E: Môn (index 4)
-                    // Col F: Điểm (index 5)
                     for (let i = 1; i < lines.length; i++) {
                         if (!lines[i].trim()) continue;
                         let cols = parseCSVLine(lines[i]);
@@ -540,11 +525,14 @@
 
             let filtered = matchedStudentData.filter(item => {
                 let matchSub = true;
+                let subLower = item.subject.toLowerCase();
+
                 if (selectedSubject !== "ALL") {
                     if (selectedSubject === "Toán-Lí") {
-                        matchSub = item.subject.toLowerCase().includes("toán") || item.subject.toLowerCase().includes("lí");
+                        // Cho phép lấy cả dòng chứa môn Toán hoặc môn Lí
+                        matchSub = subLower.includes("toán") || subLower.includes("lí");
                     } else {
-                        matchSub = item.subject.toLowerCase().includes(selectedSubject.toLowerCase());
+                        matchSub = subLower.includes(selectedSubject.toLowerCase());
                     }
                 }
                 let matchMon = (selectedMonth === "ALL") || (item.month === selectedMonth);
