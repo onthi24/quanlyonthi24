@@ -9,6 +9,7 @@
     <style>
         :root {
             --primary-color: #1a4d2e;
+            --primary-hover: #143d24;
             --secondary-color: #f4f6f9;
             --text-color: #333;
             --border-color: #e2e8f0;
@@ -23,41 +24,179 @@
         .header-title { text-align: center; color: var(--primary-color); margin-bottom: 25px; font-size: 22px; text-transform: uppercase; font-weight: 700; }
 
         /* MAIN LAYOUT */
-        .main-layout { display: flex; gap: 20px; flex-wrap: wrap; }
+        .main-layout { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
         
-        /* LEFT PANEL (Form nhập - giữ nguyên không gian) */
-        .left-panel { flex: 1; min-width: 320px; background: var(--secondary-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); height: fit-content; }
-        .left-panel h3 { color: var(--primary-color); margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e0; outline: none; font-size: 14px; background: white; }
+        /* LEFT PANEL (Google Form iframe) */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
 
-        /* RIGHT PANEL (Bảng dữ liệu và Bộ lọc theo yêu cầu) */
-        .right-panel { flex: 3; min-width: 600px; background: var(--secondary-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .right-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #1a4d2e; color: white; padding: 10px 15px; border-radius: 6px; }
-        
-        /* FILTER SECTION */
-        .filter-section { display: flex; gap: 10px; margin-bottom: 15px; background: #ffffff; padding: 12px; border-radius: 6px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border-color); }
-        .filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
-        .filter-group label { font-weight: 600; color: #4a5568; font-size: 12px; }
-        .filter-group input, .filter-group select { padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e0; font-size: 13px; outline: none; background: white; }
-        
-        .btn-update { background-color: var(--btn-blue); color: #ffffff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 35px; align-self: flex-end; }
-        .btn-update:hover { background-color: var(--btn-blue-hover); }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .form-iframe {
+            width: 100%;
+            height: 590px;
+            border: none;
+            display: block;
+        }
+
+        .data-card-content { padding: 15px 20px 20px 20px; }
+
+        /* RIGHT PANEL (Bộ lọc và Bảng dữ liệu) */
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: var(--secondary-color);
+            padding: 12px;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 140px;
+            position: relative;
+        }
+
+        .filter-group label { font-weight: 600; color: #475569; font-size: 12px; }
+        .filter-group input, .filter-group select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            outline: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        .filter-group input:disabled, .filter-group select:disabled {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Khung gợi ý tên */
+        #suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 180px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 2px;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .btn-action {
+            border: none; padding: 8px 14px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; font-size: 13px;
+            height: 35px; align-self: flex-end;
+        }
+
+        .btn-refresh { background-color: var(--btn-blue); color: white; }
+        .btn-refresh:hover { background-color: var(--btn-blue-hover); }
 
         /* TABLE */
-        .table-responsive { overflow-x: auto; background: white; border-radius: 6px; border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; }
-        thead { background-color: var(--primary-color); color: white; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 13px; text-align: left; }
-        th { font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        .table-responsive { 
+            overflow-x: auto; 
+            border-radius: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; text-transform: uppercase; font-size: 12px; text-align: left; }
+        
+        td { font-size: 14px; line-height: 1.5; }
+        td.text-center { text-align: center; }
+        td.text-right { text-align: right; }
+        td.font-weight-bold { font-weight: 600; }
+
+        tbody tr:nth-child(even) { background-color: #fbfbfb; }
         tbody tr:hover { background-color: #f1f5f9; }
-        .empty-message { text-align: center; padding: 25px; color: #718096; font-style: italic; }
-        #loading { text-align: center; padding: 15px; color: var(--primary-color); font-weight: bold; font-size: 14px; display: none; }
-        .total-records { margin-top: 10px; font-size: 13px; color: #4a5568; font-weight: 500; }
+
+        .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
+
+        .summary-bar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            padding: 8px 5px;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            font-weight: 400;
+            color: #cbd5e0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #access-link-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #16a34a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            font-size: 14px;
+        }
+        #access-link-btn:hover { background-color: #15803d; }
 
         @media (max-width: 992px) {
-            .main-layout { flex-direction: column; }
+            .main-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -67,322 +206,373 @@
         <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- PHẦN BÊN TRÁI: GIỮ NGUYÊN FORM NHẬP -->
-            <div class="left-panel">
-                <h3>Nhập dữ liệu mới</h3>
-                <div class="form-group">
-                    <label>Họ và tên *</label>
-                    <input type="text" placeholder="Nhập họ và tên...">
+            <!-- CỘT BÊN TRÁI: GOOGLE FORM -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
                 </div>
-                <div class="form-group">
-                    <label>Ngày sinh *</label>
-                    <input type="date">
-                </div>
-                <div class="form-group">
-                    <label>Tháng *</label>
-                    <select>
-                        <option value="">-- Chọn tháng --</option>
-                        <option value="1">Tháng 1</option>
-                        <option value="2">Tháng 2</option>
-                        <option value="3">Tháng 3</option>
-                    </select>
-                </div>
+                <iframe 
+                    id="google-form-iframe"
+                    class="form-iframe"
+                    src="">
+                    Đang tải form...
+                </iframe>
             </div>
 
-            <!-- PHẦN BÊN PHẢI: LỌC VÀ HIỂN THỊ DỮ LIỆU THEO YÊU CẦU -->
-            <div class="right-panel">
-                <div class="right-header">
-                    <span><i class="fa-solid fa-list"></i> DANH SÁCH DỮ LIỆU</span>
-                    <span id="sync-status" style="font-size: 12px; color: #fde047;">Đang sẵn sàng</span>
+            <!-- CỘT BÊN PHẢI: BẢNG DỮ LIỆU VÀ BỘ LỌC THEO MÃ SỐ -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-table-list"></i> DANH SÁCH DỮ LIỆU</span>
+                    <span id="sync-indicator" class="sync-status"></span>
                 </div>
+                <div class="data-card-content">
+                    
+                    <div class="filter-section">
+                        <!-- 1. Ô chọn Họ và tên (Có gợi ý) -->
+                        <div class="filter-group" style="flex: 1.5;">
+                            <label for="search-name">Họ và Tên</label>
+                            <input type="text" id="search-name" placeholder="Gõ chọn tên..." oninput="handleNameInput()" autocomplete="off">
+                            <div id="suggestions-list"></div>
+                        </div>
 
-                <!-- BỘ LỌC ĐÚNG LUỒNG YÊU CẦU -->
-                <div class="filter-section">
-                    <!-- 1. Chọn Tên (Cột B) có gợi ý -->
-                    <div class="filter-group">
-                        <label for="filter-name">Họ và Tên</label>
-                        <input type="text" id="filter-name" list="name-list" placeholder="Gõ chọn tên..." oninput="onNameChange()">
-                        <datalist id="name-list"></datalist>
+                        <!-- 2. Thay ngày sinh bằng Ô nhập Mã số -->
+                        <div class="filter-group">
+                            <label for="search-code">Mã số</label>
+                            <input type="text" id="search-code" placeholder="Nhập mã số..." oninput="handleCodeInput()" disabled>
+                        </div>
+
+                        <!-- 3. Chọn Môn (Toán, Lí hoặc cả 2) -->
+                        <div class="filter-group">
+                            <label for="filter-subject">Môn học</label>
+                            <select id="filter-subject" disabled onchange="applyFilter()">
+                                <option value="ALL">-- Tất cả môn --</option>
+                                <option value="Toán">Toán</option>
+                                <option value="Lí">Lí</option>
+                                <option value="Toán-Lí">Cả Toán và Lí</option>
+                            </select>
+                        </div>
+
+                        <!-- 4. Chọn Tháng -->
+                        <div class="filter-group">
+                            <label for="filter-month">Tháng</label>
+                            <select id="filter-month" disabled onchange="applyFilter()">
+                                <option value="ALL">-- Tất cả --</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-action btn-refresh" onclick="forceReloadData()" title="Cập nhật dữ liệu mới nhất">
+                            <i class="fa-solid fa-rotate" id="refresh-icon"></i> Cập nhật
+                        </button>
                     </div>
 
-                    <!-- 2. Chọn Ngày tháng năm (Cột C) đối chiếu -->
-                    <div class="filter-group">
-                        <label for="filter-date">Ngày sinh / Ngày</label>
-                        <input type="date" id="filter-date" onchange="onDateChange()" disabled>
+                    <div class="table-responsive">
+                        <table id="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">STT</th>
+                                    <th>Họ và tên</th>
+                                    <th style="width: 110px; text-align: center;">Mã số</th>
+                                    <th style="width: 90px; text-align: center;">Tháng</th>
+                                    <th style="width: 110px; text-align: center;">Môn</th>
+                                    <th style="width: 90px; text-align: right;">Điểm</th>
+                                    <th style="width: 120px; text-align: center;">Ngày nhập</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr><td colspan="7" class="empty-message">Vui lòng chọn Họ tên và nhập Mã số để tra cứu dữ liệu.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <!-- 3. Chọn Môn (Toán, Lí hoặc cả 2) -->
-                    <div class="filter-group">
-                        <label for="filter-subject">Môn học</label>
-                        <select id="filter-subject" onchange="applyFilter()" disabled>
-                            <option value="ALL">-- Tất cả môn --</option>
-                            <option value="Toán">Toán</option>
-                            <option value="Lí">Lí</option>
-                            <option value="Toán-Lí">Cả Toán và Lí</option>
-                        </select>
+                    <div class="summary-bar">
+                        <span id="record-count">Tổng số: 0 bản ghi</span>
+                        <span id="student-status-badge"></span>
                     </div>
-
-                    <!-- 4. Chọn Tháng (Cột D) -->
-                    <div class="filter-group">
-                        <label for="filter-month">Tháng</label>
-                        <select id="filter-month" onchange="applyFilter()" disabled>
-                            <option value="ALL">-- Tất cả tháng --</option>
-                        </select>
-                    </div>
-
-                    <button class="btn-update" onclick="fetchDataFromSheet()">
-                        <i class="fa-solid fa-rotate"></i> Cập nhật
-                    </button>
                 </div>
-
-                <div id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu từ Google Sheet...</div>
-
-                <!-- BẢNG HIỂN THỊ KẾT QUẢ -->
-                <div class="table-responsive">
-                    <table id="data-table">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>HỌ VÀ TÊN</th>
-                                <th>NGÀY SINH</th>
-                                <th>THÁNG</th>
-                                <th>MÔN</th>
-                                <th>ĐIỂM</th>
-                                <th>NGÀY NHẬP</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body">
-                            <tr><td colspan="7" class="empty-message">Vui lòng chọn tên và xác thực ngày tháng để xem dữ liệu</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="total-records">Tổng số: <span id="record-count">0</span> bản ghi</div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Link Google Sheet cấu hình theo yêu cầu của thầy
-        const SHEET_ID = "1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI";
-        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=939986110`;
-        const CACHE_KEY = "custom_sheet_data_cache";
+    <!-- Nút mở nhanh Google Sheets (Bấm F2 để ẩn/hiện) -->
+    <a id="access-link-btn" href="" target="_blank">
+        <i class="fa-solid fa-file-excel"></i> MỞ GOOGLE SHEETS
+    </a>
 
+    <script>
+        // =========================================================================
+        // KHU VỰC CẤU HÌNH HẰNG SỐ (Thầy có thể thay đổi link trực tiếp tại đây)
+        // =========================================================================
+        
+        // 1. Link nhúng Google Form (Phần khung bên trái)
+        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
+        
+        // 2. Link truy cập trực tiếp Google Sheets (Dùng cho nút mở nhanh khi bấm phím F2)
+        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
+        
+        // 3. Link Web App Apps Script (Dùng để lấy dữ liệu JSON hiển thị lên bảng)
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
+
+        // =========================================================================
+
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_V4";
         let allData = [];
+        let matchedStudentData = [];
 
         window.onload = function() {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-                try {
-                    allData = JSON.parse(cached);
-                    populateNameList();
-                } catch(e) { console.error(e); }
-            }
-            fetchDataFromSheet();
+            // Tự động gán link vào iframe và thẻ a từ các hằng số phía trên
+            document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
+            document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
+
+            setupF2KeyShortcut();
+            initDataWithCacheAndAutoUpdate();
+
+            // Ẩn bảng gợi ý khi click ra ngoài
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.filter-group')) {
+                    document.getElementById('suggestions-list').style.display = 'none';
+                }
+            });
         };
 
-        // Hàm xử lý đọc file CSV đơn giản
-        function parseCSVLine(text) {
-            let result = [], entry = '', inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                let c = text[i];
-                if (inQuotes) {
-                    if (c === '"') {
-                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
-                        else { inQuotes = false; }
-                    } else { entry += c; }
-                } else {
-                    if (c === '"') { inQuotes = true; }
-                    else if (c === ',') { result.push(entry); entry = ''; }
-                    else { entry += c; }
+        function setupF2KeyShortcut() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'F2') {
+                    event.preventDefault();
+                    const btn = document.getElementById('access-link-btn');
+                    btn.style.display = (btn.style.display === 'none' || btn.style.display === '') ? 'inline-flex' : 'none';
+                }
+            });
+        }
+
+        function formatDateOnly(dateStr) {
+            if (!dateStr) return "";
+            let str = String(dateStr).trim();
+            if (str.includes('T')) {
+                let d = new Date(str);
+                if (!isNaN(d.getTime())) {
+                    let day = String(d.getDate()).padStart(2, '0');
+                    let month = String(d.getMonth() + 1).padStart(2, '0');
+                    let year = d.getFullYear();
+                    return `${day}/${month}/${year}`;
                 }
             }
-            result.push(entry);
-            return result;
+            if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                let parts = str.split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return str.split(' ')[0];
         }
 
-        function cleanText(str) {
-            if (!str) return '';
-            return String(str).replace(/^["'\s]+|["'\s]+$/g, '').trim();
+        function initDataWithCacheAndAutoUpdate() {
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                try {
+                    allData = JSON.parse(cachedData);
+                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
+                } catch (e) { console.error(e); }
+            } else {
+                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
+            }
+            fetchDataFromSheet();
         }
 
-        // Tải dữ liệu từ Google Sheet
+        function showSyncStatus(htmlContent) {
+            const statusEl = document.getElementById('sync-indicator');
+            if (statusEl) statusEl.innerHTML = htmlContent;
+        }
+
         function fetchDataFromSheet() {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('sync-status').innerText = 'Đang đồng bộ...';
+            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
 
-            fetch(CSV_URL)
-                .then(res => res.text())
-                .then(text => {
-                    let lines = text.split(/\r?\n/);
-                    let parsed = [];
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let rawData = [];
 
-                    // Giả định dữ liệu bắt đầu từ dòng thứ 2 (bỏ qua tiêu đề cột)
-                    for (let i = 1; i < lines.length; i++) {
-                        if (!lines[i].trim()) continue;
-                        let cols = parseCSVLine(lines[i]);
-                        
-                        if (cols.length >= 6) {
-                            parsed.push({
-                                stt: cleanText(cols[0]),
-                                name: cleanText(cols[1]),     // Cột B: Tên
-                                dateVal: cleanText(cols[2]),  // Cột C: Ngày tháng
-                                monthVal: cleanText(cols[3]), // Cột D: Tháng
-                                subject: cleanText(cols[4]),  // Cột E: Môn
-                                score: cleanText(cols[5]),    // Cột F: Điểm
-                                createdDate: cleanText(cols[6]) || '' // Cột G (nếu có)
+                    // Giả định ánh xạ cột từ Google Sheets:
+                    // Col A: Dấu thời gian (index 0)
+                    // Col B: Họ và tên (index 1)
+                    // Col C: Mã số (thay thế ngày sinh) (index 2)
+                    // Col D: Tháng (index 3)
+                    // Col E: Môn (index 4)
+                    // Col F: Điểm (index 5)
+                    for (let i = 1; i < data.length; i++) {
+                        let row = data[i];
+                        if (!row || row.length === 0) continue;
+
+                        let timestamp = row[0] || ""; 
+                        let fullName  = row[1] || ""; 
+                        let codeVal   = row[2] || ""; // Cột C: Mã số
+                        let month     = row[3] || ""; 
+                        let subject   = row[4] || ""; 
+                        let score     = row[5] || ""; 
+
+                        if (fullName || codeVal) {
+                            rawData.push({
+                                inputDate: formatDateOnly(timestamp),
+                                fullName: String(fullName).trim(),
+                                code: String(codeVal).trim(),
+                                month: String(month).trim(),
+                                subject: String(subject).trim(),
+                                score: String(score).trim()
                             });
                         }
                     }
 
-                    allData = parsed;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+                    rawData.reverse();
+                    allData = rawData;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
                     
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('sync-status').innerText = 'Đã cập nhật mới nhất';
-                    populateNameList();
+                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Sẵn sàng');
+                    setTimeout(() => showSyncStatus(''), 3000);
                 })
                 .catch(err => {
-                    console.error(err);
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('sync-status').innerText = 'Lỗi kết nối Sheet';
+                    console.error("Lỗi đồng bộ:", err);
+                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Dùng dữ liệu đệm');
                 });
         }
 
-        // Đổ dữ liệu gợi ý vào ô chọn Tên (Cột B)
-        function populateNameList() {
-            const datalist = document.getElementById('name-list');
-            datalist.innerHTML = '';
-            let uniqueNames = [...new Set(allData.map(item => item.name))].filter(Boolean);
-
-            uniqueNames.sort((a,b) => a.localeCompare(b, 'vi')).forEach(name => {
-                let opt = document.createElement('option');
-                opt.value = name;
-                datalist.appendChild(opt);
-            });
+        function forceReloadData() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
+            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
+            fetchDataFromSheet();
+            setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
         }
 
-        // Bước 1: Khi người dùng chọn/nhập tên -> Mở khóa ô chọn Ngày
-        function onNameChange() {
-            let nameInput = document.getElementById('filter-name').value.trim();
-            let dateInput = document.getElementById('filter-date');
-            let subjectSelect = document.getElementById('filter-subject');
-            let monthSelect = document.getElementById('filter-month');
+        // Xử lý khi người dùng gõ tên -> Hiện gợi ý
+        function handleNameInput() {
+            let keyword = document.getElementById('search-name').value.toLowerCase().trim();
+            let suggestionsBox = document.getElementById('suggestions-list');
+            let codeInput = document.getElementById('search-code');
 
-            if (nameInput) {
-                dateInput.disabled = false; // Kích hoạt ô ngày
+            if (!keyword) {
+                suggestionsBox.style.display = 'none';
+                codeInput.disabled = true;
+                codeInput.value = '';
+                resetDependentFields();
+                return;
+            }
+
+            let uniqueNames = [...new Set(allData.map(item => item.fullName))];
+            let matchedNames = uniqueNames.filter(name => name.toLowerCase().includes(keyword));
+
+            if (matchedNames.length > 0) {
+                suggestionsBox.innerHTML = matchedNames.map(name => 
+                    `<div class="suggestion-item" onclick="selectSuggestedName('${name}')">${name}</div>`
+                ).join('');
+                suggestionsBox.style.display = 'block';
             } else {
-                dateInput.disabled = true;
-                subjectSelect.disabled = true;
-                monthSelect.disabled = true;
-                dateInput.value = '';
-                resetDropdowns();
-                clearTable();
+                suggestionsBox.style.display = 'none';
             }
         }
 
-        // Bước 2: Khi chọn Ngày -> Đối chiếu với Cột C, nếu đúng cho nhập tiếp Môn & Tháng
-        function onDateChange() {
-            let nameInput = document.getElementById('filter-name').value.trim();
-            let selectedDate = document.getElementById('filter-date').value;
-            let subjectSelect = document.getElementById('filter-subject');
-            let monthSelect = document.getElementById('filter-month');
+        function selectSuggestedName(name) {
+            document.getElementById('search-name').value = name;
+            document.getElementById('suggestions-list').style.display = 'none';
+            
+            let codeInput = document.getElementById('search-code');
+            codeInput.disabled = false; // Kích hoạt ô nhập Mã số sau khi chọn tên
+            codeInput.focus();
+        }
 
-            // Kiểm tra xem tên và ngày có khớp với cơ sở dữ liệu không
-            let matchFound = allData.some(item => 
-                item.name.toLowerCase() === nameInput.toLowerCase() && 
-                item.dateVal.includes(selectedDate)
-            );
+        // Xử lý khi người dùng nhập Mã số -> Đối chiếu với Cột C
+        function handleCodeInput() {
+            let nameVal = document.getElementById('search-name').value.toLowerCase().trim();
+            let codeVal = document.getElementById('search-code').value.trim();
+            
+            const subjectSelect = document.getElementById('filter-subject');
+            const monthSelect = document.getElementById('filter-month');
+            const statusBadge = document.getElementById('student-status-badge');
 
-            if (matchFound && selectedDate) {
+            if (!codeVal) {
+                subjectSelect.disabled = true;
+                monthSelect.disabled = true;
+                renderTable([]);
+                return;
+            }
+
+            // Lọc dữ liệu khớp tên và mã số ở cột C
+            matchedStudentData = allData.filter(item => {
+                let matchName = item.fullName.toLowerCase().includes(nameVal);
+                let matchCode = item.code.toLowerCase() === codeVal.toLowerCase();
+                return matchName && matchCode;
+            });
+
+            if (matchedStudentData.length > 0) {
                 subjectSelect.disabled = false;
                 monthSelect.disabled = false;
-                populateMonths(nameInput);
+                statusBadge.innerHTML = `<span style="color: #166534; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Xác thực thành công</span>`;
+
+                // Nạp danh sách tháng tương ứng
+                let months = [...new Set(matchedStudentData.map(i => i.month))].filter(Boolean);
+                let currentMon = monthSelect.value;
+                monthSelect.innerHTML = '<option value="ALL">-- Tất cả --</option>' + 
+                    months.map(m => `<option value="${m}" ${m === currentMon ? 'selected' : ''}>Tháng ${m}</option>`).join('');
+
                 applyFilter();
             } else {
-                alert("Ngày tháng không khớp với dữ liệu của người này trong hệ thống!");
                 subjectSelect.disabled = true;
                 monthSelect.disabled = true;
-                clearTable();
+                statusBadge.innerHTML = `<span style="color: #ef4444; font-size: 12px; font-weight:600;">Mã số không khớp</span>`;
+                renderTable([]);
             }
         }
 
-        // Nạp danh sách tháng tương ứng của người dùng từ Cột D
-        function populateMonths(name) {
-            const monthSelect = document.getElementById('filter-month');
-            monthSelect.innerHTML = '<option value="ALL">-- Tất cả tháng --</option>';
-            
-            let months = [...new Set(allData.filter(i => i.name.toLowerCase() === name.toLowerCase()).map(i => i.monthVal))].filter(Boolean);
-            
-            months.sort().forEach(m => {
-                let opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = "Tháng " + m;
-                monthSelect.appendChild(opt);
-            });
-        }
-
-        // Bước 3 & 4: Lọc và hiển thị toàn bộ thông tin lên bảng
         function applyFilter() {
-            let nameInput = document.getElementById('filter-name').value.trim().toLowerCase();
-            let selectedDate = document.getElementById('filter-date').value;
             let selectedSubject = document.getElementById('filter-subject').value;
             let selectedMonth = document.getElementById('filter-month').value;
 
-            let filtered = allData.filter(item => {
-                let matchName = !nameInput || item.name.toLowerCase().includes(nameInput);
-                let matchDate = !selectedDate || item.dateVal.includes(selectedDate);
-                
-                // Lọc Môn (Toán, Lí hoặc chọn cả 2)
-                let matchSubject = true;
+            let filtered = matchedStudentData.filter(item => {
+                let matchSub = true;
                 if (selectedSubject !== "ALL") {
                     if (selectedSubject === "Toán-Lí") {
-                        matchSubject = item.subject.toLowerCase().includes("toán") || item.subject.toLowerCase().includes("lí");
+                        matchSub = item.subject.toLowerCase().includes("toán") || item.subject.toLowerCase().includes("lí");
                     } else {
-                        matchSubject = item.subject.toLowerCase().includes(selectedSubject.toLowerCase());
+                        matchSub = item.subject.toLowerCase().includes(selectedSubject.toLowerCase());
                     }
                 }
-
-                let matchMonth = (selectedMonth === "ALL") || (item.monthVal === selectedMonth);
-
-                return matchName && matchDate && matchSubject && matchMonth;
+                let matchMon = (selectedMonth === "ALL") || (item.month === selectedMonth);
+                return matchSub && matchMon;
             });
 
             renderTable(filtered);
         }
 
-        function renderTable(data) {
+        function renderTable(dataArray) {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
-            document.getElementById('record-count').innerText = data.length;
 
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-message">Không tìm thấy dữ liệu phù hợp</td></tr>';
+            if (dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-message">Không tìm thấy dữ liệu điểm phù hợp.</td></tr>';
+                document.getElementById('record-count').innerText = `Tổng số: 0 bản ghi`;
                 return;
             }
 
-            data.forEach((item, index) => {
+            dataArray.forEach((item, index) => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight: bold; text-align: center;">${index + 1}</td>
-                    <td style="font-weight: bold; color: var(--primary-color);">${item.name}</td>
-                    <td style="text-align: center;">${item.dateVal}</td>
-                    <td style="text-align: center;">${item.monthVal}</td>
-                    <td style="text-align: center; font-weight: bold;">${item.subject}</td>
-                    <td style="text-align: center; color: #2563eb; font-weight: bold;">${item.score}</td>
-                    <td style="text-align: center; color: #555;">${item.createdDate}</td>
+                    <td class="text-center" style="font-weight: bold;">${index + 1}</td>
+                    <td class="font-weight-bold">${item.fullName}</td>
+                    <td class="text-center" style="font-weight: bold; color: #2563eb;">${item.code}</td>
+                    <td class="text-center">${item.month ? 'Tháng ' + item.month : ''}</td>
+                    <td class="text-center"><span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight:600;">${item.subject || 'N/A'}</span></td>
+                    <td class="text-right font-weight-bold" style="color: #0b694a; font-size: 15px;">${item.score}</td>
+                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.inputDate}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            document.getElementById('record-count').innerText = `Tổng số: ${dataArray.length} bản ghi`;
         }
 
-        function clearTable() {
-            document.getElementById('table-body').innerHTML = '<tr><td colspan="7" class="empty-message">Vui lòng hoàn tất các bước chọn lọc</td></tr>';
-            document.getElementById('record-count').innerText = "0";
-        }
-
-        function resetDropdowns() {
-            document.getElementById('filter-subject').value = "ALL";
-            document.getElementById('filter-month').innerHTML = '<option value="ALL">-- Tất cả tháng --</option>';
+        function resetDependentFields() {
+            document.getElementById('search-code').value = '';
+            document.getElementById('search-code').disabled = true;
+            document.getElementById('filter-subject').disabled = true;
+            document.getElementById('filter-month').disabled = true;
+            document.getElementById('student-status-badge').innerHTML = '';
+            renderTable([]);
         }
     </script>
 </body>
