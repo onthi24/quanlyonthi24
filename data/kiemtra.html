@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dữ Liệu điểm</title>
+    <title>Hệ Thống Nhập & Quản Lý Dữ Liệu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -43,6 +43,52 @@
             align-items: center;
             justify-content: space-between;
             font-size: 15px;
+        }
+
+        /* Khung nhập mật khẩu bảo mật */
+        .auth-container {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .auth-container h4 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .auth-container p {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        .auth-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .auth-input-group input {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            outline: none;
+            font-size: 14px;
+            text-align: center;
+        }
+        .auth-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .auth-btn:hover { background-color: var(--primary-hover); }
+        .auth-error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 10px;
+            font-weight: 500;
         }
 
         .form-iframe {
@@ -200,20 +246,35 @@
 <body>
 
     <div class="container">
-        <h2 class="header-title"><i class="fa-solid fa-calculator"></i> DỮ LIỆU ĐIỂM</h2>
+        <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- CỘT BÊN TRÁI: GOOGLE FORM -->
+            <!-- CỘT BÊN TRÁI: XÁC THỰC MẬT KHẨU & NHẬP DỮ LIỆU -->
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
                 </div>
-                <iframe 
-                    id="google-form-iframe"
-                    class="form-iframe"
-                    src="">
-                    Đang tải form...
-                </iframe>
+                
+                <!-- Phần 1: Khung nhập mật khẩu (Mặc định hiển thị) -->
+                <div id="auth-box" class="auth-container">
+                    <h4><i class="fa-solid fa-lock" style="color: #b45309;"></i> Xác Thực Truy Cập</h4>
+                    <p>Vui lòng nhập mật khẩu để mở khóa khung nhập dữ liệu.</p>
+                    <div class="auth-input-group">
+                        <input type="password" id="pass-input" placeholder="Nhập mật khẩu..." autocomplete="off" onkeypress="handlePassKeyPress(event)">
+                        <button class="auth-btn" onclick="verifyPassword()">Xác nhận</button>
+                    </div>
+                    <div id="auth-error-msg" class="auth-error"></div>
+                </div>
+
+                <!-- Phần 2: Khung chứa Google Form (Mặc định ẩn) -->
+                <div id="form-box" style="display: none;">
+                    <iframe 
+                        id="google-form-iframe"
+                        class="form-iframe"
+                        src="">
+                        Đang tải form...
+                    </iframe>
+                </div>
             </div>
 
             <!-- CỘT BÊN PHẢI: BẢNG DỮ LIỆU VÀ BỘ LỌC THEO MÃ SỐ -->
@@ -225,16 +286,16 @@
                 <div class="data-card-content">
                     
                     <div class="filter-section">
-                        <!-- 1. Ô chọn Họ và tên (Có gợi ý, tắt autofill) -->
+                        <!-- 1. Ô chọn Họ và tên (Có gợi ý) -->
                         <div class="filter-group" style="flex: 1.5;">
-                            <label for="search-name">Tên (VD:Hải)</label>
+                            <label for="search-name">Họ và Tên</label>
                             <input type="text" id="search-name" placeholder="Gõ chọn tên..." oninput="handleNameInput()" autocomplete="off">
                             <div id="suggestions-list"></div>
                         </div>
 
-                        <!-- 2. Ô nhập Mã số đối chiếu Cột C (tắt autofill) -->
+                        <!-- 2. Ô nhập Mã số đối chiếu Cột C -->
                         <div class="filter-group">
-                            <label for="search-code">Mã số (1/12/2008 thì viết: 11208)</label>
+                            <label for="search-code">Mã số</label>
                             <input type="text" id="search-code" placeholder="Nhập mã số..." oninput="handleCodeInput()" autocomplete="off" disabled>
                         </div>
 
@@ -268,10 +329,10 @@
                                 <tr>
                                     <th style="width: 50px; text-align: center;">STT</th>
                                     <th>Họ và tên</th>
-                                    <th style="width: 150px; text-align: center;">Mã số</th>
+                                    <th style="width: 110px; text-align: center;">Mã số</th>
                                     <th style="width: 90px; text-align: center;">Tháng</th>
-                                    <th style="width: 90px; text-align: center;">Môn</th>
-                                    <th style="width: 80px; text-align: right;">Điểm</th>
+                                    <th style="width: 110px; text-align: center;">Môn</th>
+                                    <th style="width: 90px; text-align: right;">Điểm</th>
                                     <th style="width: 120px; text-align: center;">Ngày nhập</th>
                                 </tr>
                             </thead>
@@ -297,26 +358,31 @@
 
     <script>
         // =========================================================================
-        // CÁC HẰNG SỐ CẤU HÌNH
+        // CÁC HẰNG SỐ CẤU HÌNH (Đường dẫn Google Sheet và Google Form)
         // =========================================================================
         const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
+        
+        // Link CSV của tab dữ liệu chính (gid=939986110)
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&gid=939986110";
+        
+        // Link CSV của tab pass bảo mật (Thay gid bằng gid thực tế của tab "pass" trong Google Sheet của thầy)
+        // Thầy nhớ kiểm tra gid của tab pass trên thanh URL của trình duyệt khi đang bấm vào tab pass để thay vào đây nếu khác nhé.
+        const PASS_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&sheet=pass";
         // =========================================================================
 
-        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV_V3";
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV_V4";
         let allData = [];
         let matchedStudentData = [];
+        let validPasswords = [];
 
         window.onload = function() {
-            document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
             document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
 
-            // Xóa sạch trạng thái form khi vừa load trang hoặc F5
             resetFormState();
-
             setupF2KeyShortcut();
             initDataWithCacheAndAutoUpdate();
+            fetchPasswords();
 
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.filter-group')) {
@@ -325,7 +391,48 @@
             });
         };
 
-        // Hàm đưa form về trạng thái ban đầu trống hoàn toàn
+        // Lấy danh sách mật khẩu từ tab "pass" của Google Sheets
+        function fetchPasswords() {
+            fetch(PASS_CSV_URL)
+                .then(res => res.text())
+                .then(text => {
+                    let lines = text.split(/\r?\n/);
+                    let pws = [];
+                    // Đọc từ hàng 2 trở xuống (bỏ qua tiêu đề hàng 1), lấy cột A (index 0)
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        let cols = parseCSVLine(lines[i]);
+                        if (cols.length > 0) {
+                            let p = cleanText(cols[0]);
+                            if (p) pws.push(p);
+                        }
+                    }
+                    validPasswords = pws;
+                })
+                .catch(err => console.error("Lỗi tải mật khẩu:", err));
+        }
+
+        // Kiểm tra mật khẩu khi người dùng bấm Xác nhận hoặc phím Enter
+        function handlePassKeyPress(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        function verifyPassword() {
+            let inputPass = document.getElementById('pass-input').value.trim();
+            let errorMsg = document.getElementById('auth-error-msg');
+
+            if (validPasswords.includes(inputPass)) {
+                // Đúng mật khẩu -> Ẩn khung nhập pass, hiện khung Google Form
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('form-box').style.display = 'block';
+                document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
+            } else {
+                errorMsg.innerText = "Mật khẩu không chính xác!";
+            }
+        }
+
         function resetFormState() {
             document.getElementById('search-name').value = '';
             document.getElementById('search-code').value = '';
