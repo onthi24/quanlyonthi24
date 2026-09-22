@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Nhập & Quản Lý Dữ Liệu</title>
+    <title>Dữ Liệu điểm</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -225,17 +225,17 @@
                 <div class="data-card-content">
                     
                     <div class="filter-section">
-                        <!-- 1. Ô chọn Họ và tên (Có gợi ý) -->
+                        <!-- 1. Ô chọn Họ và tên (Có gợi ý, tắt autofill) -->
                         <div class="filter-group" style="flex: 1.5;">
                             <label for="search-name">Họ và Tên</label>
                             <input type="text" id="search-name" placeholder="Gõ chọn tên..." oninput="handleNameInput()" autocomplete="off">
                             <div id="suggestions-list"></div>
                         </div>
 
-                        <!-- 2. Ô nhập Mã số đối chiếu Cột C -->
+                        <!-- 2. Ô nhập Mã số đối chiếu Cột C (tắt autofill) -->
                         <div class="filter-group">
                             <label for="search-code">Mã số</label>
-                            <input type="text" id="search-code" placeholder="Nhập mã số..." oninput="handleCodeInput()" disabled>
+                            <input type="text" id="search-code" placeholder="Nhập mã số..." oninput="handleCodeInput()" autocomplete="off" disabled>
                         </div>
 
                         <!-- 3. Chọn Môn -->
@@ -304,13 +304,16 @@
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&gid=939986110";
         // =========================================================================
 
-        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV_V2";
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV_V3";
         let allData = [];
         let matchedStudentData = [];
 
         window.onload = function() {
             document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
             document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
+
+            // Xóa sạch trạng thái form khi vừa load trang hoặc F5
+            resetFormState();
 
             setupF2KeyShortcut();
             initDataWithCacheAndAutoUpdate();
@@ -321,6 +324,19 @@
                 }
             });
         };
+
+        // Hàm đưa form về trạng thái ban đầu trống hoàn toàn
+        function resetFormState() {
+            document.getElementById('search-name').value = '';
+            document.getElementById('search-code').value = '';
+            document.getElementById('search-code').disabled = true;
+            document.getElementById('filter-subject').value = 'ALL';
+            document.getElementById('filter-subject').disabled = true;
+            document.getElementById('filter-month').value = 'ALL';
+            document.getElementById('filter-month').disabled = true;
+            document.getElementById('student-status-badge').innerHTML = '';
+            renderTable([]);
+        }
 
         function setupF2KeyShortcut() {
             document.addEventListener('keydown', function(event) {
@@ -529,7 +545,6 @@
 
                 if (selectedSubject !== "ALL") {
                     if (selectedSubject === "Toán-Lí") {
-                        // Cho phép lấy cả dòng chứa môn Toán hoặc môn Lí
                         matchSub = subLower.includes("toán") || subLower.includes("lí");
                     } else {
                         matchSub = subLower.includes(selectedSubject.toLowerCase());
