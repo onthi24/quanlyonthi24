@@ -26,7 +26,6 @@
         /* MAIN LAYOUT */
         .main-layout { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
         
-        /* LEFT PANEL (Google Form iframe) */
         .card {
             background: #ffffff;
             border-radius: 12px;
@@ -55,7 +54,6 @@
 
         .data-card-content { padding: 15px 20px 20px 20px; }
 
-        /* RIGHT PANEL (Bộ lọc và Bảng dữ liệu) */
         .filter-section {
             display: flex;
             flex-wrap: wrap;
@@ -132,7 +130,6 @@
         .btn-refresh { background-color: var(--btn-blue); color: white; }
         .btn-refresh:hover { background-color: var(--btn-blue-hover); }
 
-        /* TABLE */
         .table-responsive { 
             overflow-x: auto; 
             border-radius: 8px;
@@ -235,13 +232,13 @@
                             <div id="suggestions-list"></div>
                         </div>
 
-                        <!-- 2. Thay ngày sinh bằng Ô nhập Mã số -->
+                        <!-- 2. Ô nhập Mã số đối chiếu Cột C -->
                         <div class="filter-group">
                             <label for="search-code">Mã số</label>
                             <input type="text" id="search-code" placeholder="Nhập mã số..." oninput="handleCodeInput()" disabled>
                         </div>
 
-                        <!-- 3. Chọn Môn (Toán, Lí hoặc cả 2) -->
+                        <!-- 3. Chọn Môn -->
                         <div class="filter-group">
                             <label for="filter-subject">Môn học</label>
                             <select id="filter-subject" disabled onchange="applyFilter()">
@@ -300,33 +297,32 @@
 
     <script>
         // =========================================================================
-        // KHU VỰC CẤU HÌNH HẰNG SỐ (Thầy có thể thay đổi link trực tiếp tại đây)
+        // CÁC HẰNG SỐ CẤU HÌNH (Thầy dễ dàng thay đổi đường link tại đây)
         // =========================================================================
         
-        // 1. Link nhúng Google Form (Phần khung bên trái)
+        // 1. Link nhúng Google Form (Khung bên trái)
         const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
         
         // 2. Link truy cập trực tiếp Google Sheets (Dùng cho nút mở nhanh khi bấm phím F2)
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
         
-        // 3. Link Web App Apps Script (Dùng để lấy dữ liệu JSON hiển thị lên bảng)
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
+        // 3. Link CSV công khai lấy trực tiếp từ Google Sheets (Không cần Apps Script)
+        // Cấu trúc: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET/gviz/tq?tqx=out:csv&gid=GID_CUA_TAB
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&gid=939986110";
 
         // =========================================================================
 
-        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_V4";
+        const CACHE_KEY = "FORM_RESPONSES_DATA_CACHE_DIRECT_CSV";
         let allData = [];
         let matchedStudentData = [];
 
         window.onload = function() {
-            // Tự động gán link vào iframe và thẻ a từ các hằng số phía trên
             document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
             document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
 
             setupF2KeyShortcut();
             initDataWithCacheAndAutoUpdate();
 
-            // Ẩn bảng gợi ý khi click ra ngoài
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.filter-group')) {
                     document.getElementById('suggestions-list').style.display = 'none';
@@ -344,10 +340,34 @@
             });
         }
 
+        function parseCSVLine(text) {
+            let result = [], entry = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (inQuotes) {
+                    if (c === '"') {
+                        if (i + 1 < text.length && text[i + 1] === '"') { entry += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else { entry += c; }
+                } else {
+                    if (c === '"') { inQuotes = true; }
+                    else if (c === ',') { result.push(entry); entry = ''; }
+                    else { entry += c; }
+                }
+            }
+            result.push(entry);
+            return result;
+        }
+
+        function cleanText(str) {
+            if (!str) return '';
+            return String(str).replace(/^["'\s]+|["'\s]+$/g, '').trim();
+        }
+
         function formatDateOnly(dateStr) {
             if (!dateStr) return "";
             let str = String(dateStr).trim();
-            if (str.includes('T')) {
+            if (str.includes('T') || str.includes('-')) {
                 let d = new Date(str);
                 if (!isNaN(d.getTime())) {
                     let day = String(d.getDate()).padStart(2, '0');
@@ -355,10 +375,6 @@
                     let year = d.getFullYear();
                     return `${day}/${month}/${year}`;
                 }
-            }
-            if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                let parts = str.split('-');
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
             return str.split(' ')[0];
         }
@@ -368,10 +384,10 @@
             if (cachedData) {
                 try {
                     allData = JSON.parse(cachedData);
-                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
+                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới...');
                 } catch (e) { console.error(e); }
             } else {
-                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
+                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...');
             }
             fetchDataFromSheet();
         }
@@ -382,40 +398,43 @@
         }
 
         function fetchDataFromSheet() {
-            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
+            const requestUrl = `${SHEET_CSV_URL}&_t=${new Date().getTime()}`;
 
             fetch(requestUrl)
-                .then(response => response.json())
-                .then(data => {
+                .then(response => response.text())
+                .then(text => {
+                    let lines = text.split(/\r?\n/);
                     let rawData = [];
 
-                    // Giả định ánh xạ cột từ Google Sheets:
+                    // Ánh xạ các cột chuẩn từ file Sheets của thầy:
                     // Col A: Dấu thời gian (index 0)
                     // Col B: Họ và tên (index 1)
-                    // Col C: Mã số (thay thế ngày sinh) (index 2)
+                    // Col C: Mã số (index 2)
                     // Col D: Tháng (index 3)
                     // Col E: Môn (index 4)
                     // Col F: Điểm (index 5)
-                    for (let i = 1; i < data.length; i++) {
-                        let row = data[i];
-                        if (!row || row.length === 0) continue;
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        let cols = parseCSVLine(lines[i]);
 
-                        let timestamp = row[0] || ""; 
-                        let fullName  = row[1] || ""; 
-                        let codeVal   = row[2] || ""; // Cột C: Mã số
-                        let month     = row[3] || ""; 
-                        let subject   = row[4] || ""; 
-                        let score     = row[5] || ""; 
+                        if (cols.length >= 6) {
+                            let timestamp = cleanText(cols[0]);
+                            let fullName  = cleanText(cols[1]);
+                            let codeVal   = cleanText(cols[2]);
+                            let month     = cleanText(cols[3]);
+                            let subject   = cleanText(cols[4]);
+                            let score     = cleanText(cols[5]);
 
-                        if (fullName || codeVal) {
-                            rawData.push({
-                                inputDate: formatDateOnly(timestamp),
-                                fullName: String(fullName).trim(),
-                                code: String(codeVal).trim(),
-                                month: String(month).trim(),
-                                subject: String(subject).trim(),
-                                score: String(score).trim()
-                            });
+                            if (fullName || codeVal) {
+                                rawData.push({
+                                    inputDate: formatDateOnly(timestamp),
+                                    fullName: fullName,
+                                    code: codeVal,
+                                    month: month,
+                                    subject: subject,
+                                    score: score
+                                });
+                            }
                         }
                     }
 
@@ -427,7 +446,7 @@
                     setTimeout(() => showSyncStatus(''), 3000);
                 })
                 .catch(err => {
-                    console.error("Lỗi đồng bộ:", err);
+                    console.error("Lỗi đồng bộ CSV:", err);
                     showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Dùng dữ liệu đệm');
                 });
         }
@@ -440,7 +459,6 @@
             setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
         }
 
-        // Xử lý khi người dùng gõ tên -> Hiện gợi ý
         function handleNameInput() {
             let keyword = document.getElementById('search-name').value.toLowerCase().trim();
             let suggestionsBox = document.getElementById('suggestions-list');
@@ -472,11 +490,10 @@
             document.getElementById('suggestions-list').style.display = 'none';
             
             let codeInput = document.getElementById('search-code');
-            codeInput.disabled = false; // Kích hoạt ô nhập Mã số sau khi chọn tên
+            codeInput.disabled = false;
             codeInput.focus();
         }
 
-        // Xử lý khi người dùng nhập Mã số -> Đối chiếu với Cột C
         function handleCodeInput() {
             let nameVal = document.getElementById('search-name').value.toLowerCase().trim();
             let codeVal = document.getElementById('search-code').value.trim();
@@ -492,7 +509,6 @@
                 return;
             }
 
-            // Lọc dữ liệu khớp tên và mã số ở cột C
             matchedStudentData = allData.filter(item => {
                 let matchName = item.fullName.toLowerCase().includes(nameVal);
                 let matchCode = item.code.toLowerCase() === codeVal.toLowerCase();
@@ -504,7 +520,6 @@
                 monthSelect.disabled = false;
                 statusBadge.innerHTML = `<span style="color: #166534; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Xác thực thành công</span>`;
 
-                // Nạp danh sách tháng tương ứng
                 let months = [...new Set(matchedStudentData.map(i => i.month))].filter(Boolean);
                 let currentMon = monthSelect.value;
                 monthSelect.innerHTML = '<option value="ALL">-- Tất cả --</option>' + 
