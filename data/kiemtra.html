@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Nhập & Tra Cứu Điểm Học Sinh</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a4d2e;
+            --primary-hover: #143d24;
+            --secondary-color: #f4f6f9;
+            --text-color: #333;
+            --border-color: #e2e8f0;
+            --accent-color: #2563eb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: var(--text-color);
+            padding: 20px;
+            font-size: 15px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .header-title {
+            text-align: center; color: var(--primary-color); margin-bottom: 20px;
+            font-size: 22px; text-transform: uppercase; font-weight: 700;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .form-iframe {
+            width: 100%;
+            height: 620px;
+            border: none;
+            display: block;
+        }
+
+        .data-card-content { padding: 15px 20px 20px 20px; }
+
+        /* Filter layout */
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: var(--secondary-color);
+            padding: 12px;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            outline: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        .input-group input:disabled, .input-group select:disabled {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .search-name { flex: 1.2; min-width: 160px; }
+
+        .btn-action {
+            border: none; padding: 8px 14px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; font-size: 13px;
+        }
+
+        .btn-refresh { background-color: var(--accent-color); color: white; }
+        .btn-refresh:hover { background-color: #1d4ed8; }
+
+        .btn-reset { background-color: #e2e8f0; color: #475569; }
+        .btn-reset:hover { background-color: #cbd5e0; }
+
+        /* Table CSS */
+        .table-responsive { 
+            overflow-x: auto; 
+            border-radius: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        table { width: 100%; border-collapse: collapse; background-color: white; }
+        thead { background-color: var(--primary-color); color: white; position: sticky; top: 0; z-index: 10; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 600; text-transform: uppercase; font-size: 13px; text-align: center; }
+        
+        td { font-size: 14px; line-height: 1.5; }
+        td.text-center { text-align: center; }
+        td.text-right { text-align: right; }
+        td.font-weight-bold { font-weight: 600; }
+
+        tbody tr:nth-child(even) { background-color: #fbfbfb; }
+        tbody tr:hover { background-color: #f1f5f9; }
+
+        .empty-message { text-align: center; padding: 40px; color: #718096; font-style: italic; }
+
+        .summary-bar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            padding: 8px 5px;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            font-weight: 400;
+            color: #cbd5e0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-found {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        #access-link-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #16a34a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            font-size: 14px;
+        }
+
+        #access-link-btn:hover { background-color: #15803d; }
+
+        @media (max-width: 992px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .filter-section { flex-direction: column; align-items: stretch; }
+            .input-group { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="header-title"><i class="fa-solid fa-graduation-cap"></i> HỆ THỐNG QUẢN LÝ & TRA CỨU ĐIỂM HỌC SINH</h2>
+
+        <div class="main-layout">
+            <!-- CỘT BÊN TRÁI: GOOGLE FORM NHẬP ĐIỂM -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP ĐIỂM MỚI</span>
+                </div>
+                <!-- Link nhúng Google Form của bạn -->
+                <iframe 
+                    class="form-iframe"
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSfrAaemoCg4hfNpLPVoGug2NTufd_AUszC0psGIGsmGlz7miA/viewform?embedded=true">
+                    Đang tải form...
+                </iframe>
+            </div>
+
+            <!-- CỘT BÊN PHẢI: TRA CỨU & DANH SÁCH DỮ LIỆU -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-square-poll-vertical"></i> TRA CỨU ĐIỂM HỌC SINH</span>
+                    <span id="sync-indicator" class="sync-status"></span>
+                </div>
+                <div class="data-card-content">
+                    
+                    <!-- BỘ LỌC THÔNG TIN -->
+                    <div class="filter-section">
+                        <!-- Nhập Tên -->
+                        <div class="input-group search-name">
+                            <input type="text" id="search-name" placeholder="Nhập Họ và tên (Cột B)..." oninput="handleLookup()">
+                        </div>
+
+                        <!-- Nhập Ngày Sinh -->
+                        <div class="input-group">
+                            <span>Ngày sinh:</span>
+                            <input type="date" id="search-dob" onchange="handleLookup()">
+                        </div>
+
+                        <!-- Chọn Môn Học (Khóa mặc định) -->
+                        <div class="input-group">
+                            <span>Môn:</span>
+                            <select id="filter-subject" disabled onchange="applyFilter()">
+                                <option value="">-- Tất cả --</option>
+                            </select>
+                        </div>
+
+                        <!-- Chọn Tháng (Khóa mặc định) -->
+                        <div class="input-group">
+                            <span>Tháng:</span>
+                            <select id="filter-month" disabled onchange="applyFilter()">
+                                <option value="">-- Tất cả --</option>
+                            </select>
+                        </div>
+
+                        <!-- Nút Thao tác -->
+                        <button class="btn-action btn-reset" onclick="resetFilter()" title="Xóa bộ lọc">
+                            <i class="fa-solid fa-filter-circle-xmark"></i>
+                        </button>
+                        <button class="btn-action btn-refresh" onclick="forceReloadData()" title="Tải lại dữ liệu">
+                            <i class="fa-solid fa-rotate" id="refresh-icon"></i>
+                        </button>
+                    </div>
+
+                    <!-- BẢNG HIỂN THỊ DỮ LIỆU -->
+                    <div class="table-responsive">
+                        <table id="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">STT</th>
+                                    <th style="text-align: left;">Họ và tên</th>
+                                    <th style="width: 120px;">Ngày sinh</th>
+                                    <th style="width: 110px;">Môn học</th>
+                                    <th style="width: 90px; text-align: right;">Điểm</th>
+                                    <th style="width: 100px;">Tháng</th>
+                                    <th style="width: 120px;">Ngày nhập</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr><td colspan="7" class="empty-message">Vui lòng nhập Họ tên và Ngày sinh để tra cứu dữ liệu.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- THANH TỔNG KẾT -->
+                    <div class="summary-bar">
+                        <span id="record-count">Tổng số: 0 bài thi</span>
+                        <span id="student-status-badge"></span>
+                        <span id="avg-score" style="color: #0b694a;">Điểm trung bình: --</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NÚT MỞ NHANH GOOGLE SHEETS (Phím tắt F2) -->
+    <a id="access-link-btn" href="https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?usp=sharing" target="_blank">
+        <i class="fa-solid fa-file-excel"></i> MỞ GOOGLE SHEETS
+    </a>
+
+    <script>
+        // Đường dẫn API Apps Script liên kết với Google Sheet
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRV0s0Zex12r6S_iKnJMjoPu1WEk_xl0jW_kevmiLDZu_4Vu7ohsTTbon2ls_RpLHA/exec";
+        const CACHE_KEY = "STUDENT_SCORES_CACHE_V2";
+        
+        let allData = [];
+        let matchedStudentData = [];
+
+        window.onload = function() {
+            setupF2KeyShortcut();
+            initDataWithCacheAndAutoUpdate();
+        };
+
+        function setupF2KeyShortcut() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'F2') {
+                    event.preventDefault();
+                    const btn = document.getElementById('access-link-btn');
+                    btn.style.display = (btn.style.display === 'none' || btn.style.display === '') ? 'inline-flex' : 'none';
+                }
+            });
+        }
+
+        // Đảm bảo định dạng Ngày chuẩn DD/MM/YYYY
+        function formatDateOnly(dateStr) {
+            if (!dateStr) return "";
+            let str = String(dateStr).trim();
+            if (str.includes('T')) {
+                let d = new Date(str);
+                if (!isNaN(d.getTime())) {
+                    let day = String(d.getDate()).padStart(2, '0');
+                    let month = String(d.getMonth() + 1).padStart(2, '0');
+                    let year = d.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+            }
+            if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                let parts = str.split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return str.split(' ')[0];
+        }
+
+        // Chuyển chuỗi Ngày về dạng Date để so sánh chính xác
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            const parts = String(dateStr).trim().split(' ')[0].split('/');
+            if (parts.length === 3) {
+                return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+            }
+            return null;
+        }
+
+        function initDataWithCacheAndAutoUpdate() {
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                try {
+                    allData = JSON.parse(cachedData);
+                    showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang làm mới dữ liệu...');
+                } catch (e) {
+                    console.error("Lỗi cache:", e);
+                }
+            } else {
+                showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...');
+            }
+            fetchDataFromSheet();
+        }
+
+        function showSyncStatus(htmlContent) {
+            const statusEl = document.getElementById('sync-indicator');
+            if (statusEl) statusEl.innerHTML = htmlContent;
+        }
+
+        // Lấy dữ liệu từ Google Sheets
+        function fetchDataFromSheet() {
+            const requestUrl = `${WEB_APP_URL}?_t=${new Date().getTime()}`;
+
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let rawData = [];
+
+                    // Ánh xạ các cột tương ứng trong Google Sheet:
+                    // Cột A (0): Ngày nhập | Cột B (1): Họ tên | Cột C (2): Ngày sinh
+                    // Cột D (3): Môn học | Cột E (4): Điểm số  | Cột F (5): Tháng
+                    for (let i = 1; i < data.length; i++) {
+                        let row = data[i];
+                        if (!row || row.length === 0) continue;
+
+                        let timestamp = row[0] || ""; 
+                        let fullName  = row[1] || ""; 
+                        let dob       = row[2] || ""; 
+                        let subject   = row[3] || ""; 
+                        let score     = row[4] || ""; 
+                        let month     = row[5] || ""; 
+
+                        if (fullName || dob) {
+                            rawData.push({
+                                inputDate: formatDateOnly(timestamp),
+                                fullName: String(fullName).trim(),
+                                dob: formatDateOnly(dob),
+                                subject: String(subject).trim(),
+                                score: String(score).trim(),
+                                month: String(month).trim()
+                            });
+                        }
+                    }
+
+                    rawData.reverse(); // Đưa thông tin mới nhất lên đầu
+                    allData = rawData;
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawData));
+                    
+                    showSyncStatus('<i class="fa-solid fa-check" style="color: #4ade80;"></i> Sẵn sàng');
+                    setTimeout(() => showSyncStatus(''), 3000);
+
+                    // Kiểm tra và hiển thị lại nếu người dùng đã nhập thông tin từ trước
+                    handleLookup();
+                })
+                .catch(err => {
+                    console.error("Lỗi đồng bộ:", err);
+                    showSyncStatus('<i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> Dùng dữ liệu đệm');
+                });
+        }
+
+        function forceReloadData() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
+            showSyncStatus('<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lại...');
+            fetchDataFromSheet();
+            setTimeout(() => { if (icon) icon.classList.remove('fa-spin'); }, 1000);
+        }
+
+        // BƯỚC XỬ LÝ TRA CỨU THEO TÊN + NGÀY SINH
+        function handleLookup() {
+            let nameVal = document.getElementById('search-name').value.toLowerCase().trim();
+            let dobVal = document.getElementById('search-dob').value; // YYYY-MM-DD
+            let formattedDobInput = formatDateOnly(dobVal);
+
+            const subjectSelect = document.getElementById('filter-subject');
+            const monthSelect = document.getElementById('filter-month');
+            const statusBadge = document.getElementById('student-status-badge');
+
+            // Bắt buộc phải có cả Họ tên và Ngày sinh mới tiến hành tra cứu
+            if (!nameVal || !dobVal) {
+                subjectSelect.disabled = true;
+                monthSelect.disabled = true;
+                subjectSelect.innerHTML = '<option value="">-- Tất cả --</option>';
+                monthSelect.innerHTML = '<option value="">-- Tất cả --</option>';
+                statusBadge.innerHTML = '';
+                
+                renderTable([]);
+                return;
+            }
+
+            // Quét tìm học sinh trùng khớp Họ tên (Cột B) và Ngày sinh (Cột C)
+            matchedStudentData = allData.filter(item => {
+                let matchName = item.fullName.toLowerCase().includes(nameVal);
+                let matchDob = item.dob === formattedDobInput;
+                return matchName && matchDob;
+            });
+
+            if (matchedStudentData.length > 0) {
+                // Đã tìm thấy dữ liệu học sinh -> Mở khóa ô chọn Môn học và Tháng
+                subjectSelect.disabled = false;
+                monthSelect.disabled = false;
+                statusBadge.innerHTML = `<span class="badge-found"><i class="fa-solid fa-circle-check"></i> Đã tìm thấy học sinh</span>`;
+
+                // Nạp danh sách Môn học động
+                let subjects = [...new Set(matchedStudentData.map(i => i.subject))].filter(Boolean);
+                let currentSub = subjectSelect.value;
+                subjectSelect.innerHTML = '<option value="">-- Tất cả --</option>' + 
+                    subjects.map(s => `<option value="${s}" ${s === currentSub ? 'selected' : ''}>${s}</option>`).join('');
+
+                // Nạp danh sách Tháng động
+                let months = [...new Set(matchedStudentData.map(i => i.month))].filter(Boolean);
+                let currentMon = monthSelect.value;
+                monthSelect.innerHTML = '<option value="">-- Tất cả --</option>' + 
+                    months.map(m => `<option value="${m}" ${m === currentMon ? 'selected' : ''}>Tháng ${m}</option>`).join('');
+
+                applyFilter();
+            } else {
+                // Không tìm thấy kết quả
+                subjectSelect.disabled = true;
+                monthSelect.disabled = true;
+                statusBadge.innerHTML = `<span style="color: #ef4444; font-size: 12px; font-weight:600;">Không tìm thấy thông tin</span>`;
+                renderTable([]);
+            }
+        }
+
+        // Lọc theo Môn học và Tháng khi học sinh đã được xác thực
+        function applyFilter() {
+            let selectedSubject = document.getElementById('filter-subject').value;
+            let selectedMonth = document.getElementById('filter-month').value;
+
+            let filtered = matchedStudentData.filter(item => {
+                let matchSub = !selectedSubject || item.subject === selectedSubject;
+                let matchMon = !selectedMonth || item.month === selectedMonth;
+                return matchSub && matchMon;
+            });
+
+            renderTable(filtered);
+        }
+
+        // Hiển thị bảng kết quả
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            let totalScoreSum = 0;
+            let validScoreCount = 0;
+
+            if (dataArray.length === 0) {
+                let nameVal = document.getElementById('search-name').value;
+                let message = nameVal ? "Không tìm thấy dữ liệu điểm phù hợp." : "Vui lòng nhập Họ tên và Ngày sinh để tra cứu dữ liệu.";
+                
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-message">${message}</td></tr>`;
+                document.getElementById('record-count').innerText = `Tổng số: 0 bài thi`;
+                document.getElementById('avg-score').innerText = `Điểm trung bình: --`;
+                return;
+            }
+
+            dataArray.forEach((item, index) => {
+                let numScore = parseFloat(item.score);
+                if (!isNaN(numScore)) {
+                    totalScoreSum += numScore;
+                    validScoreCount++;
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center" style="font-weight: bold;">${index + 1}</td>
+                    <td class="font-weight-bold">${item.fullName}</td>
+                    <td class="text-center">${item.dob}</td>
+                    <td class="text-center"><span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight:600;">${item.subject || 'N/A'}</span></td>
+                    <td class="text-right font-weight-bold" style="color: #0b694a; font-size: 15px;">${item.score}</td>
+                    <td class="text-center">${item.month ? 'Tháng ' + item.month : ''}</td>
+                    <td class="text-center" style="color: #64748b; font-size: 13px;">${item.inputDate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            let avg = validScoreCount > 0 ? (totalScoreSum / validScoreCount).toFixed(1) : '--';
+
+            document.getElementById('record-count').innerText = `Tổng số: ${dataArray.length} bài thi/môn`;
+            document.getElementById('avg-score').innerText = `Điểm trung bình: ${avg}`;
+        }
+
+        function resetFilter() {
+            document.getElementById('search-name').value = '';
+            document.getElementById('search-dob').value = '';
+            document.getElementById('filter-subject').value = '';
+            document.getElementById('filter-month').value = '';
+            handleLookup();
+        }
+    </script>
+</body>
+</html>
