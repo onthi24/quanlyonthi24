@@ -244,7 +244,7 @@
 
                 <!-- Khối 2: Nhập Học Sinh -->
                 <div class="card">
-                    <div class="card-header" style="background-color: #0f766e;">
+                    <div class="card-header">
                         <span><i class="fa-solid fa-user-plus"></i> NHẬP DỮ LIỆU HỌC SINH</span>
                     </div>
                     <div id="auth-box-2" class="auth-container">
@@ -252,7 +252,7 @@
                         <p>Nhập mật khẩu (Pass 2) để mở form cập nhật danh bạ.</p>
                         <div class="auth-input-group">
                             <input type="password" id="pass-input-2" placeholder="Mật khẩu Pass 2..." autocomplete="off" onkeypress="handlePassKeyPress(event, 2)">
-                            <button class="auth-btn" style="background-color: #0f766e;" onclick="verifyPassword(2)">Xác nhận</button>
+                            <button class="auth-btn" onclick="verifyPassword(2)">Xác nhận</button>
                         </div>
                         <div id="auth-error-msg-2" class="auth-error"></div>
                     </div>
@@ -339,7 +339,9 @@
         // CÁC HẰNG SỐ CẤU HÌNH (Đường dẫn Google Sheet và Google Form)
         // =========================================================================
         const GOOGLE_FORM_URL_1 = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
-        const GOOGLE_FORM_URL_2 = "https://forms.gle/36d4Hdk4TtPbfX1A9"; // Form học sinh mới
+        
+        // Chuyển link form 2 sang dạng nhúng embedded=true để hiển thị khung giống form 1
+        const GOOGLE_FORM_URL_2 = "https://forms.gle/36d4Hdk4TtPbfX1A9"; 
         
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
         
@@ -353,8 +355,8 @@
         const STUDENTS_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&sheet=ho_va_ten";
         // =========================================================================
 
-        const CACHE_KEY_DATA = "FORM_RESPONSES_DATA_CACHE_V6";
-        const CACHE_KEY_STUDENTS = "STUDENTS_INFO_CACHE_V6";
+        const CACHE_KEY_DATA = "FORM_RESPONSES_DATA_CACHE_V7";
+        const CACHE_KEY_STUDENTS = "STUDENTS_INFO_CACHE_V7";
 
         let allData = [];
         let studentsMap = {}; 
@@ -453,19 +455,14 @@
                 if (validPass2.includes(inputPass)) {
                     document.getElementById('auth-box-2').style.display = 'none';
                     document.getElementById('form-box-2').style.display = 'block';
-                    // Xử lý link form học sinh mới (nếu là dạng rút gọn forms.gle thì mở trực tiếp hoặc nhúng)
-                    let formUrl2 = GOOGLE_FORM_URL_2;
-                    if (formUrl2.includes("forms.gle")) {
-                        document.getElementById('form-box-2').innerHTML = `
-                            <div style="padding: 30px; text-align: center;">
-                                <p style="margin-bottom: 15px; font-weight: 600; color: #0f766e;">Xác thực thành công!</p>
-                                <a href="${formUrl2}" target="_blank" style="background: #0f766e; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600;">
-                                    <i class="fa-solid fa-external-link-alt"></i> Mở Biểu Mẫu Nhập Học Sinh
-                                </a>
-                            </div>`;
-                    } else {
-                        document.getElementById('google-form-iframe-2').src = formUrl2;
+                    
+                    let embedUrl = GOOGLE_FORM_URL_2;
+                    if (embedUrl.includes("forms.gle")) {
+                        embedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdc.../viewform?embedded=true"; // Thay bằng link embedded chuẩn nếu có, hoặc dùng trực tiếp nếu Google hỗ trợ iframe
                     }
+                    // Nếu link dạng ngắn forms.gle, ta thêm tham số hoặc tự động chuyển sang dạng embed nếu cần, hoặc dùng trực tiếp:
+                    let finalUrl = GOOGLE_FORM_URL_2.includes("?") ? GOOGLE_FORM_URL_2 + "&embedded=true" : GOOGLE_FORM_URL_2 + "?embedded=true";
+                    document.getElementById('google-form-iframe-2').src = finalUrl;
                 } else {
                     errorMsg.innerText = "Mật khẩu Pass 2 không chính xác!";
                 }
@@ -562,7 +559,6 @@
                         if (!lines[i].trim()) continue;
                         let cols = parseCSVLine(lines[i]);
 
-                        // Cấu trúc Form_Responses: [Timestamp, Mã số, Tháng, Môn, Điểm]
                         if (cols.length >= 5) {
                             let timestamp = cleanText(cols[0]);
                             let codeVal   = cleanText(cols[1]);
