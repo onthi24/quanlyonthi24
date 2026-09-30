@@ -24,7 +24,7 @@
         .header-title { text-align: center; color: var(--primary-color); margin-bottom: 25px; font-size: 22px; text-transform: uppercase; font-weight: 700; }
 
         /* MAIN LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+        .main-layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; }
         
         .card {
             background: #ffffff;
@@ -32,68 +32,70 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border-color);
             overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .card-header {
             background-color: var(--primary-color);
             color: white;
-            padding: 14px 20px;
+            padding: 12px 18px;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         /* Khung nhập mật khẩu bảo mật */
         .auth-container {
-            padding: 30px 20px;
+            padding: 20px;
             text-align: center;
         }
         .auth-container h4 {
             color: var(--primary-color);
-            margin-bottom: 12px;
-            font-size: 16px;
+            margin-bottom: 8px;
+            font-size: 15px;
         }
         .auth-container p {
-            font-size: 13px;
+            font-size: 12px;
             color: #64748b;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .auth-input-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .auth-input-group input {
-            padding: 10px 12px;
+            padding: 9px 12px;
             border-radius: 6px;
             border: 1px solid #cbd5e0;
             outline: none;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
         }
         .auth-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 9px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            font-size: 13px;
         }
         .auth-btn:hover { background-color: var(--primary-hover); }
         .auth-error {
             color: #ef4444;
-            font-size: 13px;
-            margin-top: 10px;
+            font-size: 12px;
+            margin-top: 8px;
             font-weight: 500;
         }
 
         .form-iframe {
             width: 100%;
-            height: 590px;
+            height: 480px;
             border: none;
             display: block;
         }
@@ -219,31 +221,44 @@
         <h2 class="header-title"><i class="fa-solid fa-calculator"></i> HỆ THỐNG NHẬP & QUẢN LÝ DỮ LIỆU</h2>
 
         <div class="main-layout">
-            <!-- CỘT BÊN TRÁI: XÁC THỰC MẬT KHẨU & NHẬP DỮ LIỆU -->
-            <div class="card">
-                <div class="card-header">
-                    <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU MỚI</span>
-                </div>
-                
-                <!-- Phần 1: Khung nhập mật khẩu (Mặc định hiển thị) -->
-                <div id="auth-box" class="auth-container">
-                    <h4><i class="fa-solid fa-lock" style="color: #b45309;"></i> Xác Thực Truy Cập</h4>
-                    <p>Vui lòng nhập mật khẩu để mở khóa khung nhập dữ liệu.</p>
-                    <div class="auth-input-group">
-                        <input type="password" id="pass-input" placeholder="Nhập mật khẩu..." autocomplete="off" onkeypress="handlePassKeyPress(event)">
-                        <button class="auth-btn" onclick="verifyPassword()">Xác nhận</button>
+            <!-- CỘT BÊN TRÁI: 2 KHỐI NHẬP DỮ LIỆU BẢO MẬT ĐỘC LẬP -->
+            <div>
+                <!-- Khối 1: Nhập Điểm -->
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-pen-to-square"></i> NHẬP DỮ LIỆU ĐIỂM</span>
                     </div>
-                    <div id="auth-error-msg" class="auth-error"></div>
+                    <div id="auth-box-1" class="auth-container">
+                        <h4>Xác Thực Nhập Điểm</h4>
+                        <p>Nhập mật khẩu (Pass 1) để mở form nhập điểm.</p>
+                        <div class="auth-input-group">
+                            <input type="password" id="pass-input-1" placeholder="Mật khẩu Pass 1..." autocomplete="off" onkeypress="handlePassKeyPress(event, 1)">
+                            <button class="auth-btn" onclick="verifyPassword(1)">Xác nhận</button>
+                        </div>
+                        <div id="auth-error-msg-1" class="auth-error"></div>
+                    </div>
+                    <div id="form-box-1" style="display: none;">
+                        <iframe id="google-form-iframe-1" class="form-iframe" src="">Đang tải...</iframe>
+                    </div>
                 </div>
 
-                <!-- Phần 2: Khung chứa Google Form (Mặc định ẩn) -->
-                <div id="form-box" style="display: none;">
-                    <iframe 
-                        id="google-form-iframe"
-                        class="form-iframe"
-                        src="">
-                        Đang tải form...
-                    </iframe>
+                <!-- Khối 2: Nhập Học Sinh -->
+                <div class="card">
+                    <div class="card-header" style="background-color: #0f766e;">
+                        <span><i class="fa-solid fa-user-plus"></i> NHẬP DỮ LIỆU HỌC SINH</span>
+                    </div>
+                    <div id="auth-box-2" class="auth-container">
+                        <h4>Xác Thực Nhập Học Sinh</h4>
+                        <p>Nhập mật khẩu (Pass 2) để mở form cập nhật danh bạ.</p>
+                        <div class="auth-input-group">
+                            <input type="password" id="pass-input-2" placeholder="Mật khẩu Pass 2..." autocomplete="off" onkeypress="handlePassKeyPress(event, 2)">
+                            <button class="auth-btn" style="background-color: #0f766e;" onclick="verifyPassword(2)">Xác nhận</button>
+                        </div>
+                        <div id="auth-error-msg-2" class="auth-error"></div>
+                    </div>
+                    <div id="form-box-2" style="display: none;">
+                        <iframe id="google-form-iframe-2" class="form-iframe" src="">Đang tải...</iframe>
+                    </div>
                 </div>
             </div>
 
@@ -323,26 +338,29 @@
         // =========================================================================
         // CÁC HẰNG SỐ CẤU HÌNH (Đường dẫn Google Sheet và Google Form)
         // =========================================================================
-        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
+        const GOOGLE_FORM_URL_1 = "https://docs.google.com/forms/d/1LWvlw--cct8dzV5IePTX8WRHHf0nG-ppQxWbYL9Oqqw/viewform?embedded=true";
+        const GOOGLE_FORM_URL_2 = "https://forms.gle/36d4Hdk4TtPbfX1A9"; // Form học sinh mới
+        
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/edit?resourcekey=&gid=939986110#gid=939986110";
         
         // Link CSV tab dữ liệu chính (Form_Responses)
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&gid=939986110";
         
-        // Link CSV tab pass bảo mật
+        // Link CSV tab pass bảo mật (Cột A: Pass 1, Cột B: Pass 2)
         const PASS_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&sheet=pass";
 
-        // Link CSV tab ho_va_ten (Cột A: Mã số, Cột B: Họ và tên, Cột C: Lớp)
+        // Link CSV tab ho_va_ten (Cột A: Dấu thời gian, Cột B: Họ và tên, Cột C: Mã số, Cột D: Lớp)
         const STUDENTS_CSV_URL = "https://docs.google.com/spreadsheets/d/1IksY8q7pq7Y0Mi1QWV-qkdIHdBzlp2GTWx_t5JuCBUI/gviz/tq?tqx=out:csv&sheet=ho_va_ten";
         // =========================================================================
 
-        const CACHE_KEY_DATA = "FORM_RESPONSES_DATA_CACHE_V5";
-        const CACHE_KEY_STUDENTS = "STUDENTS_INFO_CACHE_V5";
+        const CACHE_KEY_DATA = "FORM_RESPONSES_DATA_CACHE_V6";
+        const CACHE_KEY_STUDENTS = "STUDENTS_INFO_CACHE_V6";
 
         let allData = [];
-        let studentsMap = {}; // Lưu thông tin học sinh theo mã số: { code: { fullName, className } }
+        let studentsMap = {}; 
         let matchedStudentData = [];
-        let validPasswords = [];
+        let validPass1 = [];
+        let validPass2 = [];
 
         window.onload = function() {
             document.getElementById('access-link-btn').href = GOOGLE_SHEET_URL;
@@ -354,27 +372,32 @@
             fetchStudentsInfo();
         };
 
-        // Lấy danh sách mật khẩu từ tab "pass"
+        // Lấy danh sách mật khẩu từ tab "pass" (Cột A cho Pass 1, Cột B cho Pass 2)
         function fetchPasswords() {
             fetch(PASS_CSV_URL)
                 .then(res => res.text())
                 .then(text => {
                     let lines = text.split(/\r?\n/);
-                    let pws = [];
+                    let p1 = [], p2 = [];
                     for (let i = 1; i < lines.length; i++) {
                         if (!lines[i].trim()) continue;
                         let cols = parseCSVLine(lines[i]);
                         if (cols.length > 0) {
-                            let p = cleanText(cols[0]);
-                            if (p) pws.push(p);
+                            let val1 = cleanText(cols[0]);
+                            if (val1) p1.push(val1);
+                        }
+                        if (cols.length > 1) {
+                            let val2 = cleanText(cols[1]);
+                            if (val2) p2.push(val2);
                         }
                     }
-                    validPasswords = pws;
+                    validPass1 = p1;
+                    validPass2 = p2;
                 })
                 .catch(err => console.error("Lỗi tải mật khẩu:", err));
         }
 
-        // Lấy danh sách họ tên, lớp từ tab "ho_va_ten"
+        // Lấy danh bạ học sinh từ tab "ho_va_ten" (Cột C: Mã số, Cột B: Họ tên, Cột D: Lớp)
         function fetchStudentsInfo() {
             fetch(STUDENTS_CSV_URL)
                 .then(res => res.text())
@@ -384,10 +407,10 @@
                     for (let i = 1; i < lines.length; i++) {
                         if (!lines[i].trim()) continue;
                         let cols = parseCSVLine(lines[i]);
-                        if (cols.length >= 2) {
-                            let code = cleanText(cols[0]);
+                        if (cols.length >= 3) {
                             let fullName = cleanText(cols[1]);
-                            let className = cols.length >= 3 ? cleanText(cols[2]) : '';
+                            let code = cleanText(cols[2]);
+                            let className = cols.length >= 4 ? cleanText(cols[3]) : '';
                             if (code) {
                                 mapObj[code.toLowerCase()] = {
                                     fullName: fullName,
@@ -401,7 +424,6 @@
                 })
                 .catch(err => {
                     console.error("Lỗi tải danh bạ học sinh:", err);
-                    // Dùng cache nếu lỗi mạng
                     let cachedStudents = localStorage.getItem(CACHE_KEY_STUDENTS);
                     if (cachedStudents) {
                         try { studentsMap = JSON.parse(cachedStudents); } catch(e){}
@@ -409,22 +431,44 @@
                 });
         }
 
-        function handlePassKeyPress(e) {
+        function handlePassKeyPress(e, formId) {
             if (e.key === 'Enter') {
-                verifyPassword();
+                verifyPassword(formId);
             }
         }
 
-        function verifyPassword() {
-            let inputPass = document.getElementById('pass-input').value.trim();
-            let errorMsg = document.getElementById('auth-error-msg');
+        function verifyPassword(formId) {
+            let inputPass = document.getElementById(`pass-input-${formId}`).value.trim();
+            let errorMsg = document.getElementById(`auth-error-msg-${formId}`);
 
-            if (validPasswords.includes(inputPass)) {
-                document.getElementById('auth-box').style.display = 'none';
-                document.getElementById('form-box').style.display = 'block';
-                document.getElementById('google-form-iframe').src = GOOGLE_FORM_URL;
-            } else {
-                errorMsg.innerText = "Mật khẩu không chính xác!";
+            if (formId === 1) {
+                if (validPass1.includes(inputPass)) {
+                    document.getElementById('auth-box-1').style.display = 'none';
+                    document.getElementById('form-box-1').style.display = 'block';
+                    document.getElementById('google-form-iframe-1').src = GOOGLE_FORM_URL_1;
+                } else {
+                    errorMsg.innerText = "Mật khẩu Pass 1 không chính xác!";
+                }
+            } else if (formId === 2) {
+                if (validPass2.includes(inputPass)) {
+                    document.getElementById('auth-box-2').style.display = 'none';
+                    document.getElementById('form-box-2').style.display = 'block';
+                    // Xử lý link form học sinh mới (nếu là dạng rút gọn forms.gle thì mở trực tiếp hoặc nhúng)
+                    let formUrl2 = GOOGLE_FORM_URL_2;
+                    if (formUrl2.includes("forms.gle")) {
+                        document.getElementById('form-box-2').innerHTML = `
+                            <div style="padding: 30px; text-align: center;">
+                                <p style="margin-bottom: 15px; font-weight: 600; color: #0f766e;">Xác thực thành công!</p>
+                                <a href="${formUrl2}" target="_blank" style="background: #0f766e; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                                    <i class="fa-solid fa-external-link-alt"></i> Mở Biểu Mẫu Nhập Học Sinh
+                                </a>
+                            </div>`;
+                    } else {
+                        document.getElementById('google-form-iframe-2').src = formUrl2;
+                    }
+                } else {
+                    errorMsg.innerText = "Mật khẩu Pass 2 không chính xác!";
+                }
             }
         }
 
@@ -575,7 +619,6 @@
                 return;
             }
 
-            // Lọc dữ liệu theo Mã số người dùng nhập
             matchedStudentData = allData.filter(item => item.code.toLowerCase() === codeVal.toLowerCase());
 
             if (matchedStudentData.length > 0) {
