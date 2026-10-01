@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Tra Cứu Học Sinh Tối Ưu</title>
+    <title>Tra Cứu Thông Tin Tối Ưu</title>
     <!-- Nhúng Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -19,11 +19,11 @@
         
         <!-- Header màu xanh rêu -->
         <div class="bg-emerald-800 text-white p-6 relative shadow-md">
-            <h1 class="text-2xl md:text-3xl font-bold text-center tracking-wide">HỆ THỐNG TRA CỨU THÔNG TIN HỌC SINH</h1>
+            <h1 class="text-2xl md:text-3xl font-bold text-center tracking-wide">TRA CỨU THÔNG TIN</h1>
             <p class="text-center text-emerald-100 text-sm mt-1">Tra cứu nhanh chóng - Tối ưu dữ liệu</p>
             
             <!-- Nút Truy cập Sheet (Ẩn mặc định, nhấn F2 để hiện) -->
-            <a id="btnAccessDrive" href="https://docs.google.com/spreadsheets/d/1mieRfJyDsdevYfwMOhzkrg60pOuBtQ_dkzOW7LfAiA8/edit?gid=363106613#gid=363106613" target="_blank" 
+            <a id="btnAccessDrive" href="https://docs.google.com/spreadsheets/d/1mieRfJyDsdevYfwMOHzkrg6pOuBtQ_dkzOW7LfAiA8/edit?gid=363106613#gid=363106613" target="_blank" 
                class="hidden absolute top-4 right-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition transform hover:scale-105 items-center gap-1">
                 🔗 Truy cập Sheet
             </a>
@@ -43,18 +43,18 @@
 
             <!-- Khung Chọn Mục & Chọn Học Sinh -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <!-- Chọn Mục (Lấy từ sheet DS_sheet) -->
+                <!-- Chọn Nhóm Dữ Liệu (Lấy từ sheet DS_sheet) -->
                 <div>
-                    <label for="monthSelect" class="block text-sm font-semibold text-emerald-900 mb-2">1. Chọn danh mục tra cứu:</label>
+                    <label for="monthSelect" class="block text-sm font-semibold text-emerald-900 mb-2">1. Chọn nhóm dữ liệu:</label>
                     <select id="monthSelect" class="w-full px-4 py-3 border border-emerald-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white text-gray-700 font-medium">
                         <option value="">-- Đang tải danh sách... --</option>
                     </select>
                 </div>
 
-                <!-- Ô tìm kiếm tên học sinh -->
+                <!-- Ô tìm kiếm tên -->
                 <div>
-                    <label for="studentSearch" class="block text-sm font-semibold text-emerald-900 mb-2">2. Nhập tên học sinh để tìm kiếm:</label>
-                    <input type="text" id="studentSearch" list="studentSuggestions" disabled placeholder="Vui lòng chọn danh mục trước..." 
+                    <label for="studentSearch" class="block text-sm font-semibold text-emerald-900 mb-2">2. Nhập tên:</label>
+                    <input type="text" id="studentSearch" list="studentSuggestions" disabled placeholder="Vui lòng chọn nhóm dữ liệu trước..." 
                            class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <datalist id="studentSuggestions"></datalist>
                 </div>
@@ -84,9 +84,9 @@
                 </div>
             </div>
 
-            <!-- Thông báo không tìm thấy học sinh -->
+            <!-- Thông báo không tìm thấy -->
             <div id="notFoundMessage" class="hidden text-center text-red-500 my-4 font-medium bg-red-50 p-3 rounded-lg border border-red-200">
-                ⚠ Không tìm thấy học sinh này trong danh mục đã chọn!
+                ⚠ Không tìm thấy thông tin này trong nhóm dữ liệu đã chọn!
             </div>
         </div>
     </div>
@@ -154,11 +154,11 @@
         // Đổ danh sách vào thẻ Select
         function renderMonthDropdown() {
             const monthSelect = document.getElementById('monthSelect');
-            monthSelect.innerHTML = '<option value="">-- Chọn danh mục --</option>' + 
+            monthSelect.innerHTML = '<option value="">-- Chọn nhóm dữ liệu --</option>' + 
                 monthList.map(m => `<option value="${m.sheetName}">${m.monthName}</option>`).join('');
         }
 
-        // Khi người dùng chọn danh mục
+        // Khi người dùng chọn nhóm dữ liệu
         document.getElementById('monthSelect').addEventListener('change', function(e) {
             const selectedSheet = e.target.value;
             if (selectedSheet) {
@@ -173,9 +173,9 @@
             }
         });
 
-        // --- BƯỚC 2: LẤY TÊN HỌC SINH CỦA SHEET ĐƯỢC CHỌN (CỘT B) ---
+        // --- BƯỚC 2: LẤY TÊN CỦA SHEET ĐƯỢC CHỌN (CỘT B) ---
         function loadStudentNamesBySheet(sheetName) {
-            showLoading(true, "🔄 Đang tải danh sách học sinh...");
+            showLoading(true, "🔄 Đang tải danh sách...");
             const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent('SELECT B')}`;
 
             fetch(url)
@@ -186,10 +186,10 @@
 
                     studentList = data.table.rows
                         .map(row => row.c && row.c[0] && row.c[0].v ? String(row.c[0].v).trim() : "")
-                        .filter(name => name !== "" && name.toLowerCase() !== "họ và tên" && name.toLowerCase() !== "họ tên");
+                        .filter(name => name !== "" && name.toLowerCase() !== "họ và tên" && name.toLowerCase() !== "họ tên" && name.toLowerCase() !== "nội dung");
 
                     if (studentList.length === 0) {
-                        alert("Không có dữ liệu học sinh trong danh mục tương ứng!");
+                        alert("Không có dữ liệu trong nhóm tương ứng!");
                         disableStudentSearch();
                     } else {
                         enableStudentSearch();
@@ -199,7 +199,7 @@
                 .catch(err => {
                     console.error(err);
                     showLoading(false);
-                    alert("Không thể tải danh sách học sinh!");
+                    alert("Không thể tải danh sách!");
                     disableStudentSearch();
                 });
         }
@@ -207,7 +207,7 @@
         function enableStudentSearch() {
             const searchInput = document.getElementById('studentSearch');
             searchInput.disabled = false;
-            searchInput.placeholder = "Ví dụ: Nguyễn Văn A...";
+            searchInput.placeholder = "Nhập tên cần tìm...";
             
             const datalist = document.getElementById('studentSuggestions');
             datalist.innerHTML = studentList.map(name => `<option value="${name}"></option>`).join('');
@@ -217,11 +217,11 @@
             const searchInput = document.getElementById('studentSearch');
             searchInput.disabled = true;
             searchInput.value = '';
-            searchInput.placeholder = "Vui lòng chọn danh mục trước...";
+            searchInput.placeholder = "Vui lòng chọn nhóm dữ liệu trước...";
             document.getElementById('resultCard').classList.add('hidden');
         }
 
-        // --- BƯỚC 3: LẮNG NGHE KHI NHẬP TÊN HỌC SINH ---
+        // --- BƯỚC 3: LẮNG NGHE KHI NHẬP TÊN ---
         document.getElementById('studentSearch').addEventListener('input', function(e) {
             const selectedName = e.target.value.trim();
             const resultCard = document.getElementById('resultCard');
@@ -280,12 +280,12 @@
             const rowData = table.rows[0].c;
 
             const sttIndex = headers.findIndex(h => h.toLowerCase().includes("stt"));
-            const nameIndex = headers.findIndex(h => h.toLowerCase().includes("họ và tên") || h.toLowerCase().includes("họ tên"));
+            const nameIndex = headers.findIndex(h => h.toLowerCase().includes("họ và tên") || h.toLowerCase().includes("họ tên") || h.toLowerCase().includes("nội dung"));
 
             const sttVal = (sttIndex !== -1 && rowData[sttIndex]) ? (rowData[sttIndex].v || "-") : "-";
             const nameVal = (nameIndex !== -1 && rowData[nameIndex]) ? (rowData[nameIndex].v || "-") : "-";
 
-            document.getElementById('studentNameTitle').innerText = `👤 Học sinh: ${nameVal} ${sttVal !== '-' ? `(STT: ${sttVal})` : ''}`;
+            document.getElementById('studentNameTitle').innerText = `👤 Thông tin: ${nameVal} ${sttVal !== '-' ? `(STT: ${sttVal})` : ''}`;
 
             tableBody.innerHTML = '';
 
