@@ -41,7 +41,7 @@
                 </button>
             </div>
 
-            <!-- Khung Chọn Mục & Chọn Học Sinh -->
+            <!-- Khung Chọn Nhóm & Nhập Tên -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <!-- Chọn Nhóm Dữ Liệu (Lấy từ sheet DS_sheet) -->
                 <div>
@@ -173,7 +173,7 @@
             }
         });
 
-        // --- BƯỚC 2: LẤY TÊN CỦA SHEET ĐƯỢC CHỌN (CỘT B) ---
+        // --- BƯỚC 2: LẤY TÊN TỪ CỘT B CỦA SHEET CON ĐƯỢC CHỌN ---
         function loadStudentNamesBySheet(sheetName) {
             showLoading(true, "🔄 Đang tải danh sách...");
             const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&tq=${encodeURIComponent('SELECT B')}`;
@@ -243,7 +243,7 @@
             }
         });
 
-        // --- BƯỚC 4: TẢI CHI TIẾT NGUYÊN HÀNG ---
+        // --- BƯỚC 4: TẢI CHI TIẾT NGUYÊN HÀNG THEO CỘT B (HỌ VÀ TÊN) ---
         function loadStudentScores(studentName) {
             showLoading(true, "⏳ Đang tải kết quả...");
             
@@ -295,7 +295,7 @@
                 const cell = rowData[index];
                 const value = cell ? (cell.f ? cell.f : (cell.v !== null ? String(cell.v) : "")) : "";
 
-                const isSpecialRow = colName.includes("Ghi chú") || colName.includes("Tổng hợp");
+                const isSpecialRow = colName.includes("Ghi chú") || colName.includes("Tổng hợp") || colName.includes("Số tiền");
                 const rowClass = isSpecialRow ? 'bg-amber-50 font-semibold text-amber-900' : 'hover:bg-emerald-50/50';
 
                 const row = `
