@@ -144,6 +144,7 @@
             display: none;
         }
 
+        /* Định dạng hiển thị khi tìm theo Tên (dạng thẻ card nhiều dòng như cũ) */
         .result-group-card {
             background: var(--white);
             border: 1px solid var(--border-color);
@@ -176,6 +177,37 @@
             width: 60%;
             color: var(--text-color);
             word-break: break-word;
+        }
+
+        /* Định dạng hiển thị mới khi lọc theo cột C (mỗi người 1 dòng gọn gàng) */
+        .table-compact {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-compact th, .table-compact td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-compact th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .table-compact tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-compact tr:hover {
+            background-color: #fafbfc;
         }
 
         /* Nút Truy cập ẩn ở cuối màn hình (Bấm F2 để bật/tắt) */
@@ -240,9 +272,9 @@
                 </select>
             </div>
 
-            <!-- 2. Lọc theo thông tin cột C -->
+            <!-- 2. Chọn thông tin cột C (Nhãn sẽ tự thay đổi theo ô C1) -->
             <div class="form-group">
-                <label for="colC-select">2. Chọn theo thông tin cột C:</label>
+                <label id="colC-label" for="colC-select">2. Chọn thông tin:</label>
                 <select id="colC-select" disabled>
                     <option value="">-- Vui lòng chọn loại dữ liệu trước --</option>
                 </select>
@@ -274,6 +306,7 @@
 
         const sheetSelect = document.getElementById('sheet-select');
         const colCSelect = document.getElementById('colC-select');
+        const colCLabel = document.getElementById('colC-label');
         const nameInput = document.getElementById('name-input');
         const nameList = document.getElementById('name-list');
         const resultContainer = document.getElementById('result-container');
@@ -349,7 +382,8 @@
             let selectedSheet = this.value;
             
             // Reset các trường phụ thuộc
-            colCSelect.innerHTML = '<option value="">-- Chọn thông tin cột C --</option>';
+            colCLabel.textContent = "2. Chọn thông tin:";
+            colCSelect.innerHTML = '<option value="">-- Chọn thông tin --</option>';
             colCSelect.disabled = true;
             nameInput.value = '';
             nameInput.disabled = true;
@@ -377,9 +411,13 @@
                 currentHeaders = rows[0];
                 currentSheetData = rows.slice(1);
 
+                // Cập nhật nhãn động theo ô C1 (currentHeaders[2])
+                let headerC = currentHeaders[2] ? currentHeaders[2] : "thông tin cột C";
+                colCLabel.textContent = `2. Chọn ${headerC}:`;
+
                 // 1. Đổ dữ liệu duy nhất cho bộ lọc Cột C (Index 2)
                 let uniqueColC = [...new Set(currentSheetData.map(row => row[2]).filter(val => val))];
-                colCSelect.innerHTML = '<option value="">-- Chọn thông tin cột C --</option>';
+                colCSelect.innerHTML = `<option value="">-- Chọn ${headerC} --</option>`;
                 uniqueColC.forEach(val => {
                     let opt = document.createElement('option');
                     opt.value = val;
@@ -407,7 +445,7 @@
             }
         });
 
-        // Khi chọn lọc theo Cột C
+        // Khi chọn thông tin theo Cột C (Hiển thị mỗi người 1 dòng dạng bảng gọn gàng)
         colCSelect.addEventListener('change', function() {
             let selectedC = this.value;
             nameInput.value = ''; // Reset ô nhập tên khi dùng bộ lọc Cột C
@@ -417,39 +455,48 @@
                 return;
             }
 
-            // Lọc toàn bộ dòng khớp với giá trị cột C
             let matchedRows = currentSheetData.filter(row => row[2] && row[2].toLowerCase() === selectedC.toLowerCase());
 
             if (matchedRows.length > 0) {
-                let html = `<h4 style="margin-bottom: 12px; color: var(--primary-dark);">Kết quả theo Cột C: "${selectedC}"</h4>`;
-                
-                matchedRows.forEach(matchedRow => {
-                    // Lấy dữ liệu cột B (Index 1), D (Index 3), E (Index 4)
+                let headB = currentHeaders[1] || 'Cột B';
+                let headD = currentHeaders[3] || 'Cột D';
+                let headE = currentHeaders[4] || 'Cột E';
+
+                let html = `
+                    <h4 style="margin-bottom: 12px; color: var(--primary-dark);">Kết quả theo "${selectedC}" (${matchedRows.length} bản ghi)</h4>
+                    <div style="overflow-x: auto;">
+                        <table class="table-compact">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>${headB}</th>
+                                    <th>${headD}</th>
+                                    <th>${headE}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                matchedRows.forEach((matchedRow, index) => {
                     let valB = matchedRow[1] !== undefined && matchedRow[1] !== '' ? matchedRow[1] : '(Trống)';
                     let valD = matchedRow[3] !== undefined && matchedRow[3] !== '' ? matchedRow[3] : '(Trống)';
                     let valE = matchedRow[4] !== undefined && matchedRow[4] !== '' ? matchedRow[4] : '(Trống)';
 
-                    let headB = currentHeaders[1] || 'Cột B';
-                    let headD = currentHeaders[3] || 'Cột D';
-                    let headE = currentHeaders[4] || 'Cột E';
-
                     html += `
-                        <div class="result-group-card">
-                            <div class="result-item">
-                                <div class="result-label">${headB}:</div>
-                                <div class="result-value">${valB}</div>
-                            </div>
-                            <div class="result-item">
-                                <div class="result-label">${headD}:</div>
-                                <div class="result-value">${valD}</div>
-                            </div>
-                            <div class="result-item">
-                                <div class="result-label">${headE}:</div>
-                                <div class="result-value">${valE}</div>
-                            </div>
-                        </div>
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><strong>${valB}</strong></td>
+                            <td>${valD}</td>
+                            <td>${valE}</td>
+                        </tr>
                     `;
                 });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
 
                 resultContainer.innerHTML = html;
                 resultContainer.style.display = 'block';
@@ -458,7 +505,7 @@
             }
         });
 
-        // Khi nhập/chọn Tên (Cột B)
+        // Khi nhập/chọn Tên (Cột B) - Giữ nguyên hiển thị dạng thẻ card chi tiết cũ
         nameInput.addEventListener('input', function() {
             let selectedName = this.value.trim();
             colCSelect.value = ''; // Reset ô chọn Cột C khi tìm theo tên
@@ -468,14 +515,12 @@
                 return;
             }
 
-            // Lọc toàn bộ dòng có tên trùng khớp (Cột B - Index 1)
             let matchedRows = currentSheetData.filter(row => row[1] && row[1].toLowerCase() === selectedName.toLowerCase());
 
             if (matchedRows.length > 0) {
                 let html = `<h4 style="margin-bottom: 12px; color: var(--primary-dark);">Kết quả tìm kiếm cho: "${selectedName}" (${matchedRows.length} bản ghi)</h4>`;
                 
                 matchedRows.forEach(matchedRow => {
-                    // Lấy dữ liệu theo thứ tự yêu cầu: Cột D, C, E, F (Index 3, 2, 4, 5)
                     let valD = matchedRow[3] !== undefined && matchedRow[3] !== '' ? matchedRow[3] : '(Trống)';
                     let valC = matchedRow[2] !== undefined && matchedRow[2] !== '' ? matchedRow[2] : '(Trống)';
                     let valE = matchedRow[4] !== undefined && matchedRow[4] !== '' ? matchedRow[4] : '(Trống)';
